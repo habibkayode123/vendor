@@ -1,0 +1,10 @@
+{
+	"class": "Using Fetch to return a json file",
+	"students": [
+		"Steven Hancock",
+		"JamesDye",
+		"Amber Larsen",
+		"Lynette Jorgenson"
+	],
+	"date": "October 17, 2018"
+}
