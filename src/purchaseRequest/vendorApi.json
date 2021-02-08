@@ -1,0 +1,36 @@
+{
+	"data": [
+		{
+			"vendorId": "12345",
+			"vendorName": "Konga",
+			"items": [
+				{
+					"name": "shoe",
+					"price": 24
+				},
+				{
+					"name": "bag",
+					"price": 20
+				}
+			]
+		},
+		{
+			"vendorId": "6789",
+			"vendorName": "Jumia",
+			"items": [
+				{
+					"name": "shoe",
+					"price": 26
+				},
+				{
+					"name": "bag",
+					"price": 29
+				},
+				{
+					"name": "watch",
+					"price": 90
+				}
+			]
+		}
+	]
+}
