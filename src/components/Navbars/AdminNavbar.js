@@ -57,13 +57,13 @@ const Header = withRouter(({ match, history }) => {
 			},
 			signal
 		).then((data) => {
-			if (data.data.errors) {
-				setError(data.errors);
-			} else {
-				console.log("budgetUsage", data.data);
-				console.log("budgetUsage DJ Louder", data.data.unUtilizedBudget);
-				setBudgetUsage(data.data);
-			}
+			// if (data.data.errors) {
+			// 	setError(data.errors);
+			// } else {
+			// 	console.log("budgetUsage", data.data);
+			// 	console.log("budgetUsage DJ Louder", data.data.unUtilizedBudget);
+			// 	setBudgetUsage(data.data);
+			// }
 		}));
 		// }
 

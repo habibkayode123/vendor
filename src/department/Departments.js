@@ -7,7 +7,8 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { list } from "./api-dept.js";
 import { Link } from "react-router-dom";
-import { Card, Container, Row, Col } from "react-bootstrap";
+import { Card, Container, Row, Col, Button } from "react-bootstrap";
+import CsvImport from 'components/CsvImport';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -50,14 +51,16 @@ export default function ControlledAccordions() {
 	};
 
 	return (
-		// <div className={classes.root}>
 		<>
 			<Container fluid>
 				<Row>
 					<Col md="12">
 						<Card>
-							<Card.Header>
+							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Departments</Card.Title>
+								<div className="buttons">
+									<CsvImport />
+								</div>
 							</Card.Header>
 							<Card.Body>
 								{departments.map((department, i) => {

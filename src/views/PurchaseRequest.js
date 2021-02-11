@@ -1,7 +1,6 @@
 // PurchaseRequest.js;
 
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Card, Form, Container, Row, Col } from "react-bootstrap";
 import { create, getVendors } from "../purchaseRequest/api-purchase";
 
@@ -16,7 +15,16 @@ function PurchaseRequest() {
 
 	const [vendor, setVendor] = useState(null);
 	const [selectedVendor, setSelectedVendor] = useState("");
-	const [vendors, setVendors] = useState([]);
+	const [vendors, setVendors] = useState([
+		{
+            vendorName: 'Jumia',
+            vendorId: 2
+        },
+        {
+            vendorName: 'Jiji',
+            vendorId: 1
+        }
+	]);
 	const [price, setPrice] = useState(null);
 	const [name, setName] = useState(null);
 	const [items, setItems] = useState([]);
@@ -81,7 +89,7 @@ function PurchaseRequest() {
 		console.log("value", value);
 		if (name === "vendorId") {
 			console.log("vendors to log", vendors);
-			const shit = vendors.find((vendor) => vendor.vendorId === value);
+			const shit = vendors.find((vendor) => vendor.vendorId == value);
 			console.log("mad oo", shit.items);
 			// list[index][name] =shit.items;
 			const list = [...inputList];
@@ -223,10 +231,9 @@ function PurchaseRequest() {
 										Make Purchase
 									</Button>
 									<div className="clearfix"></div>
-									<div style={{ marginTop: 30 }}>
+									{/* <div style={{ marginTop: 30 }}>
 										{JSON.stringify(inputList)}
-										{/* {JSON.stringify(dataToSend)}; */}
-									</div>
+									</div> */}
 								</Form>
 							</Card.Body>
 						</Card>

@@ -77,21 +77,21 @@ const additionalBudgetUpdate = async (params, budget) => {
 };
 
 const budgetUsageByDepartment = async (params, signal) => {
-	try {
-		let departmentId = params.departmentId
-			? params.departmentId
-			: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142";
-		let response = await fetch(
-			"http://localhost:3050/api/budgetusage/by/" + departmentId,
-			{
-				method: "GET",
-				signal: signal,
-			}
-		);
-		return await response.json();
-	} catch (err) {
-		console.log(err);
-	}
+	// try {
+	// 	let departmentId = params.departmentId
+	// 		? params.departmentId
+	// 		: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142";
+	// 	let response = await fetch(
+	// 		"http://localhost:3050/api/budgetusage/by/" + departmentId,
+	// 		{
+	// 			method: "GET",
+	// 			signal: signal,
+	// 		}
+	// 	);
+	// 	return await response.json();
+	// } catch (err) {
+	// 	console.log(err);
+	// }
 };
 
 

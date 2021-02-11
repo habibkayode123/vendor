@@ -3,6 +3,7 @@ import auth from "./../auth/auth-helper";
 import { Redirect } from "react-router-dom";
 import { signin } from "../auth/api-auth.js";
 import { budgetUsageByDepartment } from "../budget/api-budget";
+import { toast } from 'react-toastify';
 // import auth from "../auth/auth-helper";
 
 import {
@@ -63,7 +64,7 @@ export default function Login(props) {
 				if (data.errors) {
 					setValues({ ...values, error: data.errors });
 				} else {
-					console.log("datasss", data);
+					toast.info(`Welcome ${data.user.email}!`);
 					auth.authenticate(data, () => {
 						setValues({
 							...values,

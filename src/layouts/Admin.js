@@ -31,6 +31,11 @@ import EditDepartment from "../department/EditDepartment";
 import Departments from "../department/Departments";
 import sidebarImage from "assets/img/sidebar-3.jpg";
 import auth from '../auth/auth-helper';
+import PurchaseRequests from "views/PurchaseRequests/PurchaseRequests";
+import SinglePurchaseRequest from "views/PurchaseRequests/SinglePurchaseRequest/SinglePurchaseRequest";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import QuotationRequest from "views/PurchaseRequests/SinglePurchaseRequest/QuotationRequests";
 
 function Admin() {
 	const [image, setImage] = useState(sidebarImage);
@@ -46,6 +51,7 @@ function Admin() {
 						path={prop.layout + prop.path}
 						render={(props) => <prop.component {...props} />}
 						key={key}
+						exact
 					/>
 				);
 			} else {
@@ -69,6 +75,7 @@ function Admin() {
 	return (
 		<>
 			<div className="wrapper">
+				<ToastContainer />
 				<Sidebar color={color} image={hasImage ? image : ""} routes={routes} />
 				<div className="main-panel" ref={mainPanel}>
 					{auth.isAuthenticated()&&(<AdminNavbar />)}
@@ -111,6 +118,21 @@ function Admin() {
 										exact
 										path="/admin/departments"
 										component={Departments}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/requests"
+										component={PurchaseRequests}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/requests/:uuid"
+										component={SinglePurchaseRequest}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/requests/:uuid/quotation"
+										component={QuotationRequest}
 									/>
 								</>
 								// {<Route exact path="/home" component={Home2} />}

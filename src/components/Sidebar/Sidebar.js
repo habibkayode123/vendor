@@ -95,7 +95,17 @@ function Sidebar({ color, image, routes }) {
 									activeClassName="active"
 								>
 									<i className={""} />
-									<p>Purchase Request</p>
+									<p>Raise Purchase Request</p>
+								</NavLink>
+							</li>
+							<li className="nav-item">
+								<NavLink
+									to="/admin/purchase/requests"
+									className="nav-link"
+									activeClassName="active"
+								>
+									<i className={""} />
+									<p>Purchase Requests</p>
 								</NavLink>
 							</li>
 							<li className="nav-item">
