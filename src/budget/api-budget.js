@@ -15,7 +15,7 @@ const create = async (budget) => {
 };
 const list = async (signal) => {
 	try {
-		let response = await fetch("http://localhost:3050/api/budget", {
+		let response = await fetch("http://localhost:3050/api/budgettest", {
 			method: "GET",
 			signal: signal,
 		});

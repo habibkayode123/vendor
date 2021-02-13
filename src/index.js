@@ -24,16 +24,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/css/animate.min.css";
 import "./assets/scss/light-bootstrap-dashboard-react.scss?v=2.0.0";
 import "./assets/css/demo.css";
+// @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@700&display=swap');
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./assets/css/style.css"
 
 import AdminLayout from "layouts/Admin.js";
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Switch>
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/login" />
-    </Switch>
-  </BrowserRouter>,
-  document.getElementById("root")
+	<BrowserRouter>
+		<Switch>
+			<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+			<Redirect exact="true" from="/" to="/admin/login" />
+			<Redirect exact from="/admin" to="/admin/login" />
+		</Switch>
+	</BrowserRouter>,
+	document.getElementById("root")
 );

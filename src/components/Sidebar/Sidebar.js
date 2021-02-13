@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
+import React from "react";
 import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav } from "react-bootstrap";
@@ -30,10 +30,11 @@ function Sidebar({ color, image, routes }) {
 	return (
 		<div className="sidebar" data-image={image} data-color={color}>
 			<div
-				className="sidebar-background"
-				style={{
-					backgroundImage: "url(" + image + ")",
-				}}
+			// className="sidebar-background"
+			// style={{backgroundColor:"red"}}
+			// style={{
+			// 	backgroundImage: "url(" + image + ")",
+			// }}
 			/>
 			<div className="sidebar-wrapper">
 				<div className="logo d-flex align-items-center justify-content-start">
@@ -49,13 +50,14 @@ function Sidebar({ color, image, routes }) {
 						</div>
 					</a>
 					<a className="simple-text" href="#">
-						Cars45
+						{/* Cars45 */}
+						<img src={require("assets/img/cars45Logo.png").default} alt="..." />
 					</a>
 				</div>
 				<Nav>
 					{!auth.isAuthenticated() && (
 						<ul className="navbar-nav ml-auto">
-							<li className="nav-item">
+							{/* <li className="nav-item">
 								<NavLink
 									to="/admin/register"
 									className="nav-link"
@@ -63,7 +65,7 @@ function Sidebar({ color, image, routes }) {
 								>
 									Sign up
 								</NavLink>
-							</li>
+							</li> */}
 							<li className="nav-item">
 								<NavLink
 									to="/admin/login"
@@ -98,46 +100,84 @@ function Sidebar({ color, image, routes }) {
 									<p>Purchase Request</p>
 								</NavLink>
 							</li>
-							<li className="nav-item">
-								<NavLink
-									to="/admin/budget"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Budget</p>
-								</NavLink>
-							</li>
-							<li className="nav-item">
-								<NavLink
-									to="/admin/createdepartment"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>New Departmnet</p>
-								</NavLink>
-							</li>
-							{/* <li className="nav-item">
-								<NavLink
-									to="/admin/departments"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Departmnets</p>
-								</NavLink>
-							</li> */}
-							<li className="nav-item">
-								<NavLink
-									to="/admin/departments"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Departments</p>
-								</NavLink>
-							</li>
+							{auth.isAuthenticated().user.department === "Finance" && (
+								<>
+									{/* <li className="nav-item">
+										<NavLink
+											to="/admin/purchase"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>Purchase Request</p>
+										</NavLink>
+									</li> */}
+									<li className="nav-item">
+										<NavLink
+											to="/admin/budget"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>Budget</p>
+										</NavLink>
+									</li>
+									<li className="nav-item">
+										<NavLink
+											to="/admin/createbudget"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>Create Budget</p>
+										</NavLink>
+									</li>
+									{/* <li className="nav-item">
+										<NavLink
+											to="/admin/bulkupload/budget"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>Budget Bulk upload</p>
+										</NavLink>
+									</li> */}
+								</>
+							)}
+							{auth.isAuthenticated().user.role == "Admin" && (
+								<>
+									<li className="nav-item">
+										<NavLink
+											to="/admin/createdepartment"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>New Departmnet</p>
+										</NavLink>
+									</li>
+									<li className="nav-item">
+										<NavLink
+											to="/admin/departments"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>Departments</p>
+										</NavLink>
+									</li>
+									<li className="nav-item">
+										<NavLink
+											to="/admin/register"
+											className="nav-link"
+											activeClassName="active"
+										>
+											<i className={""} />
+											<p>User management</p>
+										</NavLink>
+									</li>
+								</>
+							)}
 						</ul>
 					)}
 				</Nav>

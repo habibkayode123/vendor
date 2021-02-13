@@ -14,7 +14,7 @@ import Edit from "@material-ui/icons/Edit";
 import Person from "@material-ui/icons/Person";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteDepartment from "./DeleteDepartment";
-import { read } from "./api-dept.js";
+import { readDepartment } from "./api-dept.js";
 
 const useStyles = makeStyles((theme) => ({
 	root: theme.mixins.gutters({
@@ -60,7 +60,7 @@ export default function Department({ match }) {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
 
-		read(
+		readDepartment(
 			{
 				id: match.params.departmentId,
 			},
@@ -104,7 +104,7 @@ export default function Department({ match }) {
 					<ListItemSecondaryAction>
 						<Link to={"/admin/editdepartment/" + department.id}>
 							<IconButton aria-label="Edit" color="primary">
-								<Edit />
+								<Edit style={{ color: "#1DC7EA" }} />
 							</IconButton>
 						</Link>
 						<DeleteDepartment
@@ -125,12 +125,12 @@ export default function Department({ match }) {
 			<Paper className={classes.auctions} elevation={4}>
 				{/* <Typography type="title" color="primary"> */}
 
-				<ListItem>
+				{/* <ListItem>
 					<ListItemText
 						color="primary"
 						primary={"Department Code: " + department.code}
 					/>
-				</ListItem>
+				</ListItem> */}
 
 				{/* </Typography> */}
 			</Paper>

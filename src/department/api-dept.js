@@ -1,12 +1,13 @@
-const create = async (user) => {
+const create = async (credentials, department) => {
 	try {
 		let response = await fetch("http://localhost:3050/api/department", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
 				"Content-Type": "application/json",
+				Authorization: "Bearer " + credentials.t,
 			},
-			body: JSON.stringify(user),
+			body: JSON.stringify(department),
 		});
 		return await response.json();
 	} catch (err) {
@@ -24,7 +25,7 @@ const list = async (signal) => {
 		console.log(err);
 	}
 };
-const read = async (params, signal) => {
+const readDepartment = async (params, signal) => {
 	try {
 		let response = await fetch(
 			"http://localhost:3050/api/department/" + params.id,
@@ -78,7 +79,7 @@ const update = async (params, credentials, department) => {
 		console.log(err);
 	}
 };
-export { create, list,read,remove,update };
+export { create, list,readDepartment,remove,update };
 
 // const create = async (credentials, department) => {
 // 	try {

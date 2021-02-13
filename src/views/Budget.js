@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Pagination from "../components/Pagination/Pagination"
+import { useLocation, NavLink } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Search from "../components/Search/Search"
 import TableHeader from "../components/TableHeader/TableHeader"
@@ -93,6 +94,16 @@ export default function Budget() {
 		<>
 			<Container fluid>
 				<Row>
+					<li className="nav-item">
+						<NavLink
+							to="/admin/bulkupload/budget"
+							className="nav-link"
+							activeClassName="active"
+						>
+							<i className={""} />
+							<h3>Bulk Upload</h3>
+						</NavLink>
+					</li>
 					<Col md="12">
 						<Card>
 							<Card.Header>
@@ -116,6 +127,7 @@ export default function Budget() {
 														setSearch(value);
 														setCurrentPage(1);
 													}}
+													placeholder="Search budget"
 												/>
 											</div>
 										</div>

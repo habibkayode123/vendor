@@ -25,12 +25,19 @@ import Sidebar from "components/Sidebar/Sidebar";
 import Home2 from "./Home2";
 import routes from "routes.js";
 import TopUpBudget from "../budget/topUpBudget";
+import CreateBudget from "../budget/createBudget";
+import BudgetBulkUpload from "../budget/budgetBulkUpload";
 import NewDepartment from "../department/NewDepartment";
 import Department from "../department/Department";
 import EditDepartment from "../department/EditDepartment";
 import Departments from "../department/Departments";
+// import User from "../user/User";
+import User from "../user/EditUser";
+// import ViewUser from "../user/ViewUser"
+import ViewUser from "../user/ViewUser"
 import sidebarImage from "assets/img/sidebar-3.jpg";
 import auth from '../auth/auth-helper';
+
 
 function Admin() {
 	const [image, setImage] = useState(sidebarImage);
@@ -69,9 +76,16 @@ function Admin() {
 	return (
 		<>
 			<div className="wrapper">
-				<Sidebar color={color} image={hasImage ? image : ""} routes={routes} />
+				{auth.isAuthenticated() && (
+					// (<Sidebar color={color} image={hasImage ? image : ""} routes={routes} />)}
+					<Sidebar
+						color={color}
+						image={hasImage ? image : ""}
+						routes={routes}
+					/>
+				)}
 				<div className="main-panel" ref={mainPanel}>
-					{auth.isAuthenticated()&&(<AdminNavbar />)}
+					{auth.isAuthenticated() && <AdminNavbar />}
 					<div className="content">
 						<Switch>
 							{
@@ -82,6 +96,16 @@ function Admin() {
 										exact
 										path="/admin/bud/additionalBudget/:budgetId"
 										component={TopUpBudget}
+									/>
+									<Route
+										exact
+										path="/admin/createbudget"
+										component={CreateBudget}
+									/>
+									<Route
+										exact
+										path="/admin/bulkupload/budget"
+										component={BudgetBulkUpload}
 									/>
 									<Route
 										// exact
@@ -112,22 +136,28 @@ function Admin() {
 										path="/admin/departments"
 										component={Departments}
 									/>
+									<Route
+										exact={true}
+										path="/admin/edit/user/:userId"
+										component={User}
+									/>
+									<Route
+										exact={true}
+										path="/admin/users/:userId"
+										component={ViewUser}
+									/>
+									{/* <Route
+										exact
+										path="/admin/users/:id"
+										component={User}
+									/> */}
 								</>
 								// {<Route exact path="/home" component={Home2} />}
 							}
 						</Switch>
 					</div>
-					<Footer />
 				</div>
 			</div>
-			{/* <FixedPlugin
-        hasImage={hasImage}
-        setHasImage={() => setHasImage(!hasImage)}
-        color={color}
-        setColor={(color) => setColor(color)}
-        image={image}
-        setImage={(image) => setImage(image)}
-      /> */}
 		</>
 	);
 }

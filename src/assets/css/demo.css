@@ -11,10 +11,12 @@
 * Coded by Creative Tim
 
 =========================================================
-
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@700&display=swap');
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@700&display=swap');
 .fixed-plugin .button-container .github-btn{
     display: inline-block;
     font-size: 14px;

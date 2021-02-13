@@ -42,8 +42,7 @@ const Header = withRouter(({ match, history }) => {
 	const [budgetUsage, setBudgetUsage] = useState({});
 	const [error, setError] = useState("");
 	const classes = useStyles();
-	// auth.isAuthenticated();
-	// if (auth.isAuthenticated()) {
+
 		useEffect(() => {
 		console.log("Ajewole", auth.isAuthenticated().user);
 		const abortController = new AbortController();
@@ -57,11 +56,13 @@ const Header = withRouter(({ match, history }) => {
 			},
 			signal
 		).then((data) => {
+
+			// console.log("data from navbar",data)
 			if (data.data.errors) {
 				setError(data.errors);
 			} else {
-				console.log("budgetUsage", data.data);
-				console.log("budgetUsage DJ Louder", data.data.unUtilizedBudget);
+				// console.log("budgetUsage", data.data);
+				// console.log("budgetUsage.unUtilized ", data.data.unUtilizedBudget);
 				setBudgetUsage(data.data);
 			}
 		}));
@@ -72,6 +73,8 @@ const Header = withRouter(({ match, history }) => {
 		};
 	}, []);
 	// }
+	
+	
 	const mobileSidebarToggle = (e) => {
 		e.preventDefault();
 		document.documentElement.classList.toggle("nav-open");
@@ -131,19 +134,39 @@ const Header = withRouter(({ match, history }) => {
 							)}
 							{auth.isAuthenticated() && (
 								<>
+									{/* <ul className="navbar-nav ml-auto"> */}
 									<ul className="navbar-nav ml-auto">
 										{
-											auth.isAuthenticated() && (
-												<li className="center">
-													<Link to="/financebudget" className="nav-link">
-														{auth.isAuthenticated().user.department}
-													</Link>
-												</li>
-											)
+											auth.isAuthenticated() &&
+												auth.isAuthenticated().user.role != "Admin" && (
+													<li className="center">
+														<Link
+															to="/admin/financebudget"
+															className="nav-link"
+														>
+															{auth.isAuthenticated().user.department}
+														</Link>
+													</li>
+												)
 											// )
 										}
-
+										{
+											auth.isAuthenticated() &&
+												auth.isAuthenticated().user.role === "Admin" && (
+													<li className="center">
+														<Link
+															to="/admin/financebudget"
+															className="nav-link"
+														>
+														Welcome	{auth.isAuthenticated().user.role}
+														</Link>
+													</li>
+												)
+											// )
+										}
 									</ul>
+								{auth.isAuthenticated().user.role !=="Admin" &&(
+
 									<Dropdown as={Nav.Item}>
 										<Dropdown.Toggle
 											aria-expanded={false}
@@ -171,9 +194,12 @@ const Header = withRouter(({ match, history }) => {
 											</Dropdown.Item>
 										</Dropdown.Menu>
 									</Dropdown>
+								)
+								}
+
 									<li className="nav-item">
 										<Link
-											to={"/login"}
+											to={"/admin/login"}
 											onClick={() => {
 												auth.clearJWT(() => history.push("/"));
 											}}

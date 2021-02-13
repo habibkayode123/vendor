@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-// import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import auth from "../auth/auth-helper";
 import TextField from "@material-ui/core/TextField";
@@ -25,9 +23,10 @@ const useStyles = makeStyles((theme) => ({
 		verticalAlign: "middle",
 	},
 	title: {
-		marginTop: theme.spacing(2),
+		// marginLeft:theme.spacing(-42),
+		marginLeft: theme.spacing(10),
 		color: theme.palette.openTitle,
-		fontSize: "1em",
+		fontSize: "1.4em",
 	},
 	textField: {
 		marginLeft: theme.spacing(10),
@@ -52,6 +51,7 @@ export default function NewDepartment() {
 		name: "",
 		description: "",
 		code: "",
+		hod:"",
 		redirect: false,
 		error: "",
 	});
@@ -64,11 +64,11 @@ export default function NewDepartment() {
 		e.preventDefault();
 		const departmentData = {
 			name: values.name || undefined,
-			description: values.description || undefined,
-			code: values.code || undefined,
+			hod: values.hod || undefined,
 		};
 
-		console.log(values.name);
+		console.log("name to submit",values.name);
+		console.log("description",values.hod)
 
 		create(
 			{
@@ -86,23 +86,23 @@ export default function NewDepartment() {
 	};
 
 	if (values.redirect) {
-		return <Redirect to={"/departments/"} />;
+		return <Redirect to={"/admin/departments/"} />;
 	}
 	return (
-		// <div>
-		// 	<Card className={classes.card}>
-		// 		<CardContent>
-		// 			<Typography type="headline" component="h1" className={classes.title}>
-		// 				New Department
-		// 			</Typography>
-		// 			<br />{" "}
 		<>
 			<Container fluid>
 				<Row>
 					<Col md="12">
 						<Card>
 							<Card.Header>
-								<Card.Title as="h4">New Departments</Card.Title>
+								{/* <Card.Title className={classes.title}>Business Unit</Card.Title> */}
+								<Typography
+									type="headline"
+									component="h2"
+									className={classes.title}
+								>
+									New Department
+								</Typography>
 							</Card.Header>
 							<Card.Body>
 								{values.error && (
@@ -112,13 +112,13 @@ export default function NewDepartment() {
 								)}
 								<TextField
 									id="name"
-									label="Name"
+									label="Unit"
 									className={classes.textField}
 									value={values.name}
 									onChange={handleChange("name")}
 									margin="normal"
 								/>
-								<TextField
+								{/* <TextField
 									id="multiline-flexible"
 									label="Description"
 									multiline
@@ -127,37 +127,36 @@ export default function NewDepartment() {
 									onChange={handleChange("description")}
 									className={classes.textField}
 									margin="normal"
-								/>
+								/> */}
 								<TextField
 									id="multiline-flexible"
-									label="Code"
+									label="Hod"
 									// multiline
-									value={values.code}
-									onChange={handleChange("code")}
+									value={values.hod}
+									onChange={handleChange("hod")}
 									className={classes.textField}
 									margin="normal"
 								/>
 								{/* </CardContent> */}
 								<CardActions>
 									<Button
-										color="primary"
+										style={{ color: "#1DC7EA" }}
+										// color="primary"
 										variant="contained"
 										onClick={clickSubmit}
 										className={classes.submit}
 									>
 										Submit
 									</Button>
-									<Link to="/departments/" className={classes.submit}>
+									<Link to="/admin/departments" className={classes.submit}>
 										<Button variant="contained">Cancel</Button>
 									</Link>
 								</CardActions>
-								{/* </Card> */}
 							</Card.Body>
 						</Card>
 					</Col>
 				</Row>
 			</Container>
-			{/* </div> */}
 		</>
 	);
 }

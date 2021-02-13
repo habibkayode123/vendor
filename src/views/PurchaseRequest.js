@@ -166,7 +166,7 @@ function PurchaseRequest() {
 														</select>
 													</Form.Group>
 												</Col>
-												<Col className="pl-1" md="1">
+												<Col className="pl-1" md="2">
 													<Form.Group>
 														{/* <label>Quantity</label> */}
 														<Form.Control
@@ -224,8 +224,7 @@ function PurchaseRequest() {
 									</Button>
 									<div className="clearfix"></div>
 									<div style={{ marginTop: 30 }}>
-										{JSON.stringify(inputList)}
-										{/* {JSON.stringify(dataToSend)}; */}
+										{/* {JSON.stringify(inputList)} */}
 									</div>
 								</Form>
 							</Card.Body>
