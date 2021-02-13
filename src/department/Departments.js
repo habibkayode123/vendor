@@ -9,6 +9,8 @@ import { list } from "./api-dept.js";
 import { Link } from "react-router-dom";
 import { Card, Container, Row, Col, Button } from "react-bootstrap";
 import CsvImport from 'components/CsvImport';
+import axios from '../axios';
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -25,10 +27,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function ControlledAccordions() {
+export default function ControlledAccordions(props) {
 	const classes = useStyles();
 	const [expanded, setExpanded] = React.useState(false);
 	const [departments, setDepartments] = useState([]);
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [needsReload, setNeedsReload] = useState(true);
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -44,10 +48,30 @@ export default function ControlledAccordions() {
 		return function cleanup() {
 			abortController.abort();
 		};
-	}, []);
+	}, [needsReload]);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
+	};
+
+	const isActionAllowed = action => {
+		return props.actions.includes(action);
+	}
+
+	const onFileUpload = (close) => {
+		let data = new FormData();
+		data.append('files', selectedFile);
+		axios.post('/businessUnitsUpload', data).then(res => {
+			toast.success(res.data.message);
+			setNeedsReload(!needsReload);
+			setSelectedFile(null);
+			close();
+		}).catch(err => {
+			toast.error(err.response.data.errors ? err.response.data.errors : 'An error occurred');
+			setNeedsReload(!needsReload);
+			setSelectedFile(null);
+			close();
+		})
 	};
 
 	return (
@@ -59,7 +83,7 @@ export default function ControlledAccordions() {
 							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Departments</Card.Title>
 								<div className="buttons">
-									<CsvImport />
+									{ isActionAllowed('add-department') && <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} /> }
 								</div>
 							</Card.Header>
 							<Card.Body>

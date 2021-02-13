@@ -15,8 +15,9 @@ import {
     Accordion
 } from "react-bootstrap";
 import QuotationModal from './QuotationRequests';
+import auth from '../../../auth/auth-helper';
 
-function SinglePurchaseRequest({ match }) {
+function SinglePurchaseRequest({ match, actions }) {
     const [request, setRequest] = useState({});
     const [showModal, setShowModal] = useState({
         status: false,
@@ -33,16 +34,21 @@ function SinglePurchaseRequest({ match }) {
         setReviewData({...reviewData, [target.name]: target.value});
     }
 
+    const isActionAllowed = action => {
+		return actions.includes(action);
+	}
+
     const handleSubmitReview = () => {
         let data = {
             id: match.params.uuid
         }
 
         let url;
-        const userName = 'Olayinka';
+
+        const userName = auth.isAuthenticated().user.email.split('@')[0];
         switch (showModal.type) {
             case 'Review':
-                url = '/request';
+                url = '/v1/request';
                 data = {
                     ...data,
                     reviewedBy: userName,
@@ -51,7 +57,7 @@ function SinglePurchaseRequest({ match }) {
                 }
                 break;
             default:
-                url = '/request/approveRequest'
+                url = '/v1/request/approveRequest'
                 data = {
                     ...data,
                     approvedBy: userName,
@@ -69,13 +75,13 @@ function SinglePurchaseRequest({ match }) {
 
     const handleSubmitQuotation = () => {
         const dat = {
-            requestedBy: 'Olayinka',
+            requestedBy: auth.isAuthenticated().user.email.split('@')[0],
             requestId: match.params.uuid,
             caseId: request.caseId,
             amount: request.totalItemsAmount.toString()
         };
 
-        axios.post('/request/requestForQuotation', dat).then(res => {
+        axios.post('/v1/request/requestForQuotation', dat).then(res => {
             toast.success(res.data.message);
             setShowQuotModal(false);
             setShouldReload(!shouldReload)
@@ -84,7 +90,7 @@ function SinglePurchaseRequest({ match }) {
 
     const fetchRequest = () => {
         const uuid = match.params.uuid;
-        axios.get(`/request/${uuid}`)
+        axios.get(`/v1/request/${uuid}`)
             .then(res => {
                 let data = res.data.data.data;
                 if (data.reviewStatus == 1) {
@@ -149,8 +155,9 @@ function SinglePurchaseRequest({ match }) {
                                 <Card.Title className="d-flex justify-content-between">
                                     <h4>Purchase Request: {request.caseId}</h4>
                                     <div className="">
-                                        {!request.reviewDate && (<Button size="sm" onClick={() => handleShow('Review')} >Review</Button>)}
+                                        {!request.reviewDate && isActionAllowed('review') && (<Button size="sm" onClick={() => handleShow('Review')} >Review</Button>)}
                                         {
+                                            isActionAllowed('approve') &&
                                             request.reviewStatus == 1 
                                             && !request.approvalStatus
                                             && (
@@ -161,7 +168,7 @@ function SinglePurchaseRequest({ match }) {
                                             )
                                         }
                                         {
-                                            request.approvalStatus == 1 && (
+                                            isActionAllowed('quote') && request.approvalStatus == 1 && (
                                                 <Button variant="info" size="sm" onClick={handleShowQuotModal}>Request For Quotation</Button>
                                             )
                                         }
@@ -199,7 +206,7 @@ function SinglePurchaseRequest({ match }) {
                                             <Card>
                                                 <Accordion.Toggle as={Card.Header} eventKey="0" className="d-flex justify-content-between">
                                                     <h5>{request.reviewDate ? `Review Status: ${request.reviewStatusReadable}` : 'Awaiting Review' }</h5>
-                                                    {!request.reviewDate && (<Button size="sm" onClick={() => handleShow('Review')}>Review Now</Button>)}
+                                                    {isActionAllowed('review') && !request.reviewDate && (<Button size="sm" onClick={() => handleShow('Review')}>Review Now</Button>)}
                                                 </Accordion.Toggle>
                                                 {request.reviewDate && (<Accordion.Collapse eventKey="0">
                                                 <Card.Body>
@@ -219,7 +226,7 @@ function SinglePurchaseRequest({ match }) {
                                             <Card>
                                                 <Accordion.Toggle as={Card.Header} eventKey="0" className="d-flex justify-content-between">
                                                     <h5>{request.approvalStatus ? `Approval Status: ${request.approvalStatusReadable}` : 'Awaiting Approval' }</h5>
-                                                    {!request.approvalStatus && (
+                                                    {isActionAllowed('approve') && !request.approvalStatus && (
                                                             <div>
                                                             <Button size="sm" variant="success" className="mr-2" onClick={() => handleShow('Approve')}>Approve Now</Button>
                                                             <Button size="sm" variant="danger" onClick={() => handleShow('Decline')}>Decline Now</Button>

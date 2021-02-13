@@ -14,7 +14,7 @@ function PurchaseRequests() {
     const [requests, setRequests] = useState([]);
 
     const fetchRequests = () => {
-        axios.get('/request')
+        axios.get('/v1/request')
             .then(res => {
                 const data = res.data.data.map(request => {
                     let reviewStatusReadable;

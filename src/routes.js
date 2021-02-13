@@ -68,21 +68,21 @@ const dashboardRoutes = [
 		layout: "/admin",
 	},
 
-	{
-		path: "/budget",
-		name: "Budget",
-		icon: "nc-icon nc-circle-09",
-		component: Budget,
-		layout: "/admin",
-	},
+	// {
+	// 	path: "/budget",
+	// 	name: "Budget",
+	// 	icon: "nc-icon nc-circle-09",
+	// 	component: Budget,
+	// 	layout: "/admin",
+	// },
 
-	{
-		path: "/purchase",
-		name: "Purchase Request",
-		icon: "nc-icon nc-circle-09",
-		component: PurchaseRequest,
-		layout: "/admin",
-	},
+	// {
+	// 	path: "/purchase",
+	// 	name: "Purchase Request",
+	// 	icon: "nc-icon nc-circle-09",
+	// 	component: PurchaseRequest,
+	// 	layout: "/admin",
+	// },
 	{
 		path: "/table",
 		name: "Log out",

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const instance = axios.create({
     baseURL: process.env.NODE_ENV === 'production'
-        ? '' : 'http://localhost:3050/api/v1'
+        ? '' : 'http://localhost:3050/api'
 })
 
 instance.interceptors.request.use(request => {
@@ -12,7 +12,7 @@ instance.interceptors.request.use(request => {
 });
 
 instance.interceptors.response.use(response => {
-    console.log(response);
+    
     return response;
 }, error => {
     return Promise.reject(error);

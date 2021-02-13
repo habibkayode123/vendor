@@ -56,7 +56,7 @@ const Header = withRouter(({ match, history }) => {
 					: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
 			},
 			signal
-		).then((data) => {
+		).then((data) => {console.log(data);
 			// if (data.data.errors) {
 			// 	setError(data.errors);
 			// } else {

@@ -21,12 +21,16 @@ import { useLocation, NavLink } from "react-router-dom";
 import { Nav } from "react-bootstrap";
 import auth from "../../auth/auth-helper";
 import logo from "assets/img/reactlogo.png";
+import { checkAccess } from '../../utils/permissionsHelper'
 
 function Sidebar({ color, image, routes }) {
 	const location = useLocation();
 	const activeRoute = (routeName) => {
 		return location.pathname.indexOf(routeName) > -1 ? "active" : "";
 	};
+	
+
+
 	return (
 		<div className="sidebar" data-image={image} data-color={color}>
 			<div
@@ -88,7 +92,7 @@ function Sidebar({ color, image, routes }) {
 					)}
 					{auth.isAuthenticated() && (
 						<ul className="navbar-nav ml-auto">
-							<li className="nav-item">
+							{checkAccess('raise-request') && <li className="nav-item">
 								<NavLink
 									to="/admin/purchase"
 									className="nav-link"
@@ -97,8 +101,8 @@ function Sidebar({ color, image, routes }) {
 									<i className={""} />
 									<p>Raise Purchase Request</p>
 								</NavLink>
-							</li>
-							<li className="nav-item">
+							</li>}
+							{checkAccess('view-requests') && <li className="nav-item">
 								<NavLink
 									to="/admin/purchase/requests"
 									className="nav-link"
@@ -107,8 +111,8 @@ function Sidebar({ color, image, routes }) {
 									<i className={""} />
 									<p>Purchase Requests</p>
 								</NavLink>
-							</li>
-							<li className="nav-item">
+							</li>}
+							{checkAccess('view-budgets') && <li className="nav-item">
 								<NavLink
 									to="/admin/budget"
 									className="nav-link"
@@ -117,8 +121,8 @@ function Sidebar({ color, image, routes }) {
 									<i className={""} />
 									<p>Budget</p>
 								</NavLink>
-							</li>
-							<li className="nav-item">
+							</li>}
+							{checkAccess('add-department') && <li className="nav-item">
 								<NavLink
 									to="/admin/createdepartment"
 									className="nav-link"
@@ -127,7 +131,7 @@ function Sidebar({ color, image, routes }) {
 									<i className={""} />
 									<p>New Departmnet</p>
 								</NavLink>
-							</li>
+							</li>}
 							{/* <li className="nav-item">
 								<NavLink
 									to="/admin/departments"
@@ -138,7 +142,7 @@ function Sidebar({ color, image, routes }) {
 									<p>Departmnets</p>
 								</NavLink>
 							</li> */}
-							<li className="nav-item">
+							{checkAccess('view-departments') && <li className="nav-item">
 								<NavLink
 									to="/admin/departments"
 									className="nav-link"
@@ -147,7 +151,7 @@ function Sidebar({ color, image, routes }) {
 									<i className={""} />
 									<p>Departments</p>
 								</NavLink>
-							</li>
+							</li>}
 						</ul>
 					)}
 				</Nav>

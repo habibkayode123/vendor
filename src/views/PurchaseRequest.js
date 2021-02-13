@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Container, Row, Col } from "react-bootstrap";
 import { create, getVendors } from "../purchaseRequest/api-purchase";
+import axios from '../axios';
+import { toast } from 'react-toastify';
 
 function PurchaseRequest() {
 	const [damn, setDamns] = useState({
@@ -18,11 +20,15 @@ function PurchaseRequest() {
 	const [vendors, setVendors] = useState([
 		{
             vendorName: 'Jumia',
-            vendorId: 2
+			vendorId: 2,
+			items: [
+				{name: 'Phone', price: 5000}
+			]
         },
         {
             vendorName: 'Jiji',
-            vendorId: 1
+			vendorId: 1,
+			items: []
         }
 	]);
 	const [price, setPrice] = useState(null);
@@ -71,14 +77,16 @@ function PurchaseRequest() {
 		console.log("to send",index); 
 
 
-		create(index).then((data) => {
-			if (data.message) {
-				console.log("data from datatbase",data);
-				setDamns({ ...values, error: data.message });
-			} else {
-				console.log("data from rfq",data);
-				setDams({ ...values, error: "" });
-			}
+		axios.post('/v1/request', index).then((res) => {
+			toast.success(res.data.message);
+			setInputList([{ items: [], vendorId: "", name: "", quantity: 0, amount: 0 }]);
+			// if (data.message) {
+			// 	console.log("data from datatbase",data);
+			// 	setDamns({ ...values, error: data.message });
+			// } else {
+			// 	console.log("data from rfq",data);
+			// 	setDams({ ...values, error: "" });
+			// }
 		});
 	};
 
@@ -125,7 +133,9 @@ function PurchaseRequest() {
 								<Card.Title as="h4">Purchase Request</Card.Title>
 							</Card.Header>
 							<Card.Body>
-								<Form onSubmit={handlePurchase}>
+								<Row>
+									<Col md={{span: 10, offset: 1}}>
+									<Form onSubmit={handlePurchase}>
 									{inputList.map((x, i) => {
 										return (
 											<Row>
@@ -235,6 +245,9 @@ function PurchaseRequest() {
 										{JSON.stringify(inputList)}
 									</div> */}
 								</Form>
+									</Col>
+								</Row>
+								
 							</Card.Body>
 						</Card>
 					</Col>

@@ -64,7 +64,7 @@ export default function Login(props) {
 				if (data.errors) {
 					setValues({ ...values, error: data.errors });
 				} else {
-					toast.info(`Welcome ${data.user.email}!`);
+					toast.info(`Welcome ${data.user.email.split('@')[0]}!`);
 					auth.authenticate(data, () => {
 						setValues({
 							...values,

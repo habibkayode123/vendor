@@ -10,14 +10,19 @@ import {
 	Row,
 	Col,
 } from "react-bootstrap";
+import CsvImport from '../components/CsvImport';
+import axios from '../axios';
+import { toast } from 'react-toastify';
 
 
-export default function Budget() {
+export default function Budget(props) {
 	const [budgets, setBudgets] = useState([]);
 	const [totalItems, setTotaltems] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [search, setSearch] = useState("");
 	const [sorting, setSorting] = useState({ field: "", order: "" });
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [needsReload, setNeedsReload] = useState(true);
 	const ITEMS_PER_PAGE = 10;
 	const jwt = auth.isAuthenticated();
 
@@ -45,7 +50,27 @@ export default function Budget() {
 				});
 		};
 		getData();
-	}, []);
+	}, [needsReload]);
+
+	const onFileUpload = (close) => {
+		let data = new FormData();
+		data.append('files', selectedFile);
+		axios.post('/budgetUpload', data).then(res => {
+			toast.success(res.data.message);
+			setNeedsReload(!needsReload);
+			setSelectedFile(null);
+			close();
+		}).catch(err => {
+			toast.error(err.response.data.errors ? err.response.data.errors : 'An error occurred');
+			setNeedsReload(!needsReload);
+			setSelectedFile(null);
+			close();
+		})
+	};
+
+	const isActionAllowed = action => {
+		return props.actions.includes(action);
+	}
 
 	const budgetsData = useMemo(() => {
 		let computedBudgets = budgets;
@@ -95,8 +120,11 @@ export default function Budget() {
 				<Row>
 					<Col md="12">
 						<Card>
-							<Card.Header>
+							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Budgets</Card.Title>
+								<div className="buttons">
+									{isActionAllowed('add-budget') && <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} />}
+								</div>
 							</Card.Header>
 							<Card.Body>
 								<div className="row w-100">
@@ -156,7 +184,7 @@ export default function Budget() {
 															)}
 														</td>
 														<td>
-															<Link
+															{isActionAllowed('top-up') && <Link
 																to={"/admin/bud/additionalBudget/" + budget.id}
 																key={i}
 															>
@@ -164,7 +192,7 @@ export default function Budget() {
 																	className="fa fa-pencil-square-o"
 																	aria-hidden="true"
 																></i>
-															</Link>
+															</Link>}
 														</td>
 													</tr>
 												))}

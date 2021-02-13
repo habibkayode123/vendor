@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Form } from 'react-bootstrap';
 
-function CsvImport() {
+function CsvImport(props) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const onFileChange = event => {
+        const file = event.target.files[0];
+        props.setFile(file);
+        // setCanSubmit(true);
+    }
 
     return (
         <>
@@ -15,15 +21,20 @@ function CsvImport() {
 
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Modal heading</Modal.Title>
+                <Modal.Title>Import Csv</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+            <Modal.Body>
+                <Form>
+                    <Form.File 
+                        id="custom-file"
+                        label="Upload File"
+                        onChange={onFileChange}
+                    />
+                </Form>
+            </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                    Save Changes
+                <Button variant="primary" onClick={() => props.onUpload(handleClose)}>
+                    Upload
                 </Button>
             </Modal.Footer>
         </Modal>

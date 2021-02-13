@@ -36,6 +36,9 @@ import SinglePurchaseRequest from "views/PurchaseRequests/SinglePurchaseRequest/
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import QuotationRequest from "views/PurchaseRequests/SinglePurchaseRequest/QuotationRequests";
+import PrivateRoute from '../components/PrivateRoute';
+import PurchaseRequest from "views/PurchaseRequest.js";
+import Budget from "views/Budget";
 
 function Admin() {
 	const [image, setImage] = useState(sidebarImage);
@@ -114,17 +117,27 @@ function Admin() {
 										path="/admin/editdepartment/:departmentId"
 										component={EditDepartment}
 									/>
-									<Route
+									<PrivateRoute
 										exact
 										path="/admin/departments"
 										component={Departments}
 									/>
-									<Route
+									<PrivateRoute
+										exact
+										path="/admin/purchase"
+										component={PurchaseRequest}
+									/>
+									<PrivateRoute
 										exact
 										path="/admin/purchase/requests"
 										component={PurchaseRequests}
 									/>
-									<Route
+									<PrivateRoute
+										exact
+										path="/admin/budget"
+										component={Budget}
+									/>
+									<PrivateRoute
 										exact
 										path="/admin/purchase/requests/:uuid"
 										component={SinglePurchaseRequest}
