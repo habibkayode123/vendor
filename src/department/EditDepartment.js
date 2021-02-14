@@ -7,7 +7,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import auth from "../auth/auth-helper";
 import { makeStyles } from "@material-ui/core/styles";
-import { read, update } from "./api-dept.js";
+import { readDepartment, update } from "./api-dept.js";
 import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,9 +24,9 @@ const useStyles = makeStyles((theme) => ({
 		paddingBottom: theme.spacing(1),
 	},
 	title: {
-		margin: theme.spacing(2),
+		marginLeft: theme.spacing(-42),
 		color: theme.palette.protectedTitle,
-		fontSize: "1.2em",
+		fontSize: "1.4em",
 	},
 	subheading: {
 		marginTop: theme.spacing(2),
@@ -41,7 +41,8 @@ const useStyles = makeStyles((theme) => ({
 		width: 500,
 	},
 	submit: {
-		margin: "auto",
+		// margin: "auto",
+		marginLeft : theme.spacing(24),
 		marginBottom: theme.spacing(2),
 	},
 	bigAvatar: {
@@ -63,6 +64,7 @@ export default function EditDepartment({ match }) {
 		name: "",
 		description: "",
 		code: "",
+		hod:"",
 		redirect: false,
 		error: "",
 		id: "",
@@ -71,7 +73,9 @@ export default function EditDepartment({ match }) {
 	useEffect(() => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
-		read(
+		
+
+		readDepartment(
 			{
 				id: match.params.departmentId,
 			},
@@ -84,8 +88,9 @@ export default function EditDepartment({ match }) {
 					...values,
 					id: data.id,
 					name: data.name,
-					description: data.description,
-					code: data.code,
+					hod:data.hod
+					// description: data.description,
+					// code: data.code,
 				});
 			}
 		});
@@ -98,11 +103,13 @@ export default function EditDepartment({ match }) {
 		e.preventDefault();
 		const departmentData = {
 			name: values.name || undefined,
-			description: values.description || undefined,
-			code: values.code || undefined,
+			// description: values.description || undefined,
+			hod: values.hod || undefined,
 		};
 
-		console.log(values.name);
+		console.log("units name",values.name);
+		console.log("hod",values.hod);
+		console.log("departmentData", departmentData);
 
 		update(
 			{
@@ -149,7 +156,7 @@ export default function EditDepartment({ match }) {
 						margin="normal"
 					/>
 					<br />
-					<TextField
+					{/* <TextField
 						id="multiline-flexible"
 						label="Description"
 						multiline
@@ -158,15 +165,15 @@ export default function EditDepartment({ match }) {
 						onChange={handleChange("description")}
 						className={classes.textField}
 						margin="normal"
-					/>
+					/> */}
 					<br />
 					<TextField
 						id="multiline-flexible"
-						label="Code"
+						label="HOD"
 						multiline
 						rows="1"
-						value={values.code}
-						onChange={handleChange("code")}
+						value={values.hod}
+						onChange={handleChange("hod")}
 						className={classes.textField}
 						margin="normal"
 					/>
@@ -175,7 +182,8 @@ export default function EditDepartment({ match }) {
 				</CardContent>
 				<CardActions>
 					<Button
-						color="primary"
+						style={{ color: "#1DC7EA" }}
+						// color="primary"
 						variant="contained"
 						onClick={clickSubmit}
 						className={classes.submit}
@@ -184,6 +192,6 @@ export default function EditDepartment({ match }) {
 					</Button>
 				</CardActions>
 			</Card>
-		 </div>
+		</div>
 	);
 }

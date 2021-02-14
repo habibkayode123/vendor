@@ -23,36 +23,6 @@ export default function Login(props) {
 	});
 		const [budgetUsage, setBudgetUsage] = useState({});
 
-// useEffect(() => {
-// 	console.log("Ajewole", auth.isAuthenticated().user);
-// 	const abortController = new AbortController();
-// 	const signal = abortController.signal;
-// 	let departmentId;
-// 	// departmentId =auth.isAuthenticated()?auth.isAuthenticated().user.departmentId:"";
-// 	budgetUsageByDepartment(
-// 		{
-// 			departmentId: auth.isAuthenticated()
-// 				? auth.isAuthenticated().user.departmentId
-// 				: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
-// 		},
-// 		signal
-// 	).then((data) => {
-// 		if (data.data.errors) {
-// 			setError(data.errors);
-// 		} else {
-// 			console.log("budgetUsage", data.data);
-// 			console.log("budgetUsage DJ Louder", data.data.unUtilizedBudget);
-// 			setBudgetUsage(data.data);
-// 		}
-// 	});
-// 	// }
-
-// 	return function cleanup() {
-// 		abortController.abort();
-// 	};
-// }, [auth.isAuthenticated()]);
-
-
 	const clickSubmit = (e) => {
 		e.preventDefault();
 		const user = {
@@ -83,14 +53,16 @@ export default function Login(props) {
 	const handleChange = (name) => (event) => {
 		setValues({ ...values, [name]: event.target.value });
 	};
-	const { from } = props.location.state || {
-		from: {
-			pathname: "/admin/financebudget",
-		},
-	};
+	let to ="/Admin/financebudget";
+	if(auth.isAuthenticated() && auth.isAuthenticated().user.role==="Admin"){
+		to="/admin/register";
+	}
+	if (auth.isAuthenticated() && auth.isAuthenticated().user.department === "Finance") {
+		to = "/admin/budget";
+	}
 	const { redirectToReferrer } = values;
 	if (redirectToReferrer) {
-		return <Redirect to={from} />;
+		return <Redirect to={to} />;
 	}
 	return (
 		<>

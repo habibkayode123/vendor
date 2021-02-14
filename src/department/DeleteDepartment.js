@@ -42,7 +42,7 @@ export default function DeleteDepartment(props) {
 
 	const { from } = {
 		from: {
-			pathname: "/departments",
+			pathname: "/admin/departments",
 		},
 	};
 	const redirectToReferal = redirectTo;

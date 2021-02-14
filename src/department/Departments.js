@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -11,6 +11,11 @@ import { Card, Container, Row, Col, Button } from "react-bootstrap";
 import CsvImport from 'components/CsvImport';
 import axios from '../axios';
 import { toast } from 'react-toastify';
+import Pagination from "../components/Pagination/Pagination";
+import { useLocation, NavLink } from "react-router-dom";
+import Search from "../components/Search/Search";
+import TableHeader from "../components/TableHeader/TableHeader";
+import auth from "../auth/auth-helper";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -27,10 +32,13 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function ControlledAccordions(props) {
+export default function ControlledAccordions() {
 	const classes = useStyles();
 	const [expanded, setExpanded] = React.useState(false);
 	const [departments, setDepartments] = useState([]);
+	const [totalItems, setTotaltems] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 4;
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [needsReload, setNeedsReload] = useState(true);
 
@@ -54,10 +62,6 @@ export default function ControlledAccordions(props) {
 		setExpanded(isExpanded ? panel : false);
 	};
 
-	const isActionAllowed = action => {
-		return props.actions.includes(action);
-	}
-
 	const onFileUpload = (close) => {
 		let data = new FormData();
 		data.append('files', selectedFile);
@@ -72,7 +76,23 @@ export default function ControlledAccordions(props) {
 			setSelectedFile(null);
 			close();
 		})
-	};
+	}
+
+	const headers = [
+		{ name: "No#", field: "id" },
+		{ name: "UNITS", field: "unit", sortable: true },
+		{ name: "HOD/DESIGNATE", field: "hod", sortable: true },
+		// { name: "Amount", field: "amount", sortable: false },
+	];
+
+	const departmentsData = useMemo(() => {
+		let computedDepartments = departments;
+		setTotaltems(computedDepartments.length);
+		return computedDepartments.slice(
+			(currentPage - 1) * ITEMS_PER_PAGE,
+			(currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+		);
+	}, [departments,currentPage]);
 
 	return (
 		<>
@@ -83,42 +103,63 @@ export default function ControlledAccordions(props) {
 							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Departments</Card.Title>
 								<div className="buttons">
-									{ isActionAllowed('add-department') && <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} /> }
+									{ <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} /> }
 								</div>
 							</Card.Header>
 							<Card.Body>
-								{departments.map((department, i) => {
-									return (
-										<Link to={"/admin/department/" + department.id} key={i}>
-											<Accordion
-												expanded={expanded === "panel1"}
-												onChange={handleChange("panel1")}
-											>
-												<AccordionSummary
-													expandIcon={<ExpandMoreIcon />}
-													aria-controls="panel1bh-content"
-													id="panel1bh-header"
-												>
-													<Typography className={classes.heading}>
-														{department.name}
-													</Typography>
-													<Typography className={classes.secondaryHeading}>
-														{department.code}
-													</Typography>
-												</AccordionSummary>
-												<AccordionDetails>
-													<Typography>{department.description}</Typography>
-												</AccordionDetails>
-											</Accordion>
-										</Link>
-									);
-								})}
+								<div className="row w-100">
+									<div className="col mb-3 col-12 text-center ">
+										<div className="row">
+											<div className="col-md-6">
+												<Pagination
+												total={totalItems}
+												itemsPerPage={ITEMS_PER_PAGE}
+												currentPage={currentPage}
+												onPageChange={(page) => setCurrentPage(page)}
+												/>
+											</div>
+											<div className="col-md-6 d-flex flex-row-reverse">
+												{/* <Search
+													onSearch={(value) => {
+														setSearch(value);
+														setCurrentPage(1);
+													}}
+													placeholder="Search department"
+												/> */}
+											</div>
+										</div>
+										<table className="table table-striped">
+											<TableHeader
+												headers={headers}
+												onSorting={(field, order) =>
+													setSorting({ field, order })
+												}
+											/>
+											<tbody>
+												{departmentsData.map((department, i) => (
+													<tr>
+														{/* <th scope="row">{department.id}</th> */}
+														<td scope="row">{i + 1}</td>
+
+														<Link
+															to={"/admin/department/" + department.id}
+															key={i}
+														>
+															<td>{department.name}</td>
+														</Link>
+														<td>{department.hod}</td>
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
+								</div>
 							</Card.Body>
 						</Card>
 					</Col>
 				</Row>
 			</Container>
 		</>
-		// </div>
+	
 	);
 }

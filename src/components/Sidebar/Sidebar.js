@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
+import React from "react";
 import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav } from "react-bootstrap";
@@ -28,68 +28,18 @@ function Sidebar({ color, image, routes }) {
 	const activeRoute = (routeName) => {
 		return location.pathname.indexOf(routeName) > -1 ? "active" : "";
 	};
-	
-
-
 	return (
 		<div className="sidebar" data-image={image} data-color={color}>
-			<div
-				className="sidebar-background"
-				style={{
-					backgroundImage: "url(" + image + ")",
-				}}
-			/>
+		
 			<div className="sidebar-wrapper">
 				<div className="logo d-flex align-items-center justify-content-start">
-					<a
-						href="https://www.creative-tim.com?ref=lbd-sidebar"
-						className="simple-text logo-mini mx-1"
-					>
-						<div className="logo-img">
-							{/* <img
-                src={require("assets/img/reactlogo.png").default}
-                alt="..."
-              /> */}
-						</div>
-					</a>
+				
 					<a className="simple-text" href="#">
-						Cars45
+						{/* Cars45 */}
+						<img src={require("assets/img/cars45Logo.png").default} alt="..." />
 					</a>
 				</div>
 				<Nav>
-					{!auth.isAuthenticated() && (
-						<ul className="navbar-nav ml-auto">
-							<li className="nav-item">
-								<NavLink
-									to="/admin/register"
-									className="nav-link"
-									activeClassName="active"
-								>
-									Sign up
-								</NavLink>
-							</li>
-							<li className="nav-item">
-								<NavLink
-									to="/admin/login"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Sign In</p>
-								</NavLink>
-							</li>
-							{/* <li className="nav-item">
-								<NavLink
-									to="/admin/typography"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Typography</p>
-								</NavLink>
-							</li> */}
-						</ul>
-					)}
 					{auth.isAuthenticated() && (
 						<ul className="navbar-nav ml-auto">
 							{checkAccess('raise-request') && <li className="nav-item">
@@ -112,6 +62,16 @@ function Sidebar({ color, image, routes }) {
 									<p>Purchase Requests</p>
 								</NavLink>
 							</li>}
+							{checkAccess('add-budget') && <li className="nav-item">
+								<NavLink
+									to="/admin/createbudget"
+									className="nav-link"
+									activeClassName="active"
+								>
+									<i className={""} />
+									<p>Create Budget</p>
+								</NavLink>
+							</li>}
 							{checkAccess('view-budgets') && <li className="nav-item">
 								<NavLink
 									to="/admin/budget"
@@ -132,16 +92,6 @@ function Sidebar({ color, image, routes }) {
 									<p>New Departmnet</p>
 								</NavLink>
 							</li>}
-							{/* <li className="nav-item">
-								<NavLink
-									to="/admin/departments"
-									className="nav-link"
-									activeClassName="active"
-								>
-									<i className={""} />
-									<p>Departmnets</p>
-								</NavLink>
-							</li> */}
 							{checkAccess('view-departments') && <li className="nav-item">
 								<NavLink
 									to="/admin/departments"
@@ -150,6 +100,17 @@ function Sidebar({ color, image, routes }) {
 								>
 									<i className={""} />
 									<p>Departments</p>
+								</NavLink>
+							</li>}
+							
+							{checkAccess('manage-users') && <li className="nav-item">
+								<NavLink
+									to="/admin/register"
+									className="nav-link"
+									activeClassName="active"
+								>
+									<i className={""} />
+									<p>User management</p>
 								</NavLink>
 							</li>}
 						</ul>

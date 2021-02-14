@@ -133,9 +133,7 @@ function PurchaseRequest() {
 								<Card.Title as="h4">Purchase Request</Card.Title>
 							</Card.Header>
 							<Card.Body>
-								<Row>
-									<Col md={{span: 10, offset: 1}}>
-									<Form onSubmit={handlePurchase}>
+								<Form onSubmit={handlePurchase}>
 									{inputList.map((x, i) => {
 										return (
 											<Row>
@@ -184,7 +182,7 @@ function PurchaseRequest() {
 														</select>
 													</Form.Group>
 												</Col>
-												<Col className="pl-1" md="1">
+												<Col className="pl-1" md="2">
 													<Form.Group>
 														{/* <label>Quantity</label> */}
 														<Form.Control
@@ -241,13 +239,10 @@ function PurchaseRequest() {
 										Make Purchase
 									</Button>
 									<div className="clearfix"></div>
-									{/* <div style={{ marginTop: 30 }}>
-										{JSON.stringify(inputList)}
-									</div> */}
+									<div style={{ marginTop: 30 }}>
+										{/* {JSON.stringify(inputList)} */}
+									</div>
 								</Form>
-									</Col>
-								</Row>
-								
 							</Card.Body>
 						</Card>
 					</Col>

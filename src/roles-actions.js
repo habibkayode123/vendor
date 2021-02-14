@@ -2,6 +2,80 @@ export default [
     {
         role: 'Requestor',
         pages: [
+        {
+                url: 'purchase',
+                actions: [
+                    {
+                        name: 'purchase',
+                        active: true
+                    }
+                ]
+            },
+            {
+                url: 'budget',
+                actions: [
+                    {
+                        name: 'add-budget',
+                        active: true
+                    },
+                    {
+                        name: 'top-up',
+                        active: true
+                    }
+                ]
+            },
+            {
+                url: 'purchaserequests:uuid',
+                actions: [
+                    {
+                        name: 'review',
+                        active: false
+                    },
+                    {
+                        name: 'approve',
+                        active: false
+                    },
+                    {
+                        name: 'quote',
+                        active: false
+                    }
+                ]
+            }
+        ],
+        sidebar: [
+            {
+                name: 'raise-request',
+                active: true
+            },
+            {
+                name: 'view-requests',
+                active: true
+            },
+            {
+                name: 'view-budgets',
+                active: true
+            },
+            {
+                name: 'add-department',
+                active: false
+            },
+            {
+                name: 'view-departments',
+                active: false
+            },
+            {
+                name: 'add-budget',
+                active: true
+            },
+            {
+                name: 'manage-users',
+                active: true
+            }
+        ]
+    },
+    {
+        role: 'Admin',
+        pages: [
             {
                 url: 'purchase',
                 actions: [
@@ -45,23 +119,31 @@ export default [
         sidebar: [
             {
                 name: 'raise-request',
-                active: true
+                active: false
             },
             {
                 name: 'view-requests',
-                active: true
+                active: false
             },
             {
                 name: 'view-budgets',
-                active: true
+                active: false
+            },
+            {
+                name: 'add-budget',
+                active: false
             },
             {
                 name: 'add-department',
-                active: false
+                active: true
             },
             {
                 name: 'view-departments',
-                active: false
+                active: true
+            },
+            {
+                name: 'manage-users',
+                active: true
             }
         ]
     },
@@ -111,7 +193,7 @@ export default [
         sidebar: [
             {
                 name: 'raise-request',
-                active: true
+                active: false
             },
             {
                 name: 'view-requests',
@@ -127,7 +209,15 @@ export default [
             },
             {
                 name: 'view-departments',
+                active: false
+            },
+            {
+                name: 'add-budget',
                 active: true
+            },
+            {
+                name: 'manage-users',
+                active: false
             }
         ]
     }
