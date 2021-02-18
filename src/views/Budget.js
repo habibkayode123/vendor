@@ -10,13 +10,29 @@ import {
 	Container,
 	Row,
 	Col,
+	Table,
+	Modal,
+	Form,
+	Button
 } from "react-bootstrap";
 import CsvImport from '../components/CsvImport';
 import axios from '../axios';
 import { toast } from 'react-toastify';
+import {numberWithCommas} from '../helpers';
+import { list } from '../department/api-dept';
+import { connect } from 'react-redux';
+import { create, getBudgetTypeList, additionalBudgetUpdate } from "../budget/api-budget";
+import { getBudgetByDepartment } from '../budget/api-budget';
 
+const mapDispatchToProps = dispatch => {
+	return {
+	  handleUpdate: (payload) => dispatch({ type: 'UPDATE', payload: payload })
+	}
+};
 
-export default function Budget(props) {
+function Budget(props) {
+	const [show, setShow] = useState(false);
+	const [showTopUp, setShowTopUp] = useState(false);
 	const [budgets, setBudgets] = useState([]);
 	const [totalItems, setTotaltems] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -24,18 +40,133 @@ export default function Budget(props) {
 	const [sorting, setSorting] = useState({ field: "", order: "" });
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [needsReload, setNeedsReload] = useState(true);
+	const [values, setValues] = useState({
+		amount: '',
+		departmentId: '',
+		budgetTypeId: '',
+		startDate: '',
+		endDate: '',
+	});
+	const [departments, setDepartments] = useState([]);
+	const [budgetTypes, setBudgetTypes] = useState([]);
 	const ITEMS_PER_PAGE = 10;
 	const jwt = auth.isAuthenticated();
 
 	const headers = [
-		// { name: "No#", field: "id" },
+		{ name: "#", field: "id" },
 		{ name: "Department", field: "departmentId", sortable: true },
 		{ name: "Budget Type", field: "budgetTypeId", sortable: true },
 		{ name: "Amount", field: "amount", sortable: true },
 		{ name: "Start Date", field: "startDate", sortable: true },
 		{ name: "End Date", field: "endDate", sortable: true },
-		{ name: "Top Up", field: "topup", sortable: false },
+		{ name: "", field: "", sortable: false },
 	];
+
+	const handleOnChange = ({target}) => {
+        setValues({...values, [target.name]: target.value});
+	};
+	
+	const handleTopUpShow = (uuid) => {
+		const budget = budgets.find(budget => budget.id == uuid);
+		setValues({
+			id: budget.id,
+			...values
+		})
+		setShowTopUp(true);
+	}
+	const handleTopUpClose = () => {
+		setShowTopUp(false);
+		handleClose();
+	}
+	const handleShow = () => setShow(true);
+	const handleClose = () => {
+		setShow(false);
+		setValues({
+			amount: '',
+			departmentId: '',
+			budgetTypeId: '',
+			startDate: '',
+			endDate: '',
+		});
+	}
+
+	const updateBudgetP = (signal) => {
+		getBudgetByDepartment(
+			{
+				departmentId: auth.isAuthenticated()
+					? auth.isAuthenticated().user.departmentId
+					: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
+			},
+			signal
+		).then((data) => {
+			
+				props.handleUpdate(data.data[0]);
+			
+		})
+	}
+
+	const handleTopUp = (e) => {
+		e.preventDefault();
+		const updateBudget = {
+			amount: values.amount,
+		};
+		additionalBudgetUpdate(
+			{
+				budgetId: values.id,
+			},
+			updateBudget
+		).then((data) => {
+			if (data.error) {
+				// console.log(data.error);
+				// setValues({ ...values, error: data.error });
+			} else {console.log(data);
+				toast.success('Topup successful!');
+				setNeedsReload(!needsReload);
+				handleTopUpClose()
+				updateBudgetP()
+			}
+		});
+	}
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		create(values).then((data) => {
+			if (data.errors) {
+				// console.log(data.errors);
+				// setValues({ ...values, error: data.error });
+			} else {
+				// console.log("datasss", data);
+				// setValues({ ...values, error: "", redirect: true });
+				handleClose();
+				toast.success(data.message);
+				setNeedsReload(!needsReload);
+				updateBudgetP();
+			}
+		});
+	}
+
+	
+
+	const fetchDepartments = (signal) => {
+		list().then((data) => {
+			if (data && data.error) {
+				console.log("Error", data.error);
+			} else {
+				setDepartments(data);
+			}
+		});
+	};
+
+	const fetchBudgetTypes = () => {
+		getBudgetTypeList().then((data) => {
+			if (data && data.error) {
+				console.log(data.error);
+			} else {
+				setBudgetTypes(data);
+			}
+		});
+	}
+
 	useEffect(() => {
 		const getData = () => {
 			fetch("http://localhost:3050/api/budget", {
@@ -51,6 +182,8 @@ export default function Budget(props) {
 				});
 		};
 		getData();
+		fetchDepartments();
+		fetchBudgetTypes();
 	}, [needsReload]);
 
 	const onFileUpload = (close) => {
@@ -119,27 +252,21 @@ export default function Budget(props) {
 		<>
 			<Container fluid>
 				<Row>
-					{/* <li className="nav-item">
-						<NavLink
-							to="/admin/bulkupload/budget"
-							className="nav-link"
-							activeClassName="active"
-						>
-							<i className={""} />
-							<h3>Bulk Upload</h3>
-						</NavLink>
-					</li> */}
 					<Col md="12">
 						<Card>
 							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Budgets</Card.Title>
 								<div className="buttons">
+									<Button size="sm" className="mr-2" variant="info" onClick={handleShow}>
+										Add
+									</Button>
 									{isActionAllowed('add-budget') && <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} />}
+									
 								</div>
 							</Card.Header>
 							<Card.Body>
 								<div className="row w-100">
-									<div className="col mb-3 col-12 text-center ">
+									<div className="col mb-3 col-12">
 										<div className="row">
 											<div className="col-md-6">
 												<Pagination
@@ -159,7 +286,7 @@ export default function Budget(props) {
 												/>
 											</div>
 										</div>
-										<table className="table table-striped">
+										<table className="table">
 											<TableHeader
 												headers={headers}
 												onSorting={(field, order) =>
@@ -168,13 +295,13 @@ export default function Budget(props) {
 											/>
 											<tbody>
 												{budgetsData.map((budget, i) => (
-													<tr>
+													<tr key={i}>
 														{/* <th scope="row">{comment.id}</th> */}
-														{/* <td>{comment.name}</td> */}
+														<td>{((currentPage - 1) * ITEMS_PER_PAGE) + i + 1}</td>
 
 														<td>{budget.dept.name}</td>
 														<td>{budget.budgetType.name}</td>
-														<td>{budget.amount}</td>
+														<td>{numberWithCommas(budget.amount)}</td>
 														<td>
 															{new Date(budget.startDate).toLocaleDateString(
 																undefined,
@@ -196,7 +323,8 @@ export default function Budget(props) {
 															)}
 														</td>
 														<td>
-															{isActionAllowed('top-up') && <Link
+															<Button size="sm" variant="success" onClick={() => handleTopUpShow(budget.id)}>Topup</Button>
+															{/* {isActionAllowed('top-up') && <Link
 																to={"/admin/bud/additionalBudget/" + budget.id}
 																key={i}
 															>
@@ -204,7 +332,7 @@ export default function Budget(props) {
 																	className="fa fa-pencil-square-o"
 																	aria-hidden="true"
 																></i>
-															</Link>}
+															</Link>} */}
 														</td>
 													</tr>
 												))}
@@ -214,9 +342,123 @@ export default function Budget(props) {
 								</div>
 							</Card.Body>
 						</Card>
+						<Modal show={show} onHide={handleClose}>
+							<Modal.Header closeButton>
+								<Modal.Title>Add Budget</Modal.Title>
+							</Modal.Header>
+
+							<Form onSubmit={handleSubmit}>
+							<Modal.Body>
+								<Form.Group controlId="role">
+									<Form.Label>Department</Form.Label>
+									<Form.Control as="select"
+										value={values.departmentId}
+										onChange={handleOnChange}
+										name="departmentId"
+									>
+										<option value="">Select Department</option>
+										{
+											departments.map((item, i) => (
+												<option value={item.id} key={item.id}>
+													{item.name}
+												</option>
+												))
+										};
+									</Form.Control>
+								</Form.Group>
+
+								<Form.Group controlId="startDate">
+									<Form.Label>Start Date</Form.Label>
+									<Form.Control
+										type="date"
+										name="startDate"
+										onChange={handleOnChange}
+										placeholder="Start Date"
+										value={values.startDate}
+									/>
+								</Form.Group>
+								<Form.Group controlId="endDate">
+									<Form.Label>End Date</Form.Label>
+									<Form.Control
+										type="date"
+										name="endDate"
+										onChange={handleOnChange}
+										placeholder="End Date"
+										value={values.endDate}
+									/>
+								</Form.Group>
+								<Form.Group>
+									<Form.Label>Amount</Form.Label>
+									<Form.Control
+										min="1"
+										step="1"
+										type="number"
+										name="amount"
+										onChange={handleOnChange}
+										placeholder="Amount"
+										value={values.amount}
+									/>
+								</Form.Group>
+								<Form.Group>
+								<Form.Label>Budget Type</Form.Label>
+									<Form.Control as="select"
+										value={values.budgetTypeId}
+										onChange={handleOnChange}
+										name="budgetTypeId"
+									>
+										<option value="">Select Type</option>
+										{
+											budgetTypes.map((item, i) => (
+												<option value={item.id} key={item.id}>
+													{item.name}
+												</option>
+												))
+										};
+									</Form.Control>
+								</Form.Group>	
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="primary" type="submit">
+									Submit
+								</Button>
+							</Modal.Footer>
+
+						</Form>
+						</Modal>
+						<Modal show={showTopUp} onHide={handleTopUpClose}>
+							<Modal.Header closeButton>
+								<Modal.Title>Top Up</Modal.Title>
+							</Modal.Header>
+
+							<Form onSubmit={handleTopUp}>
+							<Modal.Body>
+								<Form.Group>
+									<Form.Label>Amount</Form.Label>
+									<Form.Control
+										min="10"
+										step="1"
+										type="number"
+										name="amount"
+										required
+										onChange={handleOnChange}
+										placeholder="Amount"
+										value={values.amount}
+									/>
+								</Form.Group>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="primary" type="submit">
+									Submit
+								</Button>
+							</Modal.Footer>
+
+						</Form>
+						</Modal>
 					</Col>
 				</Row>
 			</Container>
 		</>
 	);
 }
+
+export default connect(null, mapDispatchToProps)(Budget);

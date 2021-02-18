@@ -1,3 +1,4 @@
+import setAuthToken from 'setAuthToken.js'
 import { signout } from './api-auth.js'
 
 const auth = {
@@ -11,6 +12,7 @@ const auth = {
       return false
   },
   authenticate(jwt, cb) {
+    setAuthToken(jwt.token);
     if (typeof window !== "undefined")
       sessionStorage.setItem('jwt', JSON.stringify(jwt))
     cb()
@@ -21,7 +23,6 @@ const auth = {
     cb()
     //optional
     signout().then((data) => {
-      console.log("data from sign out api",data);
       document.cookie = "t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     })
   },

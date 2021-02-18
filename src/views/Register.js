@@ -1,36 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Edit from "@material-ui/icons/Edit";
-import ViewIcon from "@material-ui/icons/Visibility";
-import Divider from "@material-ui/core/Divider";
-import DeleteUser from "./DeleteUser";
-import { Link } from "react-router-dom";
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardBody from "components/Card/CardBody.js";
 import { roleList } from "../role/api-role";
 import auth from "../auth/auth-helper";
 import { create, userList } from "../user/api-user.js";
 import { list } from "../department/api-dept.js";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col, Card, Table, Modal, Form} from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-// import { create } from "./api-user.js";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import { toast } from 'react-toastify';
+import Pagination from "../components/Pagination/Pagination"
 
 const useStyles = makeStyles((theme) => ({
 	card: {
@@ -58,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 export default function Register(props) {
+	const [show, setShow] = useState(false);
 	const [deptValue, setDeptValue] = useState([]);
-	const [departmentValue, setDepartmentValue] = useState("");
 	const [userValue, setUserValue] = useState([]);
 	const [roleValue, setRoleValue] = useState([]);
 	const classes = useStyles();
@@ -67,13 +45,23 @@ export default function Register(props) {
 	const [open, setOpen] = useState(false);
 	const [values, setValues] = useState({
 		email: "",
-		departmentValue: "",
-		roleValueSet: "",
-		departmentArray: [],
-		success: false,
-		message: "",
-		error: "",
+		departmentId: "",
+		roleId: "",
 	});
+	const [totalItems, setTotaltems] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 10;
+
+	const handleClose = () => {
+		setShow(false);
+		setValues({
+			email: "",
+			departmentId: "",
+			roleId: "",
+		});
+	}
+	const handleShow = () => setShow(true);
+	
 	const removeUser = (user) => {
 		const updatedUsers = [...userValue];
 		const index = updatedUsers.indexOf(user);
@@ -84,276 +72,211 @@ export default function Register(props) {
 		setOpen(false);
 	};
 	const jwt = auth.isAuthenticated();
-	const handleDepartmentChange = (e) => {
-		setDepartmentValue(e.target.value);
-	};
+	
 
-	const clickButton = () => {
-		setOpen(true);
-	};
-
-	//USEEFFECT HOOKS FOR DEPARTMENT
-	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
+	const fetchDepartments = (signal) => {
 		list(signal).then((data) => {
-			console.log("data fro department", data);
 			if (data && data.error) {
 				console.log("Error", data.error);
 				// setValues({ ...values, error: data.error });
 			} else {
-				setValues({ ...values, departmentArray: data });
+				// setValues({ ...values, departmentArray: data });
 				setDeptValue(data);
 			}
 		});
-		return function cleanup() {
-			abortController.abort();
-		};
-	}, []);
-	const handleChange = (name) => (event) => {
-		setValues({ ...values, [name]: event.target.value });
 	};
-	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
 
+	const fetchRoles = (signal) => {
+		roleList(signal).then((data) => {
+			if (data.error) {
+				setValues({ ...values, error: data.error });
+			} else {
+				// setValues({ ...values, error: "" });
+				setRoleValue(data);
+			}
+		});
+	};
+
+	const fetchUsers = (signal) => {
 		userList(signal).then((data) => {
 			if (data.error) {
 				console.log(data.error);
 				setValues({ ...values, error: data.error });
 			} else {
-				setValues({ ...values, error: "" });
-				setUserValue(data.data);
+				// setValues({ ...values, error: "" });
+				setUserValue(data);
 			}
 		});
+	};
+
+	const usersData = useMemo(() => {
+		setTotaltems(userValue.length);
+		return userValue.slice(
+			(currentPage - 1) * ITEMS_PER_PAGE,
+			(currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+		);
+	}, [userValue,currentPage]);
+
+	//USEEFFECT HOOKS FOR DEPARTMENT
+	useEffect(() => {
+		const abortController = new AbortController();
+		const signal = abortController.signal;
+
+		fetchUsers(signal);
+		fetchDepartments(signal);
+		fetchRoles(signal);
+
 		return function cleanup() {
 			abortController.abort();
 		};
 	}, [redirect]);
 
-	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
+	const handleOnChange = ({target}) => {
+        setValues({...values, [target.name]: target.value});
+    };
 
-		roleList(signal).then((data) => {
-			if (data.error) {
-				setValues({ ...values, error: data.error });
-			} else {
-				setValues({ ...values, error: "" });
-				setRoleValue(data);
-			}
-		});
-		return function cleanup() {
-			abortController.abort();
-		};
-	}, []);
-	const clickSubmit = (e) => {
+	const handleSubmit = (e) => {
 		e.preventDefault();
-		const user = {
-			email: values.email || undefined,
-			departmentId: departmentValue || undefined,
-			roleId: values.roleValueSet || undefined,
-		};
+		
 		create(
 			{
 				t: jwt.token,
 			},
-			user
+			values
 		).then((data) => {
 			if (data.error) {
 				setValues({ ...values, error: data.error });
 			} else {
-				setOpen(false);
-				console.log(data);
 				setRedirect(!redirect);
-				// window.location.reload(false);
-				setValues({
-					...values,
-					message: data.message,
-					error: "",
-				});
+				
+				toast.success(data.message);
+				handleClose()
 			}
 		});
 	};
 	return (
-		<>
-			<Container fluid>
-				<Card>
-					<Row>
-						<Row>
-							<Col md="2"></Col>
-							<Col md="10">
-								<div className="select-inner">
-									<form>
-										<h3>Create Users</h3>
-										{values.error && (
-											<div className="alert2 alert-danger" role="alert">
-												{values.error}
-											</div>
-										)}
-										{/* {values.success && (
-											<div className="alert alert-success" role="alert">
-												Successful Created
-											</div>
-										)} */}
-										<div className="form-group">
-											<label>Email</label>
-											<input
-												type="email"
-												className="form-control"
-												placeholder="email"
-												value={values.password}
-												onChange={handleChange("email")}
-											/>
-										</div>
-										{/* <br /> */}
-										<div className="form-group">
-											<label>Role</label>
-											<select
-												className="form-control"
-												defaultValue={values.roleValueSet}
-												onChange={handleChange("roleValueSet")}
-											>
-												<option>---Select Options ---</option>
-												{roleValue &&
-													roleValue.map((item, i) => {
-														return (
-															<>
-																<option value={item.id} key={i}>
-																	{item.rolename}
-																</option>
-															</>
-														);
-													})}
-											</select>
-										</div>
-										<div className="form-group">
-											<label>Department</label>
-											<select
-												className="form-control"
-												defaultValue={departmentValue}
-												onChange={handleDepartmentChange}
-											>
-												<option>---Select Options ---</option>
-												{
-													// values.departmentArray &&
-													deptValue.map((item, i) => {
-														return (
-															<>
-																<option value={item.id} key={item.id}>
-																	{item.name}
-																</option>
-															</>
-														);
-													})
-												}
-											</select>
-										</div>
-
-										<Button
-											// color="secondary"
-											style={{ color: "#1DC7EA" }}
-											autoFocus="autoFocus"
-											variant="contained"
-											onClick={clickButton}
-											className={classes.submit}
-										>
-											Submit
-										</Button>
-										<div className="clearfix"></div>
-									</form>
-								</div>
-							</Col>
-							{/* <Col md="1"></Col> */}
-						</Row>
-					</Row>
-					<br />
-				</Card>
-				<Dialog open={open} onClose={handleRequestClose}>
-					<DialogTitle>New User</DialogTitle>
-					<DialogContent>
-						<DialogContentText>Create New User.</DialogContentText>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={handleRequestClose} color="primary">
-							Cancel
-						</Button>
-						<Button
-							onClick={clickSubmit}
-							color="secondary"
-							autoFocus="autoFocus"
-						>
-							Confirm
-						</Button>
-					</DialogActions>
-				</Dialog>
-			</Container>
-			<br />
-			<Divider />
-			<br />
-
 			<Container fluid>
 				<Row>
-					<Col md="2"></Col>
-					<Col md="10">
-						<List dense>
-							<ListItem button>
-								{/* <ListItemText
-													primary={i+1}
+					<Col md="12">
+						<Card>
+							<Card.Header className="d-flex justify-content-between">
+								<Card.Title as="h4">Users</Card.Title>
+								<div className="buttons">
+								<Button size="sm" variant="info" onClick={handleShow}>
+									Add
+								</Button>
+								</div>
+							</Card.Header>
+							<Card.Body>
+								<Row>
+									<Col md="12">
+									<div className="row">
+											<div className="col-md-6">
+												<Pagination
+												total={totalItems}
+												itemsPerPage={ITEMS_PER_PAGE}
+												currentPage={currentPage}
+												onPageChange={(page) => setCurrentPage(page)}
+												/>
+											</div>
+											<div className="col-md-6 d-flex flex-row-reverse">
+												{/* <Search
+													onSearch={(value) => {
+														setSearch(value);
+														setCurrentPage(1);
+													}}
+													placeholder="Search department"
 												/> */}
-								<h6 style={{ marginLeft: 1 }}>S/N</h6>
-								<h6 style={{ marginLeft: 26 }}>EMAIL</h6>
-								<h6 style={{ marginLeft: 396 }}>ROLE</h6>
-								<ListItemSecondaryAction>ACTIONS</ListItemSecondaryAction>
-							</ListItem>
-							{userValue &&
-								userValue.map((item, i) => {
-									return (
-										<>
-											<ListItem button>
-												{/* <ListItemText
-													primary={i+1}
-												/> */}
-												<h6 style={{ marginRight: 50 }}>{i + 1}</h6>
-												<ListItemAvatar>
-													<Avatar variant="square" />
-												</ListItemAvatar>
-												<ListItemText secondary={item.email} />
-												<ListItemText primary={item.role.rolename} />
-												<ListItemSecondaryAction>
-													<Link to={"/admin/users/" + item.id}>
-														<IconButton
-															aria-label="View"
-															style={{ color: "#1DC7EA" }}
-														>
-															<ViewIcon />
-														</IconButton>
-													</Link>
-													{auth.isAuthenticated().user && (
-														// auth.isAuthenticated().user.id ==
-														// 	user.user.id && (
-														<>
-															<Link to={"/admin/edit/user/" + item.id}>
-																<IconButton
-																	aria-label="Edit"
-																	style={{ color: "#1DC7EA" }}
-																>
-																	<Edit />
-																</IconButton>
-															</Link>
-															<DeleteUser user={item} onRemove={removeUser} />
-														</>
-													)}
-												</ListItemSecondaryAction>
-											</ListItem>
-											<Divider />
-										</>
-									);
-								})}
-						</List>
+											</div>
+										</div>
+										<Table responsive>
+											<thead>
+												<tr>
+												<th>#</th>
+												<th>Email</th>
+												{/* <th>Department</th> */}
+												<th>Created At</th>
+												</tr>
+											</thead>
+											<tbody>
+												{
+													usersData.map((user, i) => (
+														<tr key={user.id}>
+															<td>{((currentPage - 1) * ITEMS_PER_PAGE) + i + 1}</td>
+															<td>{user.email}</td>
+															{/* <td>{user.department}</td> */}
+															<td>{new Date(user.createdOn).toLocaleDateString()}</td>
+														</tr>
+													))
+												}
+											</tbody>
+										</Table>
+									</Col>
+								</Row>
+							</Card.Body>
+						
+						</Card>
+						<Modal show={show} onHide={handleClose}>
+							<Modal.Header closeButton>
+								<Modal.Title>Add User</Modal.Title>
+							</Modal.Header>
+
+							<Form onSubmit={handleSubmit}>
+							<Modal.Body>
+									<Form.Group controlId="email">
+										<Form.Label>Email address</Form.Label>
+										<Form.Control
+											type="email"
+											placeholder="name@example.com"
+											value={values.email}
+											onChange={handleOnChange}
+											name="email"
+										/>
+									</Form.Group>
+									<Form.Group controlId="role">
+										<Form.Label>Role</Form.Label>
+										<Form.Control as="select"
+											value={values.roleId}
+											onChange={handleOnChange}
+											name="roleId"
+										>
+											<option value="">Select Role</option>
+											{roleValue &&
+												roleValue.map((item, i) => (
+															<option value={item.id} key={i}>
+																{item.rolename}
+															</option>
+													))};
+										</Form.Control>
+									</Form.Group>
+									<Form.Group controlId="role">
+										<Form.Label>Department</Form.Label>
+										<Form.Control as="select"
+											value={values.departmentId}
+											onChange={handleOnChange}
+											name="departmentId"
+										>
+											<option value="">Select Department</option>
+											{
+												deptValue.map((item, i) => (
+													<option value={item.id} key={item.id}>
+														{item.name}
+													</option>
+													))
+											};
+										</Form.Control>
+									</Form.Group>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="primary" type="submit">
+									Submit
+								</Button>
+							</Modal.Footer>
+
+						</Form>
+						</Modal>
 					</Col>
 				</Row>
 			</Container>
-		</>
 	);
 }

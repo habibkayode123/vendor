@@ -16,13 +16,14 @@
 
 */
 import React, { Component, useEffect, useState } from "react";
-import { useLocation, withRouter, Link } from "react-router-dom";
+import { useLocation, withRouter, Link, useHistory } from "react-router-dom";
 import { Navbar, Container, Nav, Dropdown, Button } from "react-bootstrap";
 import { makeStyles } from "@material-ui/core/styles";
-import Badge from "@material-ui/core/Badge";
-import { budgetUsageByDepartment } from "../../budget/api-budget";
+import { budgetUsageByDepartment, getBudgetByDepartment } from "../../budget/api-budget";
 import auth from "../../auth/auth-helper";
 import routes from "routes.js";
+import { connect } from 'react-redux';
+import {numberWithCommas} from '../../helpers';
 
 // function Header() {
 const useStyles = makeStyles((theme) => ({
@@ -37,17 +38,37 @@ const useStyles = makeStyles((theme) => ({
 		padding: theme.spacing(0, 2),
 	},
 }));
-const Header = withRouter(({ match, history }) => {
+
+const mapStateToProps = state => {
+	return {
+		  budget: state
+	};
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+	  handleUpdate: (payload) => dispatch({ type: 'UPDATE', payload: payload })
+	}
+  };
+
+
+const Header = ({budget, handleUpdate}) => {
 	const location = useLocation();
+	// const [budget, setBudget] = useState({amount: 0});
 	const [budgetUsage, setBudgetUsage] = useState({});
 	const [error, setError] = useState("");
 	const classes = useStyles();
+	const setBudget = () => {
+
+	}
+	const history = useHistory();
+	
 		useEffect(() => {
-		console.log("Ajewole", auth.isAuthenticated().user);
 		const abortController = new AbortController();
 		const signal = abortController.signal;
+		
 		auth.isAuthenticated()&&(
-		budgetUsageByDepartment(
+		getBudgetByDepartment(
 			{
 				departmentId: auth.isAuthenticated()
 					? auth.isAuthenticated().user.departmentId
@@ -55,14 +76,10 @@ const Header = withRouter(({ match, history }) => {
 			},
 			signal
 		).then((data) => {
-
-			// console.log("data from navbar",data)
 			if (data.data.errors) {
 				setError(data.errors);
 			} else {
-				// console.log("budgetUsage", data.data);
-				// console.log("budgetUsage.unUtilized ", data.data.unUtilizedBudget);
-				setBudgetUsage(data.data);
+				handleUpdate(data.data[0]);
 			}
 		}));
 		// }
@@ -137,7 +154,7 @@ const Header = withRouter(({ match, history }) => {
 									<ul className="navbar-nav ml-auto">
 										{
 											auth.isAuthenticated() &&
-												auth.isAuthenticated().user.role != "Admin" && (
+												auth.isAuthenticated().user.role != "Admin" && auth.isAuthenticated().user.role != "CFO" && (
 													<li className="center">
 														<Link
 															to="/admin/financebudget"
@@ -150,21 +167,31 @@ const Header = withRouter(({ match, history }) => {
 											// )
 										}
 										{
+											(auth.isAuthenticated().user.role != "Admin" && auth.isAuthenticated().user.role != "CFO"  ) && (
+												<li className="center">
+													<Link
+														to="#"
+														className="nav-link"
+													>
+														Budget Balance: { budget && numberWithCommas(budget.amount)}
+													</Link>
+												</li>
+											)
+											// )
+										}
+										{
 											auth.isAuthenticated() &&
-												auth.isAuthenticated().user.role === "Admin" && (
-													<li className="center">
-														<Link
-															to="/admin/financebudget"
-															className="nav-link"
-														>
+												(auth.isAuthenticated().user.role === "Admin" || auth.isAuthenticated().user.role === "CFO" ) && (
+													<li className="center nav-item">
+														
 														Welcome	{auth.isAuthenticated().user.role}
-														</Link>
+														
 													</li>
 												)
 											// )
 										}
 									</ul>
-								{auth.isAuthenticated().user.role !=="Admin" &&(
+								{/* {auth.isAuthenticated().user.role !=="Admin" &&(
 
 									<Dropdown as={Nav.Item}>
 										<Dropdown.Toggle
@@ -194,7 +221,7 @@ const Header = withRouter(({ match, history }) => {
 										</Dropdown.Menu>
 									</Dropdown>
 								)
-								}
+								} */}
 
 									<li className="nav-item">
 										<Link
@@ -215,6 +242,6 @@ const Header = withRouter(({ match, history }) => {
 			</Container>
 		</Navbar>
 	);
-});
+};
 
-export default Header;
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

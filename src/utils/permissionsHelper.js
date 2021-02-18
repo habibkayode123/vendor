@@ -3,7 +3,7 @@ import auth from '../auth/auth-helper';
 
 const checkPageAccess = (path, permittedPages) => {  
     let isUserAuthorised = false;  
-    let url = path.replace(/\//g, "").replace(/\admin/g, "");  console.log(url);
+    let url = path.replace(/\//g, "").replace(/\admin/g, "");
     let allowedActions = [];
     let allowedActionsName = [];
   

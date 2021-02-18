@@ -27,16 +27,54 @@ import "./assets/css/demo.css";
 // @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@700&display=swap');
 import "@fortawesome/fontawesome-free/css/all.min.css";
 // import "./assets/css/style.css"
-
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 import AdminLayout from "layouts/Admin.js";
+import axios from './axios';
+import { getBudgetByDepartment } from "budget/api-budget";
+import auth from "./auth/auth-helper";
+import Login from "views/Logins";
+
+const getBudget = () => {
+	if (auth.isAuthenticated()) {
+		const abortController = new AbortController();
+		const signal = abortController.signal;
+		getBudgetByDepartment(
+			{
+				departmentId: auth.isAuthenticated().user.departmentId
+			},
+			signal
+		).then((data) => {console.log(data);
+
+			return data.data[0]
+			
+		});
+	} else {
+		return {amount: 100}
+	}
+}
+
+const budgetReducer = function (state = {amount: 0}, action) {
+	switch (action.type) {
+		case "UPDATE":
+			return action.payload
+		default:
+			return state
+	}
+}
+
+let store = createStore(budgetReducer);
 
 ReactDOM.render(
-	<BrowserRouter>
-		<Switch>
-			<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-			<Redirect exact="true" from="/" to="/admin/login" />
-			<Redirect exact from="/admin" to="/admin/login" />
-		</Switch>
-	</BrowserRouter>,
+	<Provider store={store}>
+		<BrowserRouter>
+			<Switch>
+				<Route path="/admin/login" exact component={Login} />
+				<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+				<Redirect exact="true" from="/" to="/admin/login" />
+				<Redirect exact from="/admin" to="/admin/login" />
+			</Switch>
+		</BrowserRouter>
+	</Provider>,
 	document.getElementById("root")
 );

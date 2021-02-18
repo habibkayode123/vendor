@@ -98,7 +98,7 @@ body > .navbar-collapse{
                 p{
                     margin: 0;
                     line-height: 31px;
-                    font-size: 12px;
+                    font-size: 17px;
                     font-weight: 600;
                     text-transform: uppercase;
                     display: inline-flex;
@@ -112,6 +112,16 @@ body > .navbar-collapse{
                     vertical-align: middle;
                     float: left;
                 }
+
+                &.active {
+                    background-color: #fff;
+
+                    p {
+                        color: #1fb5aa;
+                    }
+                }
+
+
             }
 
             &:hover .nav-link{

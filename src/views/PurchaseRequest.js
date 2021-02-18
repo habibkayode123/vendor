@@ -5,51 +5,43 @@ import { Button, Card, Form, Container, Row, Col } from "react-bootstrap";
 import { create, getVendors } from "../purchaseRequest/api-purchase";
 import axios from '../axios';
 import { toast } from 'react-toastify';
+import { connect } from 'react-redux';
+import {getBudgetByDepartment} from "../budget/api-budget";
+import auth from '../auth/auth-helper';
 
-function PurchaseRequest() {
-	const [damn, setDamns] = useState({
-		error: "",
-	});
-	const [values, setValues] = useState([]);
+
+const mapDispatchToProps = dispatch => {
+	return {
+	  handleUpdate: (payload) => dispatch({ type: 'UPDATE', payload: payload })
+	}
+  };
+
+function PurchaseRequest({handleUpdate}) {
 	const [inputList, setInputList] = useState([
-		{ items: [], vendorId: "", name: "", quantity: 0, amount: 0 },
+		{ vendorId: "", name: "", quantity: 0, amount: 0, products: [] },
 	]);
-
-	const [vendor, setVendor] = useState(null);
-	const [selectedVendor, setSelectedVendor] = useState("");
-	const [vendors, setVendors] = useState([
-		{
-            vendorName: 'Jumia',
-			vendorId: 2,
-			items: [
-				{name: 'Phone', price: 5000}
-			]
-        },
-        {
-            vendorName: 'Jiji',
-			vendorId: 1,
-			items: []
-        }
-	]);
-	const [price, setPrice] = useState(null);
-	const [name, setName] = useState(null);
-	const [items, setItems] = useState([]);
-	const [nameList, setNameList] = useState([]);
-	const [dataToSend,setDataToSend]= useState([]);
+	const [vendors, setVendors] = useState([]);
 
 	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
-		getVendors(signal).then((data) => {
-			if (data) {
-				console.log("Cashmere", data.vendors);
-				setVendors(data.vendors);
-			}
-		});
-		return function cleanup() {
-			abortController.abort();
-		};
+		fetchVendors();
+		// const abortController = new AbortController();
+		// const signal = abortController.signal;
+		// getVendors(signal).then((data) => {
+		// 	if (data) {
+		// 		console.log("Cashmere", data.vendors);
+		// 		setVendors(data.vendors);
+		// 	}
+		// });
+		// return function cleanup() {
+		// 	abortController.abort();
+		// };
 	}, []);
+
+	const fetchVendors = () => {
+        axios.get('/v1/vendor').then(res => {
+            setVendors(res.data.data);
+        })
+    }
 
 	// handle click event of the Remove button
 	const handleRemoveClick = (index) => {
@@ -62,63 +54,57 @@ function PurchaseRequest() {
 	const handleAddClick = () => {
 		setInputList([
 			...inputList,
-			{ items: [], vendorId: "", name: "", quantity: 0, amount: 0 },
+			{ vendorId: "", name: "", quantity: 0, amount: 0, products: [] },
 		]);
 	};
 	// handle click event of the Make Purchase button
 	const handlePurchase = (e) => {
 		e.preventDefault();
-		console.log("Submitting these data to the backend", inputList);
-		console.log(inputList);
-		const index = inputList.map((list)=>{
+		const data = inputList.map((list)=> {
 			return {"amount":list.amount,"quantity":parseInt(list.quantity),"name":list.name,"vendorId":list.vendorId}
 		});
-		setDataToSend(index)
-		console.log("to send",index); 
-
-
-		axios.post('/v1/request', index).then((res) => {
+		const newData = data.filter(item => item.amount != 0);
+		axios.post('/v1/request', newData).then((res) => {
 			toast.success(res.data.message);
-			setInputList([{ items: [], vendorId: "", name: "", quantity: 0, amount: 0 }]);
-			// if (data.message) {
-			// 	console.log("data from datatbase",data);
-			// 	setDamns({ ...values, error: data.message });
-			// } else {
-			// 	console.log("data from rfq",data);
-			// 	setDams({ ...values, error: "" });
-			// }
+			setInputList([{ products: [], vendorId: "", name: "", quantity: 0, amount: 0 }]);
+			const abortController = new AbortController();
+		const signal = abortController.signal;
+			getBudgetByDepartment(
+				{
+					departmentId: auth.isAuthenticated()
+						? auth.isAuthenticated().user.departmentId
+						: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
+				},
+				signal
+			).then((data) => {
+				
+					handleUpdate(data.data[0]);
+				
+			})
+		}).catch(err => {
+			toast.error(err.response.data.message);
 		});
 	};
 
-	const handleInputChange = (name, index) => (e) => {
-		// const value = name === "vendor" ? e : e.target.value;
+	const handleInputChange = (index) => (e) => {
+		const name = e.target.name;
 		const value = e.target.value;
-		console.log("name", name);
-		console.log("value", value);
+		const list = [...inputList];
 		if (name === "vendorId") {
-			console.log("vendors to log", vendors);
-			const shit = vendors.find((vendor) => vendor.vendorId == value);
-			console.log("mad oo", shit.items);
-			// list[index][name] =shit.items;
-			const list = [...inputList];
-			list[index]["items"] = shit.items;
-			console.log("Gawu", list);
-			console.log("Arrararara", list[index]["items"]);
+			const vendor = vendors.find((vendor) => vendor.id == value);
+			list[index]["products"] = vendor.products
 		}
 		if (name === "name") {
-			const list = [...inputList];
-			const pprice = list[index]["items"].find((item) => item.name === value)
-				.price;
-			console.log("selected item price to log", pprice);
-
-			list[index]["amount"] = pprice;
-			console.log(list[index]);
+			const price = list[index]["products"].find(product => product.name === value).price;
+			list[index]["amount"] = price;
+			list[index]["quantity"] = 1;
 		} else if (name === "quantity") {
-			const list = [...inputList];
-			list[index]["amount"] = list[index]["amount"] * value;
+			const price = list[index]["products"]
+				.find(product => product.name === list[index]["name"]).price;
+			
+			list[index]["amount"] = price * value;
 		}
 
-		const list = [...inputList];
 		list[index][name] = value;
 		setInputList(list);
 	};
@@ -136,43 +122,36 @@ function PurchaseRequest() {
 								<Form onSubmit={handlePurchase}>
 									{inputList.map((x, i) => {
 										return (
-											<Row>
-												<Col className="px-1" md="3">
+											<Row key={i}>
+												<Col  md="3">
 													<Form.Group>
 														<select
 															className="form-control"
 															name="vendorId"
-															// value={selectedVendor}
-															onChange={handleInputChange("vendorId", i)}
+															value={x.vendorId}
+															onChange={handleInputChange(i)}
 														>
-															<option>--Choose Vendors--</option>
+															<option>Choose Vendor</option>
 															{vendors.map((e, key) => {
 																return (
-																	<option value={e.vendorId} key={key}>
-																		{e.vendorName}
+																	<option value={e.id} key={key}>
+																		{e.Title}
 																	</option>
 																);
 															})}
 														</select>
 													</Form.Group>
 												</Col>
-												<Col className="px-1" md="3">
+												<Col  md="2">
 													<Form.Group>
 														<select
 															className="form-control"
 															name="name"
-															onChange={handleInputChange("name", i)}
+															value={x.name}
+															onChange={handleInputChange(i)}
 														>
-															<option>--ChooseItems--</option>
-															{/* {items.map((e, key) => {
-																return (
-																	<option value={e.name} key={key}>
-																		{e.name}
-																	</option>
-																);
-															})} */}
-
-															{x.items.map((e, key) => {
+															<option>Choose Item</option>
+															{x.products.map((e, key) => {
 																return (
 																	<option value={e.name} key={key}>
 																		{e.name}
@@ -182,55 +161,50 @@ function PurchaseRequest() {
 														</select>
 													</Form.Group>
 												</Col>
-												<Col className="pl-1" md="2">
+												<Col  md="1">
 													<Form.Group>
 														{/* <label>Quantity</label> */}
 														<Form.Control
-															placeholder="Quantity"
+															placeholder="Qty"
 															type="number"
-															onChange={handleInputChange("quantity", i)}
+															name="quantity"
+															value={x.quantity}
+															onChange={handleInputChange(i)}
 														></Form.Control>
 													</Form.Group>
 												</Col>
-												<Col className="pl-1" md="1">
+												<Col  md="2">
 													<Form.Group>
 														{/* <label>Amount</label> */}
 														<Form.Control
 															placeholder="Amount"
 															type="number"
-															// onChange={handleInputChange("amount", i)}
 															value={x.amount}
+															readOnly
 														></Form.Control>
 													</Form.Group>
 												</Col>
-												<Col className="pl-1" md="2">
-													<Form.Group>
+												<Col  md="3">
 														{inputList.length !== 1 && (
 															// 												<>
 															<Button
-																className="btn-fill pull-right"
-																type="submit"
+																className="btn-fill"
 																variant="info"
-																onClick={handleRemoveClick}
+																onClick={() => handleRemoveClick(i)}
 															>
 																Remove
 															</Button>
 														)}
-													</Form.Group>
-												</Col>
-												<Col className="pl-2" md="1">
-													<Form.Group>
+													
 														{inputList.length - 1 === i && (
 															<Button
-																className="btn-fill pull-right"
-																type="submit"
+																className="btn-fill ml-2"
 																variant="info"
 																onClick={handleAddClick}
 															>
-																AddItem
+																Add More
 															</Button>
 														)}
-													</Form.Group>
 												</Col>
 											</Row>
 										);
@@ -238,10 +212,6 @@ function PurchaseRequest() {
 									<Button className="btn-fill" type="submit" variant="info">
 										Make Purchase
 									</Button>
-									<div className="clearfix"></div>
-									<div style={{ marginTop: 30 }}>
-										{/* {JSON.stringify(inputList)} */}
-									</div>
 								</Form>
 							</Card.Body>
 						</Card>
@@ -251,4 +221,4 @@ function PurchaseRequest() {
 		</>
 	);
 }
-export default PurchaseRequest;
+export default connect(null, mapDispatchToProps)(PurchaseRequest);

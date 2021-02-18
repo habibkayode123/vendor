@@ -45,16 +45,16 @@ const dashboardRoutes = [
 		layout: "/admin",
 	},
 
-	{
-		path: "/login",
-		name: "Login",
-		icon: "nc-icon nc-chart-pie-35",
-		component: Login,
-		layout: "/admin",
-	},
+	// {
+	// 	path: "/login",
+	// 	name: "Login",
+	// 	icon: "nc-icon nc-chart-pie-35",
+	// 	component: Login,
+	// 	layout: "/admin",
+	// },
 
 	{
-		path: "/register",
+		path: "/users",
 		name: "Sign Up",
 		icon: "nc-icon nc-chart-pie-35",
 		component: Register,

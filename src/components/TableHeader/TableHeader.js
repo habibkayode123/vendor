@@ -24,7 +24,7 @@ const TableHeader = ({ headers, onSorting }) => {
 						{name}
 						{sortingField && sortingField === field && (
 							<i
-								class={
+								className={
 									sortingOrder === "asc" ? "fa fa-arrow-down" : "fa fa-arrow-up"
 								}
 								aria-hidden="true"

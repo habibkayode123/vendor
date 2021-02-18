@@ -38,6 +38,11 @@ export default [
                     {
                         name: 'quote',
                         active: false
+                    },
+                    
+                    {
+                        name: 'invoice',
+                        active: true
                     }
                 ]
             }
@@ -69,7 +74,7 @@ export default [
             },
             {
                 name: 'manage-users',
-                active: true
+                active: false
             }
         ]
     },
@@ -144,6 +149,14 @@ export default [
             {
                 name: 'manage-users',
                 active: true
+            },
+            {
+                name: 'add-vendors',
+                active: true
+            },
+            {
+                name: 'add-product',
+                active: true
             }
         ]
     },
@@ -186,6 +199,11 @@ export default [
                     {
                         name: 'quote',
                         active: true
+                    },
+                    
+                    {
+                        name: 'invoice',
+                        active: false
                     }
                 ]
             }

@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom";
 import { signin } from "../auth/api-auth.js";
 import { budgetUsageByDepartment } from "../budget/api-budget";
 import { toast } from 'react-toastify';
+import setAuthToken from '../setAuthToken'
 // import auth from "../auth/auth-helper";
 
 import {
@@ -21,7 +22,7 @@ export default function Login(props) {
 		redirectToReferrer: false,
 		loggedIn: false,
 	});
-		const [budgetUsage, setBudgetUsage] = useState({});
+	const [budgetUsage, setBudgetUsage] = useState({});
 
 	const clickSubmit = (e) => {
 		e.preventDefault();
@@ -31,8 +32,8 @@ export default function Login(props) {
 		};
 		try {
 			signin(user).then((data) => {
-				if (data.errors) {
-					setValues({ ...values, error: data.errors });
+				if (data.error) {
+					setValues({ ...values, error: data.error });
 				} else {
 					toast.info(`Welcome ${data.user.email.split('@')[0]}!`);
 					auth.authenticate(data, () => {
@@ -53,12 +54,12 @@ export default function Login(props) {
 	const handleChange = (name) => (event) => {
 		setValues({ ...values, [name]: event.target.value });
 	};
-	let to ="/Admin/financebudget";
+	let to ="/admin/purchase/requests";
 	if(auth.isAuthenticated() && auth.isAuthenticated().user.role==="Admin"){
-		to="/admin/register";
+		to="/admin/users";
 	}
 	if (auth.isAuthenticated() && auth.isAuthenticated().user.department === "Finance") {
-		to = "/admin/budget";
+		to = "/admin/purchase/requests";
 	}
 	const { redirectToReferrer } = values;
 	if (redirectToReferrer) {
@@ -66,17 +67,17 @@ export default function Login(props) {
 	}
 	return (
 		<>
-			<Container fluid>
+			<Container>
 				<Row>
-					<Col md="2"></Col>
-					<Col md="6">
-						<div className="select-inner">
-							<form onSubmit={clickSubmit}>
-								<h3>Sign In</h3>
+					<Col md={{span:4, offset:4}}>
+						<div className="select-inner d-flex flex-column align-items-center mt-5">
+							<img src={require("assets/img/logo.png").default} style={{width:'210px', height:'50px'}} alt="..." />
+							<form onSubmit={clickSubmit} className="w-100 mt-5">
+								{/* <h3>Sign In</h3> */}
 								<br />{" "}
 								{values.error && (
-									<div className="alert2 alert-danger" role="alert">
-										{values.error}
+									<div className="alert2 text-danger mb-2" role="alert">
+										Invalid Email/Password
 									</div>
 								)}
 								<div className="form-group">
@@ -102,6 +103,7 @@ export default function Login(props) {
 										// onChange={(e) => (this.password = e.target.value)}
 									/>
 								</div>
+								
 								<br />
 								{/* <button className="btn btn-primary btn-block">Login</button> */}
 								<Button className="btn-fill" type="submit" variant="info">
@@ -110,7 +112,6 @@ export default function Login(props) {
 							</form>
 						</div>
 					</Col>
-					<Col md="2"></Col>
 				</Row>
 			</Container>
 		</>

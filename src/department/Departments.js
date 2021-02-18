@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { list } from "./api-dept.js";
-import { Link } from "react-router-dom";
-import { Card, Container, Row, Col, Button } from "react-bootstrap";
+import { Card, Container, Row, Col, Button, Table, ButtonGroup, Modal, Form } from "react-bootstrap";
 import CsvImport from 'components/CsvImport';
 import axios from '../axios';
 import { toast } from 'react-toastify';
 import Pagination from "../components/Pagination/Pagination";
-import { useLocation, NavLink } from "react-router-dom";
 import Search from "../components/Search/Search";
 import TableHeader from "../components/TableHeader/TableHeader";
 import auth from "../auth/auth-helper";
+import { create, readDepartment, update, remove, list } from "./api-dept";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -33,14 +31,134 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ControlledAccordions() {
+	const [show, setShow] = useState(false);
 	const classes = useStyles();
-	const [expanded, setExpanded] = React.useState(false);
 	const [departments, setDepartments] = useState([]);
 	const [totalItems, setTotaltems] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
-	const ITEMS_PER_PAGE = 4;
+	const ITEMS_PER_PAGE = 10;
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [needsReload, setNeedsReload] = useState(true);
+	const [data, setData] = useState({
+		name: "",
+		hod: ""
+	});
+	const [type, setType] = useState("")
+	const [open, setOpen] = useState(false);
+
+	const handleOnChange = ({target}) => {
+        setData({...data, [target.name]: target.value});
+    };
+	
+
+	const handleClose = () => {
+		setShow(false);
+		setData({
+			name: "",
+			hod: ""
+		});
+	}
+	const jwt = auth.isAuthenticated();
+
+	const handleShow = (type, uuid = null) => {
+		setType(type);
+		if(type == 'edit') {
+			readDepartment(
+				{
+					id: uuid,
+				}
+			).then((data) => {
+				if (data.error) {
+					setValues({ ...values, error: data.error });
+				} else {
+					setData({
+						name: data.name,
+						hod:data.hod,
+						id: data.id
+					});
+					setShow(true);
+				}
+			});
+		} else {
+			setShow(true);
+		}
+	}
+
+	const handleShowDialog = (data) => {
+		setOpen(true)
+		setData({
+			name: data.name,
+			id: data.id
+		})
+	}
+
+	const handleDialogClose = () => {
+		setOpen(false);
+		setData({
+			name: "",
+			hod: ""
+		});
+	}
+
+	const deleteDepartment = () => {
+		remove(
+			{
+				id: data.id,
+			},
+			{ t: jwt.token }
+		).then((data) => {
+			if (data.error) {
+				console.log(data.error);
+			} else {
+				handleDialogClose();
+				toast.success('Deleted successfully!');
+				setNeedsReload(!needsReload);
+			}
+		});
+	};
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		const departmentData = {
+			name: data.name,
+			hod: data.hod,
+		};
+
+		if (type == 'add') {
+			create(
+				{
+					t: jwt.token,
+				},
+				departmentData
+			).then((data) => {
+				if (data.errors) {
+					setValues({ ...values, error: data.errors });
+				} else {
+					toast.success(data.message);
+					handleClose();
+					setNeedsReload(!needsReload);
+				}
+			});
+		} else {
+			update(
+				{
+					id: data.id,
+				},
+				{
+					t: jwt.token,
+				},
+				departmentData
+			).then((data) => {
+				if (data.errors) {
+					setValues({ ...values, error: data.errors });
+				} else {
+					toast.success('Updated successfully!');
+					handleClose();
+					setNeedsReload(!needsReload);
+				}
+			});
+		}
+	};
 
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -57,10 +175,6 @@ export default function ControlledAccordions() {
 			abortController.abort();
 		};
 	}, [needsReload]);
-
-	const handleChange = (panel) => (event, isExpanded) => {
-		setExpanded(isExpanded ? panel : false);
-	};
 
 	const onFileUpload = (close) => {
 		let data = new FormData();
@@ -82,7 +196,7 @@ export default function ControlledAccordions() {
 		{ name: "No#", field: "id" },
 		{ name: "UNITS", field: "unit", sortable: true },
 		{ name: "HOD/DESIGNATE", field: "hod", sortable: true },
-		// { name: "Amount", field: "amount", sortable: false },
+		{ name: "Actions", field: "", sortable: false },
 	];
 
 	const departmentsData = useMemo(() => {
@@ -103,12 +217,13 @@ export default function ControlledAccordions() {
 							<Card.Header className="d-flex justify-content-between">
 								<Card.Title as="h4">Departments</Card.Title>
 								<div className="buttons">
+									<Button size="sm" className="mr-2" onClick={() => handleShow("add")}>Add</Button>
 									{ <CsvImport setFile={setSelectedFile} onUpload={onFileUpload} /> }
 								</div>
 							</Card.Header>
 							<Card.Body>
 								<div className="row w-100">
-									<div className="col mb-3 col-12 text-center ">
+									<div className="col mb-3 col-12">
 										<div className="row">
 											<div className="col-md-6">
 												<Pagination
@@ -128,7 +243,7 @@ export default function ControlledAccordions() {
 												/> */}
 											</div>
 										</div>
-										<table className="table table-striped">
+										<Table>
 											<TableHeader
 												headers={headers}
 												onSorting={(field, order) =>
@@ -139,23 +254,82 @@ export default function ControlledAccordions() {
 												{departmentsData.map((department, i) => (
 													<tr>
 														{/* <th scope="row">{department.id}</th> */}
-														<td scope="row">{i + 1}</td>
+														<td>{((currentPage - 1) * ITEMS_PER_PAGE) + i + 1}</td>
 
-														<Link
-															to={"/admin/department/" + department.id}
-															key={i}
-														>
-															<td>{department.name}</td>
-														</Link>
+														<td>{department.name}</td>
 														<td>{department.hod}</td>
+
+														<td>
+
+														<ButtonGroup aria-label="Basic example">
+															<Button size="sm" variant="info" onClick={() => {handleShow('edit', department.id)}}>Edit</Button>
+															<Button size="sm" variant="danger" onClick={() => {handleShowDialog(department)}}>Delete</Button>
+														</ButtonGroup>
+														</td>
 													</tr>
 												))}
 											</tbody>
-										</table>
+										</Table>
 									</div>
 								</div>
 							</Card.Body>
 						</Card>
+						<Modal show={show} onHide={handleClose}>
+							<Modal.Header closeButton>
+								<Modal.Title>{type == 'add' ? 'Add' : 'Edit'} Department</Modal.Title>
+							</Modal.Header>
+
+							<Form onSubmit={handleSubmit}>
+							<Modal.Body>
+									<Form.Group controlId="name">
+										<Form.Label>Name</Form.Label>
+										<Form.Control
+											type="text"
+											placeholder="Enter department name"
+											value={data.name}
+											onChange={handleOnChange}
+											name="name"
+										/>
+									</Form.Group>
+									<Form.Group controlId="hod">
+										<Form.Label>HOD</Form.Label>
+										<Form.Control
+											type="text"
+											placeholder="Enter head of department"
+											value={data.hod}
+											onChange={handleOnChange}
+											name="hod"
+										/>
+									</Form.Group>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="primary" type="submit">
+									Submit
+								</Button>
+							</Modal.Footer>
+
+						</Form>
+						</Modal>
+						<Dialog open={open} onClose={handleDialogClose}>
+							<DialogTitle>{"Delete " + data.name + "?" }</DialogTitle>
+							<DialogContent>
+								<DialogContentText>
+									Confirm to delete the department {data.name}.
+								</DialogContentText>
+							</DialogContent>
+							<DialogActions>
+								<Button onClick={handleDialogClose} color="primary">
+									Cancel
+								</Button>
+								<Button
+									onClick={deleteDepartment}
+									color="secondary"
+									autoFocus="autoFocus"
+								>
+									Confirm
+								</Button>
+							</DialogActions>
+						</Dialog>
 					</Col>
 				</Row>
 			</Container>

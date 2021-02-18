@@ -15,7 +15,7 @@ function CsvImport(props) {
 
     return (
         <>
-        <Button variant="info" onClick={handleShow}>
+        <Button size="sm" variant="info" onClick={handleShow}>
             Csv Import
         </Button>
 

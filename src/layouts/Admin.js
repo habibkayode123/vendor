@@ -43,6 +43,12 @@ import Budget from "views/Budget";
 import User from "../user/EditUser";
 import ViewUser from "../user/ViewUser"
 import auth from '../auth/auth-helper';
+import Vendors from "views/Vendors/Vendors";
+import AddProduct from "views/Products/AddProduct";
+import setAuthToken from "../setAuthToken";
+
+if (sessionStorage.getItem('jwt'))
+	setAuthToken(JSON.parse(sessionStorage.getItem('jwt')).token);
 
 
 function Admin() {
@@ -178,11 +184,16 @@ function Admin() {
 										path="/admin/users/:userId"
 										component={ViewUser}
 									/>
-									{/* <Route
+									<Route
 										exact
-										path="/admin/users/:id"
-										component={User}
-									/> */}
+										path="/admin/vendors"
+										component={Vendors}
+									/>
+									<Route
+										exact
+										path="/admin/products/create"
+										component={AddProduct}
+									/>
 								</>
 								// {<Route exact path="/home" component={Home2} />}
 							}

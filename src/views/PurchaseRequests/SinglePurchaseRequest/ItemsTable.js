@@ -1,5 +1,6 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
+import {numberWithCommas} from '../../../helpers'
 
 function itemsTable(props) {
     return (
@@ -9,8 +10,8 @@ function itemsTable(props) {
                     <th>#</th>
                     <th>Name</th>
                     <th>Quantity</th>
-                    <th>Amount (N)</th>
-                    <th>Vendor</th>
+                    <th>Amount</th>
+                    {/* <th>Vendor</th> */}
                 </tr>
             </thead>
             <tbody>
@@ -20,10 +21,10 @@ function itemsTable(props) {
                             <td>{i + 1}</td>
                             <td>{item.name}</td>
                             <td>{item.quantity}</td>
-                            <td>{parseFloat(item.amount).toFixed(2)}</td>
-                            <td>
+                            <td>{numberWithCommas(parseFloat(item.amount).toFixed(2))}</td>
+                            {/* <td>
                                 {item.vendor}
-                            </td>
+                            </td> */}
                         </tr>
                     ))
                 }

@@ -54,7 +54,7 @@ export default function DeleteDepartment(props) {
 
 	// }
 	return (
-		<span>
+		<>
 			<IconButton aria-label="Delete" onClick={clickButton} color="secondary">
 				<DeleteIcon />
 			</IconButton>
@@ -79,7 +79,7 @@ export default function DeleteDepartment(props) {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</span>
+		</>
 	);
 }
 DeleteDepartment.propTypes = {

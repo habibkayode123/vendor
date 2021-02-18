@@ -16,6 +16,7 @@ import {
 } from "react-bootstrap";
 import QuotationModal from './QuotationRequests';
 import auth from '../../../auth/auth-helper';
+import {numberWithCommas} from '../../../helpers';
 
 function SinglePurchaseRequest({ match, actions }) {
     const [request, setRequest] = useState({});
@@ -169,7 +170,15 @@ function SinglePurchaseRequest({ match, actions }) {
                                         }
                                         {
                                             isActionAllowed('quote') && request.approvalStatus == 1 && (
+
                                                 <Button variant="info" size="sm" onClick={handleShowQuotModal}>Request For Quotation</Button>
+                                            )
+                                        }
+                                        
+                                        {
+                                            isActionAllowed('invoice') && request.approvalStatus == 1 && (
+                                                
+                                                <Button variant="success" size="sm">Print Invoice</Button>
                                             )
                                         }
                                     </div>
@@ -261,7 +270,7 @@ function SinglePurchaseRequest({ match, actions }) {
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Amount(N)</th>
+                                                    <th>Amount</th>
                                                     <th>Requested By</th>
                                                     <th>Created At</th>
                                                     {/* <th></th> */}
@@ -272,7 +281,7 @@ function SinglePurchaseRequest({ match, actions }) {
                                                     request.quotations && request.quotations.map((quot, i) => (
                                                         <tr key={quot.id}>
                                                             <td>{i + 1}</td>
-                                                            <td>{quot.amount}</td>
+                                                            <td>{numberWithCommas(quot.amount)}</td>
                                                             <td>{quot.requestedBy}</td>
                                                             <td>{new Date(quot.createdAt).toLocaleDateString()}</td>
                                                             {/* <td>

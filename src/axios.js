@@ -1,4 +1,5 @@
 import axios from 'axios';
+import auth from './auth/auth-helper'
 
 const instance = axios.create({
     baseURL: process.env.NODE_ENV === 'production'
@@ -7,7 +8,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(request => {
     return request;
-}, errer => {
+}, error => {
     return Promise.reject(error);
 });
 

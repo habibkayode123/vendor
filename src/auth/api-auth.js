@@ -16,7 +16,7 @@ const signin = async (user) => {
 
 const signout = async () => {
 	try {
-		let response = await fetch("http://localhost:3050/auth/signout/", {
+		let response = await fetch("http://localhost:3050/api/auth/signout/", {
 			method: "GET",
 		});
 		return await response.json();

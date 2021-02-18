@@ -19,7 +19,7 @@ const purchaseRequestList = props => (
             {
                 props.requests.map((request, i) => (
                     <tr key={request.id}>
-                        <td>{i + 1}</td>
+                        <td>{((props.currentPage - 1) * props.perPage) + i + 1}</td>
                         <td>{request.caseId}</td>
                         <td>{request.items.length}</td>
                         <td>{request.reviewStatusReadable}</td>

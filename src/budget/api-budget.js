@@ -13,7 +13,7 @@ const create = async (budget) => {
 		console.log(err);
 	}
 };
-const list = async (signal) => {
+const list = async (signal = null) => {
 	try {
 		let response = await fetch("http://localhost:3050/api/budgettest", {
 			method: "GET",
@@ -129,7 +129,7 @@ const read = async (params, signal) => {
 	}
 };
 
-const getBudgetByDepartment = async (params, signal) => {
+const getBudgetByDepartment = async (params, signal = null) => {
 	try {
 		let response = await fetch(
 			"http://localhost:3050/api/budgets/by/" + params.departmentId,

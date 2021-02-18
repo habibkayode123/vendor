@@ -14,7 +14,7 @@ const create = async (credentials, department) => {
 		console.log(err);
 	}
 };
-const list = async (signal) => {
+const list = async (signal = null) => {
 	try {
 		let response = await fetch("http://localhost:3050/api/department", {
 			method: "GET",
@@ -25,13 +25,12 @@ const list = async (signal) => {
 		console.log(err);
 	}
 };
-const readDepartment = async (params, signal) => {
+const readDepartment = async (params) => {
 	try {
 		let response = await fetch(
 			"http://localhost:3050/api/department/" + params.id,
 			{
 				method: "GET",
-				signal: signal,
 			}
 		);
 		return response.json();

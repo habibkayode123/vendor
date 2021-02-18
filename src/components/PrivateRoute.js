@@ -12,9 +12,9 @@ const privateRoute = ({ component: Component, path, permittedPages, ...rest }) =
         
             <Redirect to={{pathname: "/admin/login"}}/>
         )} />;
-    const userRole = auth.isAuthenticated().user.role;console.log(auth.isAuthenticated().user);
+    const userRole = auth.isAuthenticated().user.role;
     const pages = rolesPerms.find(x => x.role === userRole).pages;
-    const checkAccess = checkPageAccess(path, pages);console.log(checkAccess, path);
+    const checkAccess = checkPageAccess(path, pages);
     const rests = {...rest, path};
     return <Route {...rests} render={(props) => (
         (checkAccess.isUserAuthorised != false && typeof checkAccess.isUserAuthorised != undefined) ?
