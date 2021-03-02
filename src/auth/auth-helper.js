@@ -26,7 +26,25 @@ const auth = {
       document.cookie = "t=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     })
   },
+  authenticateVendor(data) {
+    setAuthToken(data.token);
+    if (typeof window !== "undefined")
+      sessionStorage.setItem('jwtVendor', JSON.stringify(data.user))
+  },
+  clearVendorJWT(cb) {
+    if (typeof window !== "undefined")
+      sessionStorage.removeItem('jwtVendor')
+    cb()
+  },
+  getVendor() {
+    if (typeof window == "undefined")
+      return false
 
+    if (sessionStorage.getItem('jwtVendor'))
+      return JSON.parse(sessionStorage.getItem('jwtVendor'))
+    else
+      return false
+  },
 
   updateUser(user, cb) {
     if(typeof window !== "undefined"){

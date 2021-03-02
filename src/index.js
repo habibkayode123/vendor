@@ -34,6 +34,9 @@ import axios from './axios';
 import { getBudgetByDepartment } from "budget/api-budget";
 import auth from "./auth/auth-helper";
 import Login from "views/Logins";
+import "./index.css"
+import VendorLogin from "views/auth/VendorLogin";
+import VendorLayout from "layouts/VendorLayout";
 
 const getBudget = () => {
 	if (auth.isAuthenticated()) {
@@ -69,6 +72,8 @@ ReactDOM.render(
 	<Provider store={store}>
 		<BrowserRouter>
 			<Switch>
+				<Route path="/vendor/login" exact component={VendorLogin} />
+				<Route path="/vendor" render={(props) => <VendorLayout {...props} />} />
 				<Route path="/admin/login" exact component={Login} />
 				<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
 				<Redirect exact="true" from="/" to="/admin/login" />

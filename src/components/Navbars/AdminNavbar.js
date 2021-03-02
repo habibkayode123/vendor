@@ -67,21 +67,21 @@ const Header = ({budget, handleUpdate}) => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
 		
-		auth.isAuthenticated()&&(
-		getBudgetByDepartment(
-			{
-				departmentId: auth.isAuthenticated()
-					? auth.isAuthenticated().user.departmentId
-					: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
-			},
-			signal
-		).then((data) => {
-			if (data.data.errors) {
-				setError(data.errors);
-			} else {
-				handleUpdate(data.data[0]);
-			}
-		}));
+		// auth.isAuthenticated()&&(
+		// getBudgetByDepartment(
+		// 	{
+		// 		departmentId: auth.isAuthenticated()
+		// 			? auth.isAuthenticated().user.departmentId
+		// 			: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
+		// 	},
+		// 	signal
+		// ).then((data) => { console.log(data);
+		// 	if (data.data.errors) {
+		// 		setError(data.errors);
+		// 	} else {
+		// 		handleUpdate(data.data[0]);
+		// 	}
+		// }));
 		// }
 
 		return function cleanup() {
@@ -166,7 +166,7 @@ const Header = ({budget, handleUpdate}) => {
 												)
 											// )
 										}
-										{
+										{/* {
 											(auth.isAuthenticated().user.role != "Admin" && auth.isAuthenticated().user.role != "CFO"  ) && (
 												<li className="center">
 													<Link
@@ -177,8 +177,7 @@ const Header = ({budget, handleUpdate}) => {
 													</Link>
 												</li>
 											)
-											// )
-										}
+										} */}
 										{
 											auth.isAuthenticated() &&
 												(auth.isAuthenticated().user.role === "Admin" || auth.isAuthenticated().user.role === "CFO" ) && (

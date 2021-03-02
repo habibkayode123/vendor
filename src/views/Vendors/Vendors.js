@@ -31,7 +31,8 @@ function Vendors() {
 
     const vendorsData = useMemo(() => {
         setTotaltems(vendors.length);
-		return vendors.slice(
+        let newVendors = vendors.filter(v => v.Title != null)
+		return newVendors.slice(
 			(currentPage - 1) * ITEMS_PER_PAGE,
 			(currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
 		);

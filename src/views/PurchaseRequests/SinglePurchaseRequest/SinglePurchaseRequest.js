@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from '../../../axios';
 import { toast } from "react-toastify";
 import ItemsTable from './ItemsTable';
-
 import {
 	Card,
 	Container,
@@ -105,8 +104,19 @@ function SinglePurchaseRequest({ match, actions }) {
                 }
                 if (data.approvalStatus == 2)
                     data.approvalStatusReadable = 'Declined'
-                    
-                data.totalItemsAmount = data.items.reduce((a, item) => a + parseFloat(item.amount), 0);
+
+                let items = [];
+                data.orders.forEach(order => {
+                    let orde = order.items.map(item => {
+                        return {
+                            ...item,
+                            vendorId: order.vendorId
+                        }
+                    })
+                    items = items.concat(orde);
+                });
+                data.items = items;
+                // data.totalItemsAmount = data.items.reduce((a, item) => a + parseFloat(item.amount), 0);
                
                 setRequest(data);
             });

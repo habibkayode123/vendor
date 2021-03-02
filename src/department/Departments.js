@@ -167,7 +167,6 @@ export default function ControlledAccordions() {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-				console.log(data);
 				setDepartments(data);
 			}
 		});
@@ -252,7 +251,7 @@ export default function ControlledAccordions() {
 											/>
 											<tbody>
 												{departmentsData.map((department, i) => (
-													<tr>
+													<tr key={i}>
 														{/* <th scope="row">{department.id}</th> */}
 														<td>{((currentPage - 1) * ITEMS_PER_PAGE) + i + 1}</td>
 

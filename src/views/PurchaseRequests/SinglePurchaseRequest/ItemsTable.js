@@ -17,7 +17,7 @@ function itemsTable(props) {
             <tbody>
                 {
                     props.items && props.items.map((item, i) => (
-                        <tr key={item.id}>
+                        <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{item.name}</td>
                             <td>{item.quantity}</td>

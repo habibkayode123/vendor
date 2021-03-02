@@ -27,7 +27,6 @@ function PurchaseRequests() {
 
     const departmentId = auth.isAuthenticated().user.departmentId;
     const role = auth.isAuthenticated().user.role;
-    console.log(auth.isAuthenticated().user);
     const fetchRequests = () => {
 
         if (role == 'CFO') {
@@ -46,7 +45,6 @@ function PurchaseRequests() {
                     return {...request, reviewStatusReadable}
                 });
 
-                
                 setRequests(data);
             });
         } else {

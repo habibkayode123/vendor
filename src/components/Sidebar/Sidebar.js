@@ -49,7 +49,19 @@ function Sidebar({ color, image, routes }) {
 									exact
 								>
 									<i className={""} />
-									<p>Raise Request</p>
+									<p>Log Request</p>
+								</NavLink>
+							</li>}
+
+							{checkAccess('view-requests') && <li className="nav-item">
+								<NavLink
+									to="/admin/purchase/request/logs"
+									className="nav-link"
+									activeClassName="active"
+									exact
+								>
+									<i className={""} />
+									<p>Requests Logs</p>
 								</NavLink>
 							</li>}
 							{checkAccess('view-requests') && <li className="nav-item">

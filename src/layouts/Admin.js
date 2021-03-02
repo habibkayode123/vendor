@@ -46,6 +46,9 @@ import auth from '../auth/auth-helper';
 import Vendors from "views/Vendors/Vendors";
 import AddProduct from "views/Products/AddProduct";
 import setAuthToken from "../setAuthToken";
+import BudgetBalance from "components/Sidebar/BudgetBalance";
+import PurchaseRequestLogs from "views/PurchaseRequests/Logs/PurchaseRequestLogs";
+import SingleLog from "views/PurchaseRequests/Logs/SingleLog";
 
 if (sessionStorage.getItem('jwt'))
 	setAuthToken(JSON.parse(sessionStorage.getItem('jwt')).token);
@@ -154,6 +157,17 @@ function Admin() {
 										path="/admin/purchase"
 										component={PurchaseRequest}
 									/>
+
+									<Route
+										exact
+										path="/admin/purchase/request/logs"
+										component={PurchaseRequestLogs}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/request/logs/:uuid"
+										component={SingleLog}
+									/>
 									<PrivateRoute
 										exact
 										path="/admin/purchase/requests"
@@ -199,6 +213,9 @@ function Admin() {
 							}
 						</Switch>
 					</div>
+					
+					{ auth.isAuthenticated() &&
+						auth.isAuthenticated().user.role != "Admin" && <BudgetBalance /> }
 				</div>
 			</div>
 		</>

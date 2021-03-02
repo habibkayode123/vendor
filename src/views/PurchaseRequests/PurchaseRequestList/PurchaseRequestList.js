@@ -9,7 +9,7 @@ const purchaseRequestList = props => (
             <tr>
             <th>#</th>
             <th>Case ID</th>
-            <th>Items Count</th>
+            {/* <th>Items Count</th> */}
             <th>Review Status</th>
             <th>Created At</th>
             <th></th>
@@ -21,7 +21,7 @@ const purchaseRequestList = props => (
                     <tr key={request.id}>
                         <td>{((props.currentPage - 1) * props.perPage) + i + 1}</td>
                         <td>{request.caseId}</td>
-                        <td>{request.items.length}</td>
+                        {/* <td>{request.items.length}</td> */}
                         <td>{request.reviewStatusReadable}</td>
                         <td>{new Date(request.createdAt).toLocaleDateString()}</td>
                         <td>

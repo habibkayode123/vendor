@@ -92,7 +92,7 @@ export default function Register(props) {
 				setValues({ ...values, error: data.error });
 			} else {
 				// setValues({ ...values, error: "" });
-				setRoleValue(data);
+				setRoleValue(data.data);
 			}
 		});
 	};
@@ -104,7 +104,7 @@ export default function Register(props) {
 				setValues({ ...values, error: data.error });
 			} else {
 				// setValues({ ...values, error: "" });
-				setUserValue(data);
+				setUserValue(data.data);
 			}
 		});
 	};
@@ -117,7 +117,6 @@ export default function Register(props) {
 		);
 	}, [userValue,currentPage]);
 
-	//USEEFFECT HOOKS FOR DEPARTMENT
 	useEffect(() => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
