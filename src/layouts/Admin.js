@@ -37,12 +37,13 @@ import SinglePurchaseRequest from "views/PurchaseRequests/SinglePurchaseRequest/
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import QuotationRequest from "views/PurchaseRequests/SinglePurchaseRequest/QuotationRequests";
-import PrivateRoute from '../components/PrivateRoute';
+import PrivateRoute from "../components/PrivateRoute";
 import PurchaseRequest from "views/PurchaseRequest.js";
-import Budget from "views/Budget";
+// import Budget from "views/Budget";
+import Budget from "../budget/Budget";
 import User from "../user/EditUser";
-import ViewUser from "../user/ViewUser"
-import auth from '../auth/auth-helper';
+import ViewUser from "../user/ViewUser";
+import auth from "../auth/auth-helper";
 import Vendors from "views/Vendors/Vendors";
 import AddProduct from "views/Products/AddProduct";
 import setAuthToken from "../setAuthToken";
@@ -50,14 +51,16 @@ import BudgetBalance from "components/Sidebar/BudgetBalance";
 import PurchaseRequestLogs from "views/PurchaseRequests/Logs/PurchaseRequestLogs";
 import SingleLog from "views/PurchaseRequests/Logs/SingleLog";
 
-if (sessionStorage.getItem('jwt'))
-	setAuthToken(JSON.parse(sessionStorage.getItem('jwt')).token);
+import { getBudgetByDepartment } from "../budget/api-budget";
 
+if (sessionStorage.getItem("jwt"))
+	setAuthToken(JSON.parse(sessionStorage.getItem("jwt")).token);
 
 function Admin() {
 	const [image, setImage] = useState(sidebarImage);
 	const [color, setColor] = useState("black");
 	const [hasImage, setHasImage] = useState(true);
+	const [budgets, setBudgets] = useState([]);
 	const location = useLocation();
 	const mainPanel = React.useRef(null);
 	const getRoutes = (routes) => {
@@ -88,6 +91,21 @@ function Admin() {
 			element.parentNode.removeChild(element);
 		}
 	}, [location]);
+
+	let userDepartment = {
+		departmentId: auth.isAuthenticated().user.departmentId,
+	};
+	const fetchBudgets = () => {
+		getBudgetByDepartment(userDepartment).then((res) => {
+			// console.log("budgets", res.data);
+			setBudgets(res.data);
+		});
+	};
+
+	useEffect(() => {
+		fetchBudgets();
+	}, []);
+
 	return (
 		<>
 			<div className="wrapper">
@@ -157,7 +175,6 @@ function Admin() {
 										path="/admin/purchase"
 										component={PurchaseRequest}
 									/>
-
 									<Route
 										exact
 										path="/admin/purchase/request/logs"
@@ -166,18 +183,31 @@ function Admin() {
 									<Route
 										exact
 										path="/admin/purchase/request/logs/:uuid"
-										component={SingleLog}
+										render={(props) => (
+											<SingleLog
+												setBudgets={(totalAmount, expId) =>
+													setBudgets((prev) => {
+														let newState = prev.map((i) => {
+															let newObj = i;
+															if ((i.expenseTypeId == expId)) {
+																newObj.amount = i.amount - totalAmount;
+															}
+															return newObj;
+														});
+														return newState;
+													})
+												}
+												{...props}
+											/>
+										)}
+										// component={SingleLog}
 									/>
 									<PrivateRoute
 										exact
 										path="/admin/purchase/requests"
 										component={PurchaseRequests}
 									/>
-									<PrivateRoute
-										exact
-										path="/admin/budget"
-										component={Budget}
-									/>
+									<PrivateRoute exact path="/admin/budget" component={Budget} />
 									<PrivateRoute
 										exact
 										path="/admin/purchase/requests/:uuid"
@@ -198,11 +228,7 @@ function Admin() {
 										path="/admin/users/:userId"
 										component={ViewUser}
 									/>
-									<Route
-										exact
-										path="/admin/vendors"
-										component={Vendors}
-									/>
+									<Route exact path="/admin/vendors" component={Vendors} />
 									<Route
 										exact
 										path="/admin/products/create"
@@ -213,9 +239,11 @@ function Admin() {
 							}
 						</Switch>
 					</div>
-					
-					{ auth.isAuthenticated() &&
-						auth.isAuthenticated().user.role != "Admin" && <BudgetBalance /> }
+
+					{auth.isAuthenticated() &&
+						auth.isAuthenticated().user.role != "Admin" && (
+							<BudgetBalance budgets={budgets} />
+						)}
 				</div>
 			</div>
 		</>

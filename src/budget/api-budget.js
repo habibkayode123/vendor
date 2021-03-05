@@ -94,11 +94,10 @@ const budgetUsageByDepartment = async (params, signal) => {
 	}
 };
 
-
 const update = async (params, credentials, user) => {
 	try {
 		let response = await fetch(
-			"http://localhost:3050//api/budget/update" + params.budgetId,
+			"http://localhost:3050/api/budget/update" + params.budgetId,
 			{
 				method: "PUT",
 				headers: {
@@ -129,13 +128,33 @@ const read = async (params, signal) => {
 	}
 };
 
-const getBudgetByDepartment = async (params, signal = null) => {
+// const getBudgetByDepartment = async (params, signal = null) => {
+// 	try {
+// 		let response = await fetch(
+// 			// "http://localhost:3050/api/budgets/by/" + params.departmentId,
+// 			"http://localhost:3050/api/budgets/department/" + params.departmentId,
+// 			{
+// 				method: "GET",
+// 				signal: signal,
+// 			}
+// 		);
+// 		return response.json();
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// };
+const getBudgetByDepartment = async (userDept, signal = null) => {
 	try {
 		let response = await fetch(
-			"http://localhost:3050/api/budgets/by/" + params.departmentId,
+			"http://localhost:3050/api/budget/departmentBudget",
 			{
-				method: "GET",
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
 				signal: signal,
+				body: JSON.stringify(userDept),
 			}
 		);
 		return response.json();
@@ -143,6 +162,7 @@ const getBudgetByDepartment = async (params, signal = null) => {
 		console.log(err);
 	}
 };
+
 
 export {
 	create,
@@ -153,5 +173,5 @@ export {
 	read,
 	additionalBudgetUpdate,
 	getBudgetByDepartment,
-	budgetUsageByDepartment
+	budgetUsageByDepartment,
 };

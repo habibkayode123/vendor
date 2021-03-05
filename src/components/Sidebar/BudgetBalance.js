@@ -1,47 +1,57 @@
-import BulkBudget from 'budget/budgetBulkUpload';
-import React, {useEffect, useState} from 'react';
-import { getBudgetByDepartment } from '../../budget/api-budget';
-import auth from '../../auth/auth-helper';
+import BulkBudget from "budget/budgetBulkUpload";
+import React, { useEffect, useState } from "react";
+import { getBudgetByDepartment } from "../../budget/api-budget";
+import auth from "../../auth/auth-helper";
 
-import {numberWithCommas} from '../../helpers';
+import { numberWithCommas } from "../../helpers";
 
-function BudgetBalance() {
-    const [budgets, setBudgets] = useState([]);
-    const [active, setActive] = useState('');
+function BudgetBalance(props) {
+	console.log("In BudgetBalance", props.budgets);
+	const [budgets, setBudgets] = useState([]);
+	const [active, setActive] = useState("");
+	let userDepartment = {
+		departmentId: auth.isAuthenticated().user.departmentId,
+	};
+	// const fetchBudgets = () => {
+	//     getBudgetByDepartment({
+	//         departmentId: auth.isAuthenticated().user.departmentId
+	//     }).then(res => {
+	//         console.log("All Department Expense Budget",res.data)
+	//         setBudgets(res.data);
+	//     })
+	// }
 
-    const fetchBudgets = () => {
-        getBudgetByDepartment({
-            departmentId: auth.isAuthenticated().user.departmentId
-        }).then(res => {
-            console.log(res)
-            setBudgets(res.data);
-        })
-    }
+	// const fetchBudgets = () => {
+	// 	getBudgetByDepartment(userDepartment).then((res) => {
+	// 		setBudgets(res.data);
+	// 	});
+	// };
 
-    const handleActive = () => {
-        if (active) setActive('');
-        else setActive('active')
-    }
+	const handleActive = () => {
+		if (active) setActive("");
+		else setActive("active");
+	};
 
-    useEffect(() => {
-        fetchBudgets();
-    }, [])
+	// useEffect(() => {
+	// 	fetchBudgets();
+	// }, []);
 
-    return (
-        <div className={'budget-sidebar ' + active} onClick={handleActive}>
-            <p className="view">View Budget Balance</p>
-            <p className="hide">Hide Budget Balance</p>
-            {/* <h5>Budget Balances</h5> */}
-            {
-                budgets.map(budget => (
-                    <div className="mt-3" key={budget.id}>
-                        <h5>{numberWithCommas(budget.amount)}</h5>
-                        <span className="budget-title">{budget.expenseType.name}</span>
-                    </div>
-                ))
-            }
-        </div>
-    );
+	return (
+		<div className={"budget-sidebar " + active} onClick={handleActive}>
+			<p className="view">View Budget Balance</p>
+			<p className="hide">Hide Budget Balance</p>
+			{/* <h5>Budget Balances</h5> */}
+			{props.budgets.map((budget) => {
+				console.log("expenseTypeBudgets", props.budgets);
+				return (
+					<div className="mt-3" key={budget.id}>
+						<h5>{numberWithCommas(budget.amount)}</h5>
+						<span className="budget-title">{budget.expenseType.name}</span>
+					</div>
+				);
+			})}
+		</div>
+	);
 }
 
 export default BudgetBalance;

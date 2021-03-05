@@ -25,7 +25,8 @@ import Notifications from "views/Notifications.js";
 import Upgrade from "views/Upgrade.js";
 import Login from "views/Logins.js"
 import Register from "views/Register.js"
-import Budget from "views/Budget.js"
+// import Budget from "views/Budget.js"
+import Budget from "./budget/Budget.js";
 import PurchaseRequest from "views/PurchaseRequest.js";
 
 const dashboardRoutes = [

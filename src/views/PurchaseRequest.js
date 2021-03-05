@@ -32,13 +32,13 @@ function PurchaseRequest({handleUpdate}) {
 	const fetchBudgets = () => {
         getBudgetByDepartment({
             departmentId: auth.isAuthenticated().user.departmentId
-        }).then(res => { console.log(res);
+        }).then(res => { console.log("newLog",res);
             const data = res.data.map(datum => {
 				return {
 					name: datum.expenseType.name,
 					id: datum.expenseTypeId
 				}
-			});console.log(data);
+			});
             setExpenseTypes(data);
         })
 	}

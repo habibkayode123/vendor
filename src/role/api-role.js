@@ -1,22 +1,12 @@
-// const create = async (budget) => {
-// 	try {
-// 		let response = await fetch("http://localhost:3050/api/budget", {
-// 			method: "POST",
-// 			headers: {
-// 				Accept: "application/json",
-// 				"Content-Type": "application/json",
-// 			},
-// 			body: JSON.stringify(budget),
-// 		});
-// 		return await response.json();
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-const roleList = async (signal) => {
+const roleList = async (credentials,signal) => {
 	try {
 		let response = await fetch("http://localhost:3050/api/role", {
 			method: "GET",
+			headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+					Authorization: "Bearer " + credentials.t,
+				},
 			signal: signal,
 		});
 		return await response.json();
@@ -24,18 +14,6 @@ const roleList = async (signal) => {
 		console.log(err);
 	}
 };
-
-// const getBudgetTypeList = async (signal) => {
-// 	try {
-// 		let response = await fetch("http://localhost:3050/api/budgettype", {
-// 			method: "GET",
-// 			signal: signal,
-// 		});
-// 		return await response.json();
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
 
 // const getBudgetById = async (params, credentials, signal) => {
 // 	try {

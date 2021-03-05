@@ -21,8 +21,8 @@ import { toast } from 'react-toastify';
 import {numberWithCommas} from '../helpers';
 import { list } from '../department/api-dept';
 import { connect } from 'react-redux';
-import { create, getBudgetTypeList, additionalBudgetUpdate } from "../budget/api-budget";
-import { getBudgetByDepartment } from '../budget/api-budget';
+import { create, getBudgetTypeList, additionalBudgetUpdate } from "./api-budget";
+import { getBudgetByDepartment } from './api-budget';
 
 const mapDispatchToProps = dispatch => {
 	return {
@@ -55,7 +55,7 @@ function Budget(props) {
 	const headers = [
 		{ name: "#", field: "id" },
 		{ name: "Department", field: "departmentId", sortable: true },
-		{ name: "Budget Type", field: "budgetTypeId", sortable: true },
+		// { name: "Budget Type", field: "budgetTypeId", sortable: true },
 		{ name: "Amount", field: "amount", sortable: true },
 		{ name: "Start Date", field: "startDate", sortable: true },
 		{ name: "End Date", field: "endDate", sortable: true },
@@ -149,10 +149,11 @@ function Budget(props) {
 
 	const fetchDepartments = (signal) => {
 		list().then((data) => {
+			console.log("fetchedDataDepartment",data)
 			if (data && data.error) {
 				console.log("Error", data.error);
 			} else {
-				setDepartments(data);
+				setDepartments(data.data);
 			}
 		});
 	};
@@ -178,7 +179,8 @@ function Budget(props) {
 			})
 				.then((response) => response.json())
 				.then((json) => {
-					setBudgets(json);
+					console.log("BudgetsJson",json)
+					setBudgets(json.data);
 				});
 		};
 		getData();
@@ -226,8 +228,8 @@ function Budget(props) {
 					budget.endDate
 						.toString()
 						.toLowerCase()
-						.includes(search.toString().toLowerCase()) ||
-					budget.budgetType.name.toLowerCase().includes(search.toLowerCase())
+						.includes(search.toString().toLowerCase()) 
+					// budget.budgetType.name.toLowerCase().includes(search.toLowerCase())
 			);
 		}
 
@@ -300,7 +302,7 @@ function Budget(props) {
 														<td>{((currentPage - 1) * ITEMS_PER_PAGE) + i + 1}</td>
 
 														<td>{budget.dept.name}</td>
-														<td>{budget.budgetType.name}</td>
+														{/* <td>{budget.budgetType.name}</td> */}
 														<td>{numberWithCommas(budget.amount)}</td>
 														<td>
 															{new Date(budget.startDate).toLocaleDateString(

@@ -14,10 +14,15 @@ const create = async (credentials,user) => {
 		console.log(err);
 	}
 };
-const userList = async (signal) => {
+const userList = async (credentials,signal) => {
 	try {
 		let response = await fetch("http://localhost:3050/api/users", {
 			method: "GET",
+			// header:{
+			// 	Accept:'application/json',
+			// 	"Content-Type":"application/json",
+			// 	Authorization:"Bearer "+ credentials.t,
+			// },
 			signal: signal,
 		});	
 		return await response.json();
@@ -27,6 +32,23 @@ const userList = async (signal) => {
 		res.json({errors:err.message});
 	}
 };
+
+// const roleList = async (credentials, signal) => {
+// 	try {
+// 		let response = await fetch("http://localhost:3050/api/role", {
+// 			method: "GET",
+// 			headers: {
+// 				Accept: "application/json",
+// 				"Content-Type": "application/json",
+// 				Authorization: "Bearer " + credentials.t,
+// 			},
+// 			signal: signal,
+// 		});
+// 		return await response.json();
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// };
 
 const read = async (credentials,params, signal) => {
 	try {

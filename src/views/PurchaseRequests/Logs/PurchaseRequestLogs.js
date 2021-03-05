@@ -20,6 +20,7 @@ function PurchaseRequestLogs() {
 
     const fetchLogs = () => {
         axios.get('/v1/log').then(res => {
+            console.log("v1/log",res.data.data)
             setLogs(res.data.data.data)
         })
     }

@@ -124,7 +124,7 @@ export default function ControlledAccordions() {
 			hod: data.hod,
 		};
 
-		if (type == 'add') {
+		if (type == 'add'){
 			create(
 				{
 					t: jwt.token,
@@ -167,7 +167,7 @@ export default function ControlledAccordions() {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-				setDepartments(data);
+				setDepartments(data.data);
 			}
 		});
 		return function cleanup() {

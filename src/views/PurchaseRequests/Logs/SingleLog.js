@@ -15,7 +15,8 @@ import {numberWithCommas} from '../../../helpers';
 import auth from 'auth/auth-helper';
 import {toast } from 'react-toastify';
 
-function SingleLog({match}) {
+function SingleLog(props) {
+    console.log("props...",props)
     const init = {
         vendorId: '',
         name: '',
@@ -26,14 +27,18 @@ function SingleLog({match}) {
     const [vendors, setVendors] = useState([]);
     const [values, setValues] = useState(init);
     const [items, setItems] = useState([]);
+    const [expenseTypeId,setExpenseTypeId]= useState('');
 
     const handleOnChange = ({target}) => {
+        console.log("Targets",target);
         setValues({...values, [target.name]: target.value});
     }
 
     const fetchLog = () => {
-        const uuid = match.params.uuid;
+        const uuid = props.match.params.uuid;
         axios.get(`/v1/log/${uuid}`).then(res => {
+            console.log("singleLog",res.data.data)
+            setExpenseTypeId(res.data.data.data.expenseTypeId);
             setLog(res.data.data.data);
         });
     }
@@ -45,6 +50,7 @@ function SingleLog({match}) {
     }
 
     const handleSubmit = () => {
+        console.log("datalogs", items);
         const data = items.map(item => {
             const newItems = [{
                 quantity: item.quantity,
@@ -67,12 +73,15 @@ function SingleLog({match}) {
             requestedBy: auth.isAuthenticated().user.email.split('@')[0]
         };
 
+        // console.log("propsBudget",props)
+        props.setBudgets(payload.total,expenseTypeId)
+        console.log("Payloads...",payload)
         axios.post('/v1/request', payload).then(res => {
             toast.success(res.data.message);
             setItems([]);
             setValues(init);
         }).catch(err => {
-            console.log(err.response)
+            console.log("Payload From singleLog",payload,err.response)
         })
     }
 
@@ -175,7 +184,7 @@ function SingleLog({match}) {
                                                 {vendors.map((e, key) => {
                                                     return (
                                                         <option value={e.id} key={key}>
-                                                            {e.Title}
+                                                            {e.title}
                                                         </option>
                                                     );
                                                 })}
@@ -237,7 +246,7 @@ function SingleLog({match}) {
                                         <tbody>
                                             {items.map((item, index) => (
                                                 <tr key={index}>
-                                                    <td>{vendors.find(v => v.id == item.vendorId).Title}</td>
+                                                    <td>{vendors.find(v => v.id == item.vendorId).title}</td>
                                                     <td>{item.name}</td>
                                                     <td>{item.quantity}</td>
                                                     <td>{numberWithCommas(item.amount)}</td>
