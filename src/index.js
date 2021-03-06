@@ -36,6 +36,7 @@ import auth from "./auth/auth-helper";
 import Login from "views/Logins";
 import "./index.css";
 import VendorLogin from "views/auth/VendorLogin";
+import FetchVendorQuotation from "views/VendorQuotation/fetchVendorsQuotation";
 import VendorLayout from "layouts/VendorLayout";
 import PrivateRouteVendor from "./auth/PrivateRouteVendor";
 
@@ -70,17 +71,19 @@ const budgetReducer = function (state = { amount: 0 }, action) {
 let store = createStore(budgetReducer);
 
 ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <Switch>
-        <Route path="/vendor/login" exact component={VendorLogin} />
-        <PrivateRouteVendor path="/vendor" component={VendorLayout} />
-        <Route path="/admin/login" exact component={Login} />
-        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-        <Redirect exact="true" from="/" to="/admin/login" />
-        <Redirect exact from="/admin" to="/admin/login" />
-      </Switch>
-    </BrowserRouter>
-  </Provider>,
-  document.getElementById("root")
+	<Provider store={store}>
+		<BrowserRouter>
+			<Switch>
+				<Route path="/vendor/login" exact component={VendorLogin} />
+				{/* <PrivateRouteVendor path="/vendor/vendorQuotation" component={FetchVendorQuotation} /> */}
+
+				<PrivateRouteVendor path="/vendor" component={VendorLayout} />
+				<Route path="/admin/login" exact component={Login} />
+				<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+				<Redirect exact="true" from="/" to="/admin/login" />
+				<Redirect exact from="/admin" to="/admin/login" />
+			</Switch>
+		</BrowserRouter>
+	</Provider>,
+	document.getElementById("root")
 );
