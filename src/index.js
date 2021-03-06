@@ -27,59 +27,60 @@ import "./assets/css/demo.css";
 // @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@700&display=swap');
 import "@fortawesome/fontawesome-free/css/all.min.css";
 // import "./assets/css/style.css"
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import { createStore } from "redux";
+import { Provider } from "react-redux";
 import AdminLayout from "layouts/Admin.js";
-import axios from './axios';
+import axios from "./axios";
 import { getBudgetByDepartment } from "budget/api-budget";
 import auth from "./auth/auth-helper";
 import Login from "views/Logins";
-import "./index.css"
+import "./index.css";
 import VendorLogin from "views/auth/VendorLogin";
 import VendorLayout from "layouts/VendorLayout";
+import PrivateRouteVendor from "./auth/PrivateRouteVendor";
 
 const getBudget = () => {
-	if (auth.isAuthenticated()) {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
-		getBudgetByDepartment(
-			{
-				departmentId: auth.isAuthenticated().user.departmentId
-			},
-			signal
-		).then((data) => {console.log(data);
+  if (auth.isAuthenticated()) {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    getBudgetByDepartment(
+      {
+        departmentId: auth.isAuthenticated().user.departmentId,
+      },
+      signal
+    ).then((data) => {
+      console.log(data);
 
-			return data.data[0]
-			
-		});
-	} else {
-		return {amount: 100}
-	}
-}
+      return data.data[0];
+    });
+  } else {
+    return { amount: 100 };
+  }
+};
 
-const budgetReducer = function (state = {amount: 0}, action) {
-	switch (action.type) {
-		case "UPDATE":
-			return action.payload
-		default:
-			return state
-	}
-}
+const budgetReducer = function (state = { amount: 0 }, action) {
+  switch (action.type) {
+    case "UPDATE":
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
 let store = createStore(budgetReducer);
 
 ReactDOM.render(
-	<Provider store={store}>
-		<BrowserRouter>
-			<Switch>
-				<Route path="/vendor/login" exact component={VendorLogin} />
-				<Route path="/vendor" render={(props) => <VendorLayout {...props} />} />
-				<Route path="/admin/login" exact component={Login} />
-				<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-				<Redirect exact="true" from="/" to="/admin/login" />
-				<Redirect exact from="/admin" to="/admin/login" />
-			</Switch>
-		</BrowserRouter>
-	</Provider>,
-	document.getElementById("root")
+  <Provider store={store}>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/vendor/login" exact component={VendorLogin} />
+        <PrivateRouteVendor path="/vendor" component={VendorLayout} />
+        <Route path="/admin/login" exact component={Login} />
+        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <Redirect exact="true" from="/" to="/admin/login" />
+        <Redirect exact from="/admin" to="/admin/login" />
+      </Switch>
+    </BrowserRouter>
+  </Provider>,
+  document.getElementById("root")
 );
