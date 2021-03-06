@@ -30,9 +30,8 @@ const auth = {
     });
   },
   authenticateVendor(data) {
-    setAuthToken(data.token);
     if (typeof window !== "undefined")
-      sessionStorage.setItem("jwtVendor", JSON.stringify(data.user));
+      sessionStorage.setItem("jwtVendor", JSON.stringify(data));
   },
   clearVendorJWT(cb) {
     if (typeof window !== "undefined") sessionStorage.removeItem("jwtVendor");

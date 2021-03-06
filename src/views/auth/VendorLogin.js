@@ -29,15 +29,14 @@ function VendorLogin() {
     axios
       .post("/vportal/login", user)
       .then((res) => {
-        // console.log("Errors",res)
-        // if (!res.data.status) {
-				// 	setValues({ ...values, error: res.data.error });
-				// } else{
-        auth.authenticateVendor(res.data);
-        console.log("i am here", res.data);
+        let data = {
+          token: res.data.token,
+          user: res.data.user,
+        };
+        console.log(data);
+        auth.authenticateVendor(data);
         //history.push("/vendor");
         setLoggedIn(true);
-        // }
       })
       .catch((err) => {
         console.log(err.response);
