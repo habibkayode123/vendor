@@ -16,7 +16,7 @@ function VendorLayout() {
         <div className="content">
           <Switch>
             <Route exact path="/vendor/profile" component={Profile} />
-            <Route exact path="/" component={Vendors} />
+            <Route exact path="/vendor" component={Vendors} />
           </Switch>
         </div>
       </div>
