@@ -1,11 +1,8 @@
 import VendorNavbar from "components/Navbars/VendorNavbar";
 import VendorSidebar from "components/Sidebar/VendorSidebar";
 import Vendors from "../views/Vendors/Vendors";
-<<<<<<< HEAD
 import FetchVendorQuotation from "views/VendorQuotation/fetchVendorsQuotation";
-=======
 import UploadQuotation from "../views/VendorQuotation/uploadQuotation";
->>>>>>> 6e2b6e575a47c00edbb79c16584088d971b46471
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import { Route, Switch } from "react-router-dom";
