@@ -50,6 +50,7 @@ import setAuthToken from "../setAuthToken";
 import BudgetBalance from "components/Sidebar/BudgetBalance";
 import PurchaseRequestLogs from "views/PurchaseRequests/Logs/PurchaseRequestLogs";
 import SingleLog from "views/PurchaseRequests/Logs/SingleLog";
+import ApproveRequest from "views/PurchaseRequests/PurchaseRequestList/ApproveRequest";
 
 import { getBudgetByDepartment } from "../budget/api-budget";
 
@@ -189,7 +190,7 @@ function Admin() {
 													setBudgets((prev) => {
 														let newState = prev.map((i) => {
 															let newObj = i;
-															if ((i.expenseTypeId == expId)) {
+															if (i.expenseTypeId == expId) {
 																newObj.amount = i.amount - totalAmount;
 															}
 															return newObj;
@@ -233,6 +234,11 @@ function Admin() {
 										exact
 										path="/admin/products/create"
 										component={AddProduct}
+									/>
+									<Route
+										exact
+										path="/admin/requests/approve"
+										component={ApproveRequest}
 									/>
 								</>
 								// {<Route exact path="/home" component={Home2} />}
