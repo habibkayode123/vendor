@@ -7,24 +7,40 @@ import React from "react";
 import { ToastContainer } from "react-toastify";
 import { Route, Switch } from "react-router-dom";
 import Profile from "views/vendor/Profile";
+import ListQuotation from "views/vendor/ListQuotation";
 
 function VendorLayout() {
   return (
-		<div className="wrapper">
-			<ToastContainer />
-			<VendorSidebar />
-			<div className="main-panel">
-				<VendorNavbar />
-				<div className="content">
-					<Switch>
-						<Route exact path="/vendor/profile" component={Profile} />
-						<Route exact path="/" component={Vendors} />
-						<Route exact path="/vendor/vendorQuotation" component={FetchVendorQuotation} />
-					</Switch>
-				</div>
-			</div>
-		</div>
-	);
+    <div className="wrapper">
+      <ToastContainer />
+      <VendorSidebar />
+      <div className="main-panel">
+        <VendorNavbar />
+        <div className="content">
+          <Switch>
+            <Route exact path="/vendor/profile" component={Profile} />
+            <Route exact path="/" component={Vendors} />
+            <Route
+              exact
+              path="/vendor/vendorQuotation"
+              component={FetchVendorQuotation}
+            />
+            <Route
+              exact
+              path="/vendor/uploadVendorQuotation"
+              component={UploadQuotation}
+            />
+
+            <Route
+              exact
+              path="/vendor/listQuotation"
+              component={ListQuotation}
+            />
+          </Switch>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default VendorLayout;
