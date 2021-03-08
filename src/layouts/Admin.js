@@ -56,210 +56,212 @@ import ListQuotation from "../views/vendor/ListQuotation";
 import { getBudgetByDepartment } from "../budget/api-budget";
 
 if (sessionStorage.getItem("jwt"))
-  setAuthToken(JSON.parse(sessionStorage.getItem("jwt")).token);
+	setAuthToken(JSON.parse(sessionStorage.getItem("jwt")).token);
 
 function Admin() {
-  const [image, setImage] = useState(sidebarImage);
-  const [color, setColor] = useState("black");
-  const [hasImage, setHasImage] = useState(true);
-  const [budgets, setBudgets] = useState([]);
-  const location = useLocation();
-  const mainPanel = React.useRef(null);
-  const getRoutes = (routes) => {
-    return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            render={(props) => <prop.component {...props} />}
-            key={key}
-          />
-        );
-      } else {
-        return null;
-      }
-    });
-  };
-  useEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
-    mainPanel.current.scrollTop = 0;
-    if (
-      window.innerWidth < 993 &&
-      document.documentElement.className.indexOf("nav-open") !== -1
-    ) {
-      document.documentElement.classList.toggle("nav-open");
-      var element = document.getElementById("bodyClick");
-      element.parentNode.removeChild(element);
-    }
-  }, [location]);
+	const [image, setImage] = useState(sidebarImage);
+	const [color, setColor] = useState("black");
+	const [hasImage, setHasImage] = useState(true);
+	const [budgets, setBudgets] = useState([]);
+	const location = useLocation();
+	const mainPanel = React.useRef(null);
+	const getRoutes = (routes) => {
+		return routes.map((prop, key) => {
+			if (prop.layout === "/admin") {
+				return (
+					<Route
+						path={prop.layout + prop.path}
+						render={(props) => <prop.component {...props} />}
+						key={key}
+					/>
+				);
+			} else {
+				return null;
+			}
+		});
+	};
+	useEffect(() => {
+		document.documentElement.scrollTop = 0;
+		document.scrollingElement.scrollTop = 0;
+		mainPanel.current.scrollTop = 0;
+		if (
+			window.innerWidth < 993 &&
+			document.documentElement.className.indexOf("nav-open") !== -1
+		) {
+			document.documentElement.classList.toggle("nav-open");
+			var element = document.getElementById("bodyClick");
+			element.parentNode.removeChild(element);
+		}
+	}, [location]);
 
-  let userDepartment = {
-    departmentId: auth.isAuthenticated().user.departmentId,
-  };
-  const fetchBudgets = () => {
-    getBudgetByDepartment(userDepartment).then((res) => {
-      // console.log("budgets", res.data);
-      setBudgets(res.data);
-    });
-  };
+	let userDepartment = {
+		departmentId: auth.isAuthenticated().user.departmentId,
+	};
+	const fetchBudgets = () => {
+		getBudgetByDepartment(userDepartment).then((res) => {
+			console.log("budgets....", res.data);
+			setBudgets(res.data);
+		});
+	};
 
-  useEffect(() => {
-    fetchBudgets();
-  }, []);
+	useEffect(() => {
+		fetchBudgets();
+	}, []);
 
-  return (
-    <>
-      <div className="wrapper">
-        <ToastContainer />
-        {auth.isAuthenticated() && (
-          // (<Sidebar color={color} image={hasImage ? image : ""} routes={routes} />)}
-          <Sidebar
-            color={color}
-            image={hasImage ? image : ""}
-            routes={routes}
-          />
-        )}
-        <div className="main-panel" ref={mainPanel}>
-          {auth.isAuthenticated() && <AdminNavbar />}
-          <div className="content">
-            <Switch>
-              {
-                <>
-                  {getRoutes(routes)}{" "}
-                  <Route exact path="/admin/home" component={Home2} />
-                  <Route
-                    exact
-                    path="/admin/bud/additionalBudget/:budgetId"
-                    component={TopUpBudget}
-                  />
-                  <Route
-                    exact
-                    path="/admin/createbudget"
-                    component={CreateBudget}
-                  />
-                  <Route
-                    exact
-                    path="/admin/bulkupload/budget"
-                    component={BudgetBulkUpload}
-                  />
-                  <Route
-                    // exact
-                    path="/admin/createdepartment"
-                    component={NewDepartment}
-                  />
-                  {/* <Route
+	return (
+		<>
+			<div className="wrapper">
+				<ToastContainer />
+				{auth.isAuthenticated() && (
+					// (<Sidebar color={color} image={hasImage ? image : ""} routes={routes} />)}
+					<Sidebar
+						color={color}
+						image={hasImage ? image : ""}
+						routes={routes}
+					/>
+				)}
+				<div className="main-panel" ref={mainPanel}>
+					{auth.isAuthenticated() && <AdminNavbar />}
+					<div className="content">
+						<Switch>
+							{
+								<>
+									{getRoutes(routes)}{" "}
+									<Route exact path="/admin/home" component={Home2} />
+									<Route
+										exact
+										path="/admin/bud/additionalBudget/:budgetId"
+										component={TopUpBudget}
+									/>
+									<Route
+										exact
+										path="/admin/createbudget"
+										component={CreateBudget}
+									/>
+									<Route
+										exact
+										path="/admin/bulkupload/budget"
+										component={BudgetBulkUpload}
+									/>
+									<Route
+										// exact
+										path="/admin/createdepartment"
+										component={NewDepartment}
+									/>
+									{/* <Route
 										exact
 										path="/admin/departments"
 										component={Departments}
 									/> */}
-                  {/* <PrivateRoute
+									{/* <PrivateRoute
 										path="/budget/additionalBudget/:budgetId"
 										component={AdditionalBudget}
 									/> */}
-                  <Route
-                    // exact
-                    path="/admin/department/:departmentId"
-                    component={Department}
-                  />
-                  <Route
-                    exact
-                    path="/admin/editdepartment/:departmentId"
-                    component={EditDepartment}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/admin/departments"
-                    component={Departments}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/admin/purchase"
-                    component={PurchaseRequest}
-                  />
-                  <Route
-                    exact
-                    path="/admin/purchase/request/logs"
-                    component={PurchaseRequestLogs}
-                  />
-                  <Route
-                    exact
-                    path="/admin/purchase/request/logs/:uuid"
-                    render={(props) => (
-                      <SingleLog
-                        setBudgets={(totalAmount, expId) =>
-                          setBudgets((prev) => {
-                            let newState = prev.map((i) => {
-                              let newObj = i;
-                              if (i.expenseTypeId == expId) {
-                                newObj.amount = i.amount - totalAmount;
-                              }
-                              return newObj;
-                            });
-                            return newState;
-                          })
-                        }
-                        {...props}
-                      />
-                    )}
-                    // component={SingleLog}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/admin/purchase/requests"
-                    component={PurchaseRequests}
-                  />
-                  <PrivateRoute exact path="/admin/budget" component={Budget} />
-                  <PrivateRoute
-                    exact
-                    path="/admin/quotations-list"
-                    component={ListQuotation}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/admin/purchase/requests/:uuid"
-                    component={SinglePurchaseRequest}
-                  />
-                  <Route
-                    exact
-                    path="/admin/purchase/requests/:uuid/quotation"
-                    component={QuotationRequest}
-                  />
-                  <Route
-                    exact={true}
-                    path="/admin/edit/user/:userId"
-                    component={User}
-                  />
-                  <Route
-                    exact={true}
-                    path="/admin/users/:userId"
-                    component={ViewUser}
-                  />
-                  <Route exact path="/admin/vendors" component={Vendors} />
-                  <Route
-                    exact
-                    path="/admin/products/create"
-                    component={AddProduct}
-                  />
-                  <Route
-                    exact
-                    path="/admin/requests/approve"
-                    component={ApproveRequest}
-                  />
-                </>
-                // {<Route exact path="/home" component={Home2} />}
-              }
-            </Switch>
-          </div>
+									<Route
+										// exact
+										path="/admin/department/:departmentId"
+										component={Department}
+									/>
+									<Route
+										exact
+										path="/admin/editdepartment/:departmentId"
+										component={EditDepartment}
+									/>
+									<PrivateRoute
+										exact
+										path="/admin/departments"
+										component={Departments}
+									/>
+									<PrivateRoute
+										exact
+										path="/admin/purchase"
+										component={PurchaseRequest}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/request/logs"
+										component={PurchaseRequestLogs}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/request/logs/:uuid"
+										render={(props) => (
+											<SingleLog
+												setBudgets={(totalAmount, expId) =>
+													setBudgets((prev) => {
+														let newState = prev.map((i) => {
+                              console.log("iiiiiiiiiiiiii",i)
+															let newObj = i;
+															if (i.expenseTypeId == expId) {
+                                console.log("exptypeiiiii",expId);
+																newObj.amount = i.amount - totalAmount;
+															}
+															return newObj;
+														});
+														return newState;
+													})
+												}
+												{...props}
+											/>
+										)}
+										// component={SingleLog}
+									/>
+									<PrivateRoute
+										exact
+										path="/admin/purchase/requests"
+										component={PurchaseRequests}
+									/>
+									<PrivateRoute exact path="/admin/budget" component={Budget} />
+									<PrivateRoute
+										exact
+										path="/admin/quotations-list"
+										component={ListQuotation}
+									/>
+									<PrivateRoute
+										exact
+										path="/admin/purchase/requests/:uuid"
+										component={SinglePurchaseRequest}
+									/>
+									<Route
+										exact
+										path="/admin/purchase/requests/:uuid/quotation"
+										component={QuotationRequest}
+									/>
+									<Route
+										exact={true}
+										path="/admin/edit/user/:userId"
+										component={User}
+									/>
+									<Route
+										exact={true}
+										path="/admin/users/:userId"
+										component={ViewUser}
+									/>
+									<Route exact path="/admin/vendors" component={Vendors} />
+									<Route
+										exact
+										path="/admin/products/create"
+										component={AddProduct}
+									/>
+									<Route
+										exact
+										path="/admin/requests/approve"
+										component={ApproveRequest}
+									/>
+								</>
+								// {<Route exact path="/home" component={Home2} />}
+							}
+						</Switch>
+					</div>
 
-          {auth.isAuthenticated() &&
-            auth.isAuthenticated().user.role != "Admin" && (
-              <BudgetBalance budgets={budgets} />
-            )}
-        </div>
-      </div>
-    </>
-  );
+					{auth.isAuthenticated() &&
+						auth.isAuthenticated().user.role != "Admin" && (
+							<BudgetBalance budgets={budgets} />
+						)}
+				</div>
+			</div>
+		</>
+	);
 }
 
 export default Admin;

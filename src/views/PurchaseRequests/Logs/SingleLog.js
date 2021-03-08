@@ -16,7 +16,7 @@ import auth from "auth/auth-helper";
 import { toast } from "react-toastify";
 
 function SingleLog(props) {
-  // console.log("props...",props)
+  console.log("props...",props)
   const init = {
     vendorId: "",
     name: "",
@@ -83,6 +83,7 @@ function SingleLog(props) {
     axios
       .post("/v1/request", payload)
       .then((res) => {
+        console.log("res/v1/request", res);
         toast.success(res.data.message);
         setItems([]);
         setValues(init);
@@ -235,7 +236,7 @@ function SingleLog(props) {
                         type="number"
                         placeholder="Amount"
                         name="amount"
-                        value={values.amount}
+                        value={log.amount}
                         onChange={handleOnChange}
                       />
                     </Form.Group>

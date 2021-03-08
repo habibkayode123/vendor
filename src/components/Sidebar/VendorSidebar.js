@@ -42,7 +42,7 @@ export default function VendorSidebar() {
                 <p>Upload Quotations</p>
               </NavLink>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <NavLink
                 to="/vendor/profile"
                 className="nav-link"
@@ -52,7 +52,7 @@ export default function VendorSidebar() {
                 <i className={""} />
                 <p>Profile</p>
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </Nav>
       </div>

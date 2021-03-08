@@ -407,8 +407,8 @@ const FetchVendorQuotation = () => {
     { name: "SN", field: "id" },
     { name: "Case Id", field: "", sortable: false },
     { name: "Total Amount", field: "hod", sortable: true },
-    { name: "Vendor Email", field: "unit", sortable: true },
-    { name: "Vendor Name", field: "hod", sortable: true },
+    // { name: "Vendor Email", field: "unit", sortable: true },
+    // { name: "Vendor Name", field: "hod", sortable: true },
     { name: "Comments", field: "unit", sortable: true },
     { name: "Status", field: "hod", sortable: true },
     { name: "Created Date", field: "hod", sortable: true },
@@ -504,8 +504,8 @@ const FetchVendorQuotation = () => {
                           </td>
                           <td>{item.caseId}</td>
                           <td>{numberWithCommas(item.totalAmount)}</td>
-                          <td>{item.email}</td>
-                          <td>{item.name}</td>
+                          {/* <td>{item.email}</td>
+                          <td>{item.name}</td> */}
                           <td>{item.comment}</td>
                           <td>{item.status}</td>
                           <td>{new Date(item.createdAt).toLocaleString()}</td>

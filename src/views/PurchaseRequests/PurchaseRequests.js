@@ -40,14 +40,15 @@ function PurchaseRequests() {
 				setRequests(data);
 			});
 		} else {
-			axios.get('/v1/request/getRequestBydepartmentId/'+departmentId)
-			// axios
-			// 	.get(
-			// 		"http://localhost:3050/api/v1/request/getRequestBydepartmentId/" +
-			// 			departmentId
-			// 	)
+			axios
+				.get("/v1/request/getRequestBydepartmentId/" + departmentId)
+				// axios
+				// 	.get(
+				// 		"http://localhost:3050/api/v1/request/getRequestBydepartmentId/" +
+				// 			departmentId
+				// 	)
 				.then((res) => {
-					console.log("result...Request",res)
+					console.log("result...Request", res);
 					const data = res.data.data.data.map((request) => {
 						let reviewStatusReadable;
 						const reviewStatus = request.reviewStatus;
@@ -59,6 +60,9 @@ function PurchaseRequests() {
 					});
 
 					setRequests(data);
+				})
+				.catch((err) => {
+					console.log(err);
 				});
 		}
 	};
