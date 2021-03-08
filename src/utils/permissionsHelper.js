@@ -1,7 +1,7 @@
 import roles from '../roles-actions';
 import auth from '../auth/auth-helper';
 
-const checkPageAccess = (path, permittedPages) => {  
+const checkPageAccess = (path, permittedPages) => {
     let isUserAuthorised = false;  
     let url = path.replace(/\//g, "").replace(/\admin/g, "");
     let allowedActions = [];
