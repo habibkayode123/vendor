@@ -248,7 +248,7 @@ export default [
       },
       {
         name: "view-qoutations",
-        active: false,
+        active: true,
       },
     ],
   },
