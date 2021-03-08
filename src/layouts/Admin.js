@@ -99,8 +99,12 @@ function Admin() {
   };
   const fetchBudgets = () => {
     getBudgetByDepartment(userDepartment).then((res) => {
-      // console.log("budgets", res.data);
-      setBudgets(res.data);
+      console.log("budgets", res.data);
+      if (res.data) {
+        setBudgets(res.data);
+      } else {
+        setBudgets([]);
+      }
     });
   };
 
