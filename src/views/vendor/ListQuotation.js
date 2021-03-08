@@ -165,7 +165,7 @@ const ListQuotation = () => {
                           </td>
                           <td>{item.caseId}</td>
                           <td>{numberWithCommas(item.totalAmount)}</td>
-                          <td>{item.email}</td>
+                          <td>{item.createBy}</td>
                           <td>{item.name}</td>
                           <td>{item.comment}</td>
                           <td>
