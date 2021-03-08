@@ -16,7 +16,7 @@ import auth from 'auth/auth-helper';
 import {toast } from 'react-toastify';
 
 function SingleLog(props) {
-    console.log("props...",props)
+    // console.log("props...",props)
     const init = {
         vendorId: '',
         name: '',
