@@ -17,12 +17,12 @@ function ApproveRequest(props) {
 					// { t: jwt.token }
 				).then((data) => {
 					console.log("...Data from approve request", data);
-					if (data.error) {
-						console.log(data.error);
-					} else {
-						setOpen(false);
-						props.onRemove(props.auction);
-					}
+					// if (data.error) {
+					// 	console.log(data.error);
+					// } else {
+					// 	setOpen(false);
+					// 	props.onRemove(props.auction);
+					// }
 				});
 			};
 

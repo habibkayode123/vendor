@@ -1,4 +1,4 @@
-const listRequests = async (payload,signal) => {
+const listRequests = async (payload) => {
 	try {
 		let response = await fetch(
 			"http://localhost:3050/api/v1/request/getRequestApprover",
