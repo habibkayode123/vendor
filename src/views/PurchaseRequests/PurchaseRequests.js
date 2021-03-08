@@ -47,7 +47,7 @@ function PurchaseRequests() {
 			// 			departmentId
 			// 	)
 				.then((res) => {
-					console.log("result",res)
+					console.log("result...Request",res)
 					const data = res.data.data.data.map((request) => {
 						let reviewStatusReadable;
 						const reviewStatus = request.reviewStatus;

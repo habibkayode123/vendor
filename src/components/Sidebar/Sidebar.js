@@ -73,6 +73,19 @@ function Sidebar({ color, image, routes }) {
                   </NavLink>
                 </li>
               )}
+              {checkAccess("view-purchase-requests") && (
+                <li className="nav-item">
+                  <NavLink
+                    to="/admin/purchase/requests"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Purchase Request</p>
+                  </NavLink>
+                </li>
+              )}
               {checkAccess("view-requests") && (
                 <li className="nav-item">
                   <NavLink
