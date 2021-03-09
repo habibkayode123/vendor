@@ -276,7 +276,7 @@ function PurchaseRequest({ handleUpdate }) {
 										);
 									})} */}
                       <Button
-                        // disabled={expenseTypes.length === 0}
+                        disabled={expenseTypes.length === 0}
                         className="btn-fill"
                         onClick={handleAddClick}
                         variant="info"

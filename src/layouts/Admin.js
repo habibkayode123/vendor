@@ -100,23 +100,25 @@ function Admin() {
   };
 
   const fetchBudgets = () => {
-    // getBudgetByDepartment(userDepartment).then((res) => {
-    //   console.log("budgets", res.data);
-    //   if (res.data) {
-    //     setBudgets(res.data);
-    //   } else {
-    //     setBudgets([]);
-    //   }
-    // });
-
-    getAllBudget().then((res) => {
-      console.log("budgets", res.data);
-      if (res.data) {
-        setBudgets(res.data);
-      } else {
-        setBudgets([]);
-      }
-    });
+    if (auth.isAuthenticated().user.role === "Procurement Team") {
+      getAllBudget().then((res) => {
+        console.log("budgets", res.data);
+        if (res.data) {
+          setBudgets(res.data);
+        } else {
+          setBudgets([]);
+        }
+      });
+    } else {
+      getBudgetByDepartment(userDepartment).then((res) => {
+        console.log("budgets", res.data);
+        if (res.data) {
+          setBudgets(res.data);
+        } else {
+          setBudgets([]);
+        }
+      });
+    }
   };
 
   useEffect(() => {
