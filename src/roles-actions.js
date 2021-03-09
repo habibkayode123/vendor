@@ -219,8 +219,8 @@ export default [
     ],
     sidebar: [
       {
-        name: "raise-request",
-        active: false,
+        name: "qoutation-list",
+        active: true,
       },
       {
         name: "view-requests",
