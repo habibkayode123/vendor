@@ -125,7 +125,7 @@ const ListQuotation = () => {
     const abortController = new AbortController();
     const signal = abortController.signal;
     fetchVedorQuotation(signal);
-  }, [vendorQuotation]);
+  }, []);
 
   useEffect(() => {
     let lastIndex = currentPage * ITEMS_PER_PAGE;
