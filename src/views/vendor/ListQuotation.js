@@ -20,10 +20,10 @@ import {
 } from "react-bootstrap";
 
 const STATUS = {
-  APPROVED: "Approved",
-  REJECTED: "Rejected",
-  ALL: "all",
-  PENDING: "Pending",
+	APPROVED: "Approved",
+	REJECTED: "Rejected",
+	ALL: "all",
+	PENDING: "Pending",
 };
 
 let ITEMS_PER_PAGE = 10;
@@ -58,45 +58,49 @@ const ListQuotation = () => {
 		});
 	};
 
-  const handleApprove = () => {
-    if (approvalComment.length > 3) {
-      let payload = {
-        status: "Approved",
-        approvalComment: approvalComment,
-      };
-      approveQuotation(clickId, payload)
-        .then((res) => {
-          console.log(res.data, "approved");
-          toast.success("Quotation has been Approved successfully");
-          setVendorQuotation((prev) => {
-            let newState = prev.map((i) => {
-              let newObj = i;
-              if (newObj.id === clickId) {
-                newObj.status = STATUS.APPROVED;
-                console.log("ok i in");
-              }
-              return newObj;
-            });
-            return newState;
-          });
-          handleClose();
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("An Error Occur while rejection");
-          handleClose();
-        });
-    } else {
-      setApprovalCommentError(true);
-    }
-  };
+	const handleApprove = () => {
+		if (approvalComment.length > 3) {
+			let payload = {
+				status: "Approved",
+				approvalComment: approvalComment,
+			};
+			approveQuotation(clickId, payload)
+				.then((res) => {
+					console.log(res.data, "approved");
+					toast.success("Quotation has been Approved successfully");
+					setVendorQuotation((prev) => {
+						let newState = prev.map((i) => {
+							let newObj = i;
+							if (newObj.id === clickId) {
+								newObj.status = STATUS.APPROVED;
+								console.log("ok i in");
+							}
+							return newObj;
+						});
+						return newState;
+					});
+					handleClose();
+				})
+				.catch((error) => {
+					console.log(error);
+					toast.error("An Error Occur while rejection");
+					handleClose();
+				});
+		} else {
+			setApprovalCommentError(true);
+		}
+	};
 
 	const handleRejection = (item) => {
-		rejectQuotation(item.id)
+		let payload = {
+			status: "Rejected",
+			approvalComment: "...latessome comments",
+			// approvalComment: approvalComment,
+		};
+		rejectQuotation(item.id, payload)
 			.then((res) => {
 				console.log(res.data);
 				toast.success("Quotation has been Rejected");
-
 				handleClose();
 			})
 			.catch((error) => {
@@ -121,7 +125,7 @@ const ListQuotation = () => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
 		fetchVedorQuotation(signal);
-	}, []);
+	}, [vendorQuotation]);
 
 	useEffect(() => {
 		let lastIndex = currentPage * ITEMS_PER_PAGE;
@@ -130,77 +134,98 @@ const ListQuotation = () => {
 		setDisplayData(newData);
 	}, [currentPage, vendorQuotation]);
 
-  return (
-    <div>
-      <Container fluid>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header className="d-flex justify-content-between">
-                <Card.Title as="h4">List Of Quotations</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <div className="d-flex justify-content-center">
-                  <Pagination
-                    total={totalItems}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    currentPage={currentPage}
-                    onPageChange={(page) => setCurrentPage(page)}
-                  />
-                </div>
-                <Table responsive>
-                  <TableHeader
-                    headers={headers}
-                    onSorting={(field, order) => setSorting({ field, order })}
-                  />
-                  <tbody>
-                    {displayData.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>
-                            {index +
-                              1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
-                              1}
-                          </td>
-                          <td>{item.caseId}</td>
-                          <td>{numberWithCommas(item.totalAmount)}</td>
-                          {/* {<td>{item.createBy}</td>
+	return (
+		<div>
+			<Container fluid>
+				<Row>
+					<Col md="12">
+						<Card>
+							<Card.Header className="d-flex justify-content-between">
+								<Card.Title as="h4">List Of Quotations</Card.Title>
+							</Card.Header>
+							<Card.Body>
+								<div className="d-flex justify-content-center">
+									<Pagination
+										total={totalItems}
+										itemsPerPage={ITEMS_PER_PAGE}
+										currentPage={currentPage}
+										onPageChange={(page) => setCurrentPage(page)}
+									/>
+								</div>
+								<Table responsive>
+									<TableHeader
+										headers={headers}
+										onSorting={(field, order) => setSorting({ field, order })}
+									/>
+									<tbody>
+										{displayData.map((item, index) => {
+											return (
+												<tr key={index}>
+													<td>
+														{index +
+															1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
+															1}
+													</td>
+													<td>{item.caseId}</td>
+													<td>{numberWithCommas(item.totalAmount)}</td>
+													{/* {<td>{item.createBy}</td>
                           <td>{item.name}</td>} */}
-                          <td>{item.comment}</td>
-                          <td>
-                            {new Date(item.createdAt).toLocaleDateString()},{" "}
-                            {new Date(item.createdAt).toLocaleTimeString()}
-                          </td>
-                          <td>
-                            {item.status === STATUS.APPROVED ? (
-                              "Approved"
-                            ) : (
-                              <>
-                                <Button
-                                  variant="success"
-                                  className="mr-4"
-                                  onClick={() => approveClick(item.id)}
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  variant="danger"
-                                  onClick={() => handleRejection(item)}
-                                >
-                                  Reject
-                                </Button>
-                              </>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+													<td>{item.comment}</td>
+													<td>
+														{new Date(item.createdAt).toLocaleDateString()},{" "}
+														{new Date(item.createdAt).toLocaleTimeString()}
+													</td>
+
+													<td>
+														{item.status === STATUS.REJECTED && "Rejected"}
+														{item.status === STATUS.APPROVED && "Approved"}
+														{item.status !== STATUS.REJECTED &&
+															item.status !== STATUS.APPROVED && (
+																<>
+																	<Button
+																		variant="success"
+																		className="mr-4"
+																		onClick={() => approveClick(item.id)}
+																	>
+																		Approve
+																	</Button>
+																	<Button
+																		variant="danger"
+																		onClick={() => handleRejection(item)}
+																	>
+																		Reject
+																	</Button>
+																</>
+															)}
+														{/* {item.status === STATUS.APPROVED ? (
+															"Approved"
+														) : (
+															<>
+																<Button
+																	variant="success"
+																	className="mr-4"
+																	onClick={() => approveClick(item.id)}
+																>
+																	Approve
+																</Button>
+																<Button
+																	variant="danger"
+																	onClick={() => handleRejection(item)}
+																>
+																	Reject
+																</Button>
+															</>
+														)} */}
+													</td>
+												</tr>
+											);
+										})}
+									</tbody>
+								</Table>
+							</Card.Body>
+						</Card>
+					</Col>
+				</Row>
 
 				<Modal show={show} onHide={handleClose}>
 					<Modal.Header closeButton>

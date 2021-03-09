@@ -63,6 +63,7 @@ function Admin() {
 	const [color, setColor] = useState("black");
 	const [hasImage, setHasImage] = useState(true);
 	const [budgets, setBudgets] = useState([]);
+	const [deptId,setDeptId] = useState("")
 	const location = useLocation();
 	const mainPanel = React.useRef(null);
 	const getRoutes = (routes) => {
@@ -97,6 +98,8 @@ function Admin() {
   let userDepartment = {
     departmentId: auth.isAuthenticated().user.departmentId,
   };
+
+  
   const fetchBudgets = () => {
     getBudgetByDepartment(userDepartment).then((res) => {
       console.log("budgets", res.data);
@@ -191,6 +194,7 @@ function Admin() {
 										path="/admin/purchase/request/logs/:uuid"
 										render={(props) => (
 											<SingleLog
+												// deptId= {}
 												setBudgets={(totalAmount, expId) =>
 													setBudgets((prev) => {
 														let newState = prev.map((i) => {

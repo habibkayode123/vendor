@@ -1,44 +1,64 @@
 export default [
-	{
-		role: "Requestor",
-		pages: [
-			{
-				url: "purchase",
-				actions: [
-					{
-						name: "purchase",
-						active: true,
-					},
-				],
-			},
-			{
-				url: "budget",
-				actions: [
-					{
-						name: "add-budget",
-						active: true,
-					},
-					{
-						name: "top-up",
-						active: true,
-					},
-				],
-			},
-			{
-				url: "purchaserequests:uuid",
-				actions: [
-					{
-						name: "review",
-						active: false,
-					},
-					{
-						name: "approve",
-						active: false,
-					},
-					{
-						name: "quote",
-						active: false,
-					},
+  {
+    role: "Procurement Team",
+    pages: [
+      {
+        url: "purchaserequestlogs",
+        actions: [
+          {
+            name: "Logs",
+            active: true,
+          },
+        ],
+      },
+    ],
+    sidebar: [
+      {
+        name: "view-requests-pro",
+        active: true,
+      },
+    ],
+  },
+  {
+    role: "Requestor",
+    pages: [
+      {
+        url: "purchase",
+        actions: [
+          {
+            name: "purchase",
+            active: true,
+          },
+        ],
+      },
+      {
+        url: "budget",
+        actions: [
+          {
+            name: "add-budget",
+            active: true,
+          },
+          {
+            name: "top-up",
+            active: true,
+          },
+        ],
+      },
+      {
+        url: "purchaserequests:uuid",
+        actions: [
+          {
+            name: "review",
+            active: false,
+          },
+          {
+            name: "approve",
+            active: false,
+          },
+          {
+            name: "quote",
+            active: false,
+          },
 
 					{
 						name: "invoice",

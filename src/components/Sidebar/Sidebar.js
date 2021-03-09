@@ -61,7 +61,7 @@ function Sidebar({ color, image, routes }) {
               )}
 
               {auth.isAuthenticated().user.role !== "CFO" &&
-                checkAccess("view-requests") && (
+                checkAccess("view-requests-pro") && (
                   <li className="nav-item">
                     <NavLink
                       to="/admin/purchase/request/logs"

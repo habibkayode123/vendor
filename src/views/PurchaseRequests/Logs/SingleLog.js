@@ -24,6 +24,7 @@ function SingleLog(props) {
     amount: "",
   };
   const [log, setLog] = useState({ amount: 0 });
+  const [depLog,setDeptLog]=useState("");
   const [vendors, setVendors] = useState([]);
   const [values, setValues] = useState(init);
   const [items, setItems] = useState([]);
@@ -38,13 +39,16 @@ function SingleLog(props) {
     const uuid = props.match.params.uuid;
     axios.get(`/v1/log/${uuid}`).then((res) => {
       console.log("singleLog", res.data.data);
+      console.log("singleLogDeptId", res.data.data.data.departmentId);
       setExpenseTypeId(res.data.data.data.expenseTypeId);
       setLog(res.data.data.data);
+      setDeptLog(res.data.data.data.departmentId);
     });
   };
 
   const fetchVendors = () => {
     axios.get("/v1/vendor").then((res) => {
+      console.log(res.data, "vendor");
       setVendors(res.data.data);
     });
   };

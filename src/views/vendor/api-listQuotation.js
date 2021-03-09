@@ -22,17 +22,19 @@ const approveQuotation = async (id, payload) => {
   }
 };
 
-const rejectQuotation = async (id) => {
+const rejectQuotation = async (id,payload) => {
   try {
     let response = await fetch(
-      `http://localhost:3050/vquotation/approve/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + auth.isAuthenticated().token,
-        },
-      }
-    );
+			`http://localhost:3050/api/vquotation/approve/${id}`,
+			{
+				method: "PUT",
+				headers: {
+					Authorization: "Bearer " + auth.isAuthenticated().token,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(payload),
+			}
+		);
     return await response.json();
   } catch (err) {
     throw err;
