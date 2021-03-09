@@ -60,32 +60,20 @@ function Sidebar({ color, image, routes }) {
                 </li>
               )}
 
-              {checkAccess("view-requests") && (
-                <li className="nav-item">
-                  <NavLink
-                    to="/admin/purchase/request/logs"
-                    className="nav-link"
-                    activeClassName="active"
-                    exact
-                  >
-                    <i className={""} />
-                    <p>Requests Logs</p>
-                  </NavLink>
-                </li>
-              )}
-              {checkAccess("view-purchase-requests") && (
-                <li className="nav-item">
-                  <NavLink
-                    to="/admin/purchase/requests"
-                    className="nav-link"
-                    activeClassName="active"
-                    exact
-                  >
-                    <i className={""} />
-                    <p>Purchase Request</p>
-                  </NavLink>
-                </li>
-              )}
+              {auth.isAuthenticated().user.role !== "CFO" &&
+                checkAccess("view-requests") && (
+                  <li className="nav-item">
+                    <NavLink
+                      to="/admin/purchase/request/logs"
+                      className="nav-link"
+                      activeClassName="active"
+                      exact
+                    >
+                      <i className={""} />
+                      <p>Requests Logs</p>
+                    </NavLink>
+                  </li>
+                )}
               {checkAccess("view-requests") && (
                 <li className="nav-item">
                   <NavLink

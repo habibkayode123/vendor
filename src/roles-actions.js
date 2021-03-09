@@ -210,59 +210,79 @@ export default [
 						active: true,
 					},
 
-					{
-						name: "invoice",
-						active: false,
-					},
-				],
-			},
-		],
-		sidebar: [
-			{
-				name: "view-purchase-requests",
-				active: true,
-			},
-			// {
-			//   name: "view-requests",
-			//   active: true,
-			// },
-			{
-				name: "view-qoutations",
-				active: true,
-			},
-		],
-	},
-	{
-		role: "Business Unit Head",
-		pages: [
-			{
-				url: "purchase",
-				actions: [
-					{
-						name: "purchase",
-						active: true,
-					},
-				],
-			},
-			{
-				url: "budget",
-				actions: [],
-			},
-			{
-				url: "purchaserequests:uuid",
-				actions: [
-					{
-						name: "review",
-						active: true,
-					},
-					{
-						name: "approve",
-						active: false,
-					},
-					{
-						name: "quote",
-						active: false,
-					},
+          {
+            name: "invoice",
+            active: false,
+          },
+        ],
+      },
+    ],
+    sidebar: [
+      {
+        name: "qoutation-list",
+        active: true,
+      },
+      {
+        name: "view-requests",
+        active: true,
+      },
+      {
+        name: "view-budgets",
+        active: true,
+      },
+      {
+        name: "add-department",
+        active: false,
+      },
+      {
+        name: "view-departments",
+        active: false,
+      },
+      {
+        name: "add-budget",
+        active: true,
+      },
+      {
+        name: "manage-users",
+        active: false,
+      },
+      {
+        name: "view-qoutations",
+        active: true,
+      },
+    ],
+  },
+  {
+    role: "Business Unit Head",
+    pages: [
+      {
+        url: "purchase",
+        actions: [
+          {
+            name: "purchase",
+            active: true,
+          },
+        ],
+      },
+      {
+        url: "budget",
+        actions: [],
+      },
+      {
+        url: "purchaserequests:uuid",
+        actions: [
+          {
+            name: "review",
+            active: true,
+          },
+          {
+            name: "approve",
+            active: false,
+          },
+          {
+            name: "quote",
+            active: false,
+          },
 
 					{
 						name: "invoice",
