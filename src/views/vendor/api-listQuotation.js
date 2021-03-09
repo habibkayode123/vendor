@@ -1,14 +1,15 @@
 import auth from "../../auth/auth-helper";
 
 const approveQuotation = async (id, payload) => {
-  console.log("token vendor");
+  console.log("token vendor", auth.isAuthenticated().token);
   try {
     let response = await fetch(
       `http://localhost:3050/api/vquotation/approve/${id}`,
       {
         method: "PUT",
         headers: {
-          Authorization: "Bearer " + auth.isAuthenticatedVendor().token,
+          Authorization: "Bearer " + auth.isAuthenticated().token,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       }
@@ -28,7 +29,7 @@ const rejectQuotation = async (id) => {
       {
         method: "PUT",
         headers: {
-          Authorization: "Bearer " + auth.isAuthenticatedVendor().token,
+          Authorization: "Bearer " + auth.isAuthenticated().token,
         },
       }
     );

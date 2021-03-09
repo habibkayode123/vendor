@@ -20,7 +20,7 @@ import {
 } from "react-bootstrap";
 
 const STATUS = {
-  APPROVED: "aprroved",
+  APPROVED: "Approved",
   REJECTED: "Rejected",
   ALL: "all",
   PENDING: "Pending",
@@ -66,7 +66,7 @@ const ListQuotation = () => {
       };
       approveQuotation(clickId, payload)
         .then((res) => {
-          console.log(res.data);
+          console.log(res.data, "approved");
           toast.success("Quotation has been Approved successfully");
           setVendorQuotation((prev) => {
             let newState = prev.map((i) => {
@@ -155,7 +155,6 @@ const ListQuotation = () => {
                   />
                   <tbody>
                     {displayData.map((item, index) => {
-                      console.log(item, index);
                       return (
                         <tr key={index}>
                           <td>
