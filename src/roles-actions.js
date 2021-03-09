@@ -1,5 +1,25 @@
 export default [
   {
+    role: "Procurement Team",
+    pages: [
+      {
+        url: "purchaserequestlogs",
+        actions: [
+          {
+            name: "Logs",
+            active: true,
+          },
+        ],
+      },
+    ],
+    sidebar: [
+      {
+        name: "view-requests-pro",
+        active: true,
+      },
+    ],
+  },
+  {
     role: "Requestor",
     pages: [
       {

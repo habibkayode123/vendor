@@ -45,6 +45,7 @@ function SingleLog(props) {
 
   const fetchVendors = () => {
     axios.get("/v1/vendor").then((res) => {
+      console.log(res.data, "vendor");
       setVendors(res.data.data);
     });
   };
