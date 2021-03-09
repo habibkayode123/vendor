@@ -12,12 +12,14 @@ const UploadQuotation = () => {
     comment: "",
     totalAmount: 0,
     caseId: "",
+    orderId: "",
   });
   const [formError, setformError] = useState({
     comment: true,
     totalAmount: true,
     caseId: true,
     file: true,
+    orderId: true,
   });
 
   const handleOnChange = ({ target }) => {
@@ -45,6 +47,8 @@ const UploadQuotation = () => {
       setformError((prev) => ({ ...prev, comment: true }));
     if (formData.caseId.length < 2)
       setformError((prev) => ({ ...prev, caseId: true }));
+    if (formData.orderId.length < 2)
+      setformError((prev) => ({ ...prev, caseId: true }));
     if (!file) setformError((prev) => ({ ...prev, file: true }));
     console.log(formError);
     if (
@@ -68,6 +72,7 @@ const UploadQuotation = () => {
       payload.append("totalAmount", formData.totalAmount);
       payload.append("quotationFile", file);
       payload.append("caseId", formData.caseId);
+      payload.append("orderId", formData.orderId);
 
       let token = auth.isAuthenticatedVendor().token;
 
@@ -114,6 +119,19 @@ const UploadQuotation = () => {
                     <ErrorMessage
                       status={formError.caseId}
                       message={"please input a valid Case Id"}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="orderId">
+                    <Form.Label>Order ID</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="orderId"
+                      value={formData.orderId}
+                      onChange={handleOnChange}
+                    />
+                    <ErrorMessage
+                      status={formError.orderId}
+                      message={"please input a valid Order Id"}
                     />
                   </Form.Group>
                   <Form.Group controlId="totalAmount">
