@@ -16,7 +16,7 @@ import auth from "auth/auth-helper";
 import { toast } from "react-toastify";
 
 function SingleLog(props) {
-  console.log("props...",props)
+  console.log("props...", props);
   const init = {
     vendorId: "",
     name: "",
@@ -24,7 +24,7 @@ function SingleLog(props) {
     amount: "",
   };
   const [log, setLog] = useState({ amount: 0 });
-  const [depLog,setDeptLog]=useState("");
+  const [departmentId, setDepartmentId] = useState("");
   const [vendors, setVendors] = useState([]);
   const [values, setValues] = useState(init);
   const [items, setItems] = useState([]);
@@ -37,12 +37,14 @@ function SingleLog(props) {
 
   const fetchLog = () => {
     const uuid = props.match.params.uuid;
+    console.log(props, "all Props");
     axios.get(`/v1/log/${uuid}`).then((res) => {
       console.log("singleLog", res.data.data);
       console.log("singleLogDeptId", res.data.data.data.departmentId);
-      setExpenseTypeId(res.data.data.data.expenseTypeId);
+      // setExpenseTypeId(res.data.data.data.expenseTypeId);
+      setExpenseTypeId(props.location.state.expenseTypeId);
       setLog(res.data.data.data);
-      setDeptLog(res.data.data.data.departmentId);
+      setDepartmentId(props.location.state.departmentId);
     });
   };
 
@@ -70,12 +72,12 @@ function SingleLog(props) {
         items: newItems,
       };
     });
-
+    console.log(items, "items");
     const payload = {
       total: items.reduce((a, c) => a + parseFloat(c.amount), 0).toString(),
       logId: log.id,
-      departmentId: log.departmentId,
-      expenseTypeId: log.expenseTypeId,
+      departmentId: departmentId,
+      expenseTypeId: expenseTypeId,
       orders: data,
       requestedBy: auth.isAuthenticated().user.email.split("@")[0],
       userId: auth.isAuthenticated().user.id,
@@ -98,7 +100,8 @@ function SingleLog(props) {
   };
 
   const handleAddItem = () => {
-    setItems([...items, values]);
+    let newValues = { ...values, amount: log.amount };
+    setItems([...items, newValues]);
     setValues(init);
   };
 

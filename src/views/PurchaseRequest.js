@@ -41,7 +41,7 @@ function PurchaseRequest({ handleUpdate }) {
       departmentId: auth.isAuthenticated().user.departmentId,
     }).then((res) => {
       let data;
-      console.log("newLog", res);
+      console.log("newLog", res.data);
       if (res.data.length > 0) {
         data = res.data.map((datum) => {
           return {
@@ -52,6 +52,7 @@ function PurchaseRequest({ handleUpdate }) {
       } else {
         data = [];
       }
+      console.log(data, "final datat");
 
       setExpenseTypes(data);
     });
@@ -141,6 +142,12 @@ function PurchaseRequest({ handleUpdate }) {
               <Card.Body>
                 <Row>
                   <Col md={{ span: 4 }}>
+                    {expenseTypes.length === 0 && (
+                      <p className="text-danger">
+                        Budget not available yet.Purchase request cannot be
+                        raised at the moment
+                      </p>
+                    )}{" "}
                     <Form onSubmit={handlePurchase}>
                       <Form.Group controlId="narration">
                         <Form.Label>Narration</Form.Label>
@@ -269,6 +276,7 @@ function PurchaseRequest({ handleUpdate }) {
 										);
 									})} */}
                       <Button
+                        // disabled={expenseTypes.length === 0}
                         className="btn-fill"
                         onClick={handleAddClick}
                         variant="info"
