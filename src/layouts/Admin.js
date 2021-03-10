@@ -208,10 +208,8 @@ function Admin() {
                         setBudgets={(totalAmount, expId) =>
                           setBudgets((prev) => {
                             let newState = prev.map((i) => {
-                              console.log("iiiiiiiiiiiiii", i);
                               let newObj = i;
                               if (i.expenseTypeId == expId) {
-                                console.log("exptypeiiiii", expId);
                                 newObj.amount = i.amount - totalAmount;
                               }
                               return newObj;

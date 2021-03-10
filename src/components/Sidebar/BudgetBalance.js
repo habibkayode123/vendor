@@ -6,7 +6,6 @@ import auth from "../../auth/auth-helper";
 import { numberWithCommas } from "../../helpers";
 
 function BudgetBalance(props) {
-  console.log("In BudgetBalance", props.budgets);
   const [budgets, setBudgets] = useState([]);
   const [active, setActive] = useState("");
   let userDepartment = {
@@ -43,7 +42,6 @@ function BudgetBalance(props) {
       {/* <h5>Budget Balances</h5> */}
       {props.budgets.length > 0
         ? props.budgets.map((budget) => {
-            console.log("expenseTypeBudgets", props.budgets);
             return (
               <div className="mt-3" key={budget.id}>
                 <h5>{numberWithCommas(budget.amount)}</h5>

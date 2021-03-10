@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../../../axios";
 import { toast } from "react-toastify";
 import ItemsTable from "./ItemsTable";
+import { useHistory } from "react-router-dom";
 import {
 	Card,
 	Container,
@@ -29,7 +30,7 @@ function SinglePurchaseRequest({ match, actions }) {
 		comment: "",
 	});
 	const [shouldReload, setShouldReload] = useState(false);
-
+	const history = useHistory();
 	const handleOnChange = ({ target }) => {
 		setReviewData({ ...reviewData, [target.name]: target.value });
 	};
@@ -38,9 +39,14 @@ function SinglePurchaseRequest({ match, actions }) {
 		return actions.includes(action);
 	};
 
+	const cancelRequest = () => {
+
+	}
+
 	const handleSubmitReview = () => {
 		let data = {
 			id: match.params.uuid,
+			userId: auth.isAuthenticated().user.id
 		};
 
 		let url;
@@ -61,15 +67,19 @@ function SinglePurchaseRequest({ match, actions }) {
 				data = {
 					...data,
 					approvedBy: userName,
-					approvalComment: reviewData.comment,
-					approvalStatus: reviewData.status,
+					approvalComment: showModal.type == 'Cancel' ? 'Cancelled' : reviewData.comment,
+					approvalStatus: reviewData.status
 				};
 		}
 
 		axios.patch(url, data).then((res) => {
 			toast.success(res.data.message);
 			handleClose();
-			setShouldReload(!shouldReload);
+			if (showModal.type == 'Cancel')
+				history.push('/admin/purchase/requests');
+			else
+				setShouldReload(!shouldReload);
+
 		});
 	};
 
@@ -105,7 +115,9 @@ function SinglePurchaseRequest({ match, actions }) {
 					data.reviewStatusReadable = "Declined";
 				}
 				if (data.approvalStatus == 2) data.approvalStatusReadable = "Declined";
-				console.log("dara from request single", data);
+				
+				data.hasAlreadyApproved = data.approvals && data.approvals.find(a => a.userId == auth.isAuthenticated().user.id)
+				  
 				let items = [];
 				data.orders.forEach((order) => {
 					let orde = order.items.map((item) => {
@@ -129,6 +141,7 @@ function SinglePurchaseRequest({ match, actions }) {
 			type,
 		});
 		if (type == "Decline") setReviewData({ ...reviewData, status: 2 });
+		else if (type == 'Cancel') setReviewData({ ...reviewData, status: 3 })
 		else setReviewData({ ...reviewData, status: 1 });
 	};
 
@@ -165,14 +178,14 @@ function SinglePurchaseRequest({ match, actions }) {
 								<Card.Title className="d-flex justify-content-between">
 									<h4>Purchase Request: {request.caseId}</h4>
 									<div className="">
-										{!request.reviewDate && isActionAllowed("review") && (
+										{/* {!request.reviewDate && isActionAllowed("review") && (
 											<Button size="sm" onClick={() => handleShow("Review")}>
 												Review
 											</Button>
-										)}
+										)} */}
 										{isActionAllowed("approve") &&
-											request.reviewStatus == 1 &&
-											!request.approvalStatus && (
+											!request.approvalStatus && 
+											!request.hasAlreadyApproved && (
 												<>
 													<Button
 														variant="success"
@@ -183,11 +196,19 @@ function SinglePurchaseRequest({ match, actions }) {
 														Approve
 													</Button>
 													<Button
-														variant="danger"
+														variant="info"
 														size="sm"
+														className="mr-2"
 														onClick={() => handleShow("Decline")}
 													>
 														Decline
+													</Button>
+													<Button
+														variant="danger"
+														size="sm"
+														onClick={() => handleShow("Cancel")}
+													>
+														Cancel
 													</Button>
 												</>
 											)}
@@ -236,7 +257,7 @@ function SinglePurchaseRequest({ match, actions }) {
 								</Row>
 
 								<Row>
-									<Col md="6">
+									{/* <Col md="6">
 										<Accordion defaultActiveKey="0">
 											<Card>
 												<Accordion.Toggle
@@ -276,10 +297,10 @@ function SinglePurchaseRequest({ match, actions }) {
 												)}
 											</Card>
 										</Accordion>
-									</Col>
+									</Col> */}
 
-									{request.reviewStatus == 1 && (
-										<Col md="6">
+									{/* {request.reviewStatus == 1 && ( */}
+										{/* <Col md="12">
 											<Accordion defaultActiveKey="0">
 												<Card>
 													<Accordion.Toggle
@@ -306,9 +327,17 @@ function SinglePurchaseRequest({ match, actions }) {
 																	<Button
 																		size="sm"
 																		variant="danger"
+																		className="mr-2"
 																		onClick={() => handleShow("Decline")}
 																	>
 																		Decline Now
+																	</Button>
+																	<Button
+																		size="sm"
+																		variant="danger"
+																		onClick={() => handleShow("Cancel")}
+																	>
+																		Cancel Now
 																	</Button>
 																</div>
 															)}
@@ -331,8 +360,8 @@ function SinglePurchaseRequest({ match, actions }) {
 													)}
 												</Card>
 											</Accordion>
-										</Col>
-									)}
+										</Col> */}
+									{/* )} */}
 								</Row>
 								<Row>
 									<Col md="5">
@@ -386,7 +415,11 @@ function SinglePurchaseRequest({ match, actions }) {
 					<Modal.Title>{showModal.type} Request</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<Form>
+						{
+							showModal.type == "Cancel" && <p>Are you sure?</p>
+						}
+					{
+						showModal.type != "Cancel" && <Form>
 						<Form.Group controlId="reviewStatus">
 							<Form.Label hidden={showModal.type !== "Review"}>
 								Status
@@ -413,13 +446,14 @@ function SinglePurchaseRequest({ match, actions }) {
 							/>
 						</Form.Group>
 					</Form>
+				}
 				</Modal.Body>
 				<Modal.Footer>
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>
 					<Button variant="primary" onClick={handleSubmitReview}>
-						Submit
+						{ showModal.type == 'Cancel' ? 'Cancel' : 'Submit' }
 					</Button>
 				</Modal.Footer>
 			</Modal>

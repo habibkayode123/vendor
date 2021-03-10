@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../../axios";
+import { useHistory } from "react-router-dom";
 import {
   Card,
   Container,
@@ -34,6 +35,8 @@ function SingleLog(props) {
     console.log("Targets", target);
     setValues({ ...values, [target.name]: target.value });
   };
+
+  const history = useHistory();
 
   const fetchLog = () => {
     const uuid = props.match.params.uuid;
@@ -93,9 +96,10 @@ function SingleLog(props) {
         toast.success(res.data.message);
         setItems([]);
         setValues(init);
+        history.push('/admin/purchase/request/logs');
       })
       .catch((err) => {
-        console.log("Payload From singleLog", payload, err.response);
+        toast.error(err.response.data.message)
       });
   };
 
