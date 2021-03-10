@@ -75,11 +75,7 @@ function SinglePurchaseRequest({ match, actions }) {
 		axios.patch(url, data).then((res) => {
 			toast.success(res.data.message);
 			handleClose();
-			if (showModal.type == 'Cancel')
-				history.push('/admin/purchase/requests');
-			else
-				setShouldReload(!shouldReload);
-
+			history.push('/admin/purchase/requests');
 		});
 	};
 
@@ -184,7 +180,7 @@ function SinglePurchaseRequest({ match, actions }) {
 											</Button>
 										)} */}
 										{isActionAllowed("approve") &&
-											!request.approvalStatus && 
+											request.approvalStatus == null &&
 											!request.hasAlreadyApproved && (
 												<>
 													<Button
@@ -212,21 +208,7 @@ function SinglePurchaseRequest({ match, actions }) {
 													</Button>
 												</>
 											)}
-										{isActionAllowed("quote") && request.approvalStatus == 1 && (
-											<Button
-												variant="info"
-												size="sm"
-												onClick={handleShowQuotModal}
-											>
-												Request For Quotation
-											</Button>
-										)}
 
-										{isActionAllowed("invoice") && request.approvalStatus == 1 && (
-											<Button variant="success" size="sm">
-												Print Invoice
-											</Button>
-										)}
 									</div>
 								</Card.Title>
 							</Card.Header>
@@ -364,12 +346,12 @@ function SinglePurchaseRequest({ match, actions }) {
 									{/* )} */}
 								</Row>
 								<Row>
-									<Col md="5">
+									<Col md="6">
 										<h5>Items</h5>
 										<ItemsTable items={request.items} />
 									</Col>
 
-									{
+									{/* {
 										<Col md="7">
 											<h5>Quotations</h5>
 
@@ -380,7 +362,6 @@ function SinglePurchaseRequest({ match, actions }) {
 														<th>Amount</th>
 														<th>Requested By</th>
 														<th>Created At</th>
-														{/* <th></th> */}
 													</tr>
 												</thead>
 												<tbody>
@@ -395,15 +376,12 @@ function SinglePurchaseRequest({ match, actions }) {
 																		quot.createdAt
 																	).toLocaleDateString()}
 																</td>
-																{/* <td>
-                                                                <Button size='sm'>Review</Button>
-                                                            </td> */}
 															</tr>
 														))}
 												</tbody>
 											</Table>
 										</Col>
-									}
+									} */}
 								</Row>
 							</Card.Body>
 						</Card>
