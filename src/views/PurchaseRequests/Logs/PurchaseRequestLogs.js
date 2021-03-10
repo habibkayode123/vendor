@@ -21,7 +21,7 @@ function PurchaseRequestLogs() {
   const logsData = useMemo(() => {
     setTotaltems(logs.length);
 
-    return logs
+    return logs.filter(log => log.status !== true)
       .reverse()
       .slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
