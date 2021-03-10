@@ -121,7 +121,7 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/quotations",
+    path: "/quotations-list",
     name: "Quotations",
     icon: "nc-icon nc-bell-55",
     component: ListQuotation,
