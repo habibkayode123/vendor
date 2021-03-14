@@ -2,8 +2,7 @@ import axios from "axios";
 import auth from "./auth/auth-helper";
 
 const instance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "production" ? "" : "http://localhost:3050/api",
+  baseURL: "https://procurementsolution.herokuapp.com/api",
 });
 
 instance.interceptors.request.use(

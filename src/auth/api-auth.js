@@ -1,28 +1,13 @@
-const signin = async (user) => {
-	try {
-		let response = await fetch("http://localhost:3050/api/auth/signin", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(user),
-		});
-		return await response.json();
-	} catch (err) {
-		console.log(err);
-	}
+import axios from '../axios';
+
+const signin = (user) => {
+	return axios.post('/auth/signin', user);
 };
 
-const signout = async () => {
-	try {
-		let response = await fetch("http://localhost:3050/api/auth/signout/", {
-			method: "GET",
-		});
-		return await response.json();
-	} catch (err) {
-		console.log(err);
-	}
+const signout = () => {
+	return axios.get('/auth/signout');
 };
 
 export { signin, signout };
+
+

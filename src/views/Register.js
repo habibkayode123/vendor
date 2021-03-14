@@ -14,35 +14,10 @@ import {
 	Modal,
 	Form,
 } from "react-bootstrap";
-import { makeStyles } from "@material-ui/core/styles";
 import { toast } from "react-toastify";
 import Pagination from "../components/Pagination/Pagination";
+import { trackPromise } from 'react-promise-tracker';
 
-const useStyles = makeStyles((theme) => ({
-	card: {
-		maxWidth: 600,
-		margin: "auto",
-		textAlign: "center",
-		marginTop: theme.spacing(5),
-		paddingBottom: theme.spacing(2),
-	},
-	error: {
-		verticalAlign: "middle",
-	},
-	title: {
-		marginTop: theme.spacing(2),
-		color: theme.palette.openTitle,
-	},
-	textField: {
-		marginLeft: theme.spacing(1),
-		marginRight: theme.spacing(1),
-		width: 300,
-	},
-	submit: {
-		margin: "auto",
-		marginBottom: theme.spacing(2),
-	},
-}));
 export default function Register(props) {
 	const [show, setShow] = useState(false);
 	const [deptValue, setDeptValue] = useState([]);
@@ -80,45 +55,24 @@ export default function Register(props) {
 	};
 	const jwt = auth.isAuthenticated();
 
-	const fetchDepartments = (signal) => {
-		list(signal).then((data) => {
-			if (data && data.error) {
-				console.log("Error", data.error);
-			} else {
-				setDeptValue(data.data);
-			}
+	const fetchDepartments = () => {
+		list().then((res) => {
+			setDeptValue(res.data.data);
 		});
 	};
 
-	const fetchRoles = (signal) => {
-		roleList(
-			{
-				t: jwt.token,
-			},
-			signal
-		).then((data) => {
-			if (data.error) {
-				setValues({ ...values, error: data.error });
-			} else {
-				setRoleValue(data.data);
-			}
+	const fetchRoles = () => {
+		roleList().then((res) => {
+			setRoleValue(res.data.data);
 		});
 	};
 
-	const fetchUsers = (signal) => {
-		userList(
-			{
-				t: jwt.token,
-			},
-			signal
-		).then((data) => {
-			if (data.error) {
-				console.log(data.error);
-				setValues({ ...values, error: data.error });
-			} else {
-				setUserValue(data.data);
-			}
-		});
+	const fetchUsers = () => {
+		trackPromise(
+			userList().then((res) => {
+				setUserValue(res.data.data);
+			})
+		);
 	};
 
 	const usersData = useMemo(() => {
@@ -130,16 +84,9 @@ export default function Register(props) {
 	}, [userValue, currentPage]);
 
 	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
-
-		fetchUsers(signal);
-		fetchDepartments(signal);
-		fetchRoles(signal);
-
-		return function cleanup() {
-			abortController.abort();
-		};
+		fetchUsers();
+		fetchDepartments();
+		fetchRoles();
 	}, [redirect]);
 
 	const handleOnChange = ({ target }) => {
@@ -149,22 +96,15 @@ export default function Register(props) {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-		create(
-			{
-				t: jwt.token,
-			},
-			values
-		).then((data) => {
-			console.log(data);
-			if (data.error) {
-				setValues({ ...values, error: data.error });
-			} else {
+		trackPromise(
+			create(values).then((res) => {
 				setRedirect(!redirect);
-
-				toast.success(data.message);
+				toast.success(res.data.message);
 				handleClose();
-			}
-		});
+			}).catch(err => {
+				setValues({ ...values, error: err.response.data.error });
+			})
+		);
 	};
 	return (
 		<Container fluid>
@@ -208,6 +148,7 @@ export default function Register(props) {
 												<th>Email</th>
 												{/* <th>Department</th> */}
 												<th>Created At</th>
+												<th></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -218,6 +159,9 @@ export default function Register(props) {
 													{/* <td>{user.department}</td> */}
 													<td>
 														{new Date(user.createdOn).toLocaleDateString()}
+													</td>
+													<td>
+														{/* <Button size="sm" variant="info" className="ml-1" onClick={() => handleEdit(requ.id)}>Edit</Button> */}
 													</td>
 												</tr>
 											))}

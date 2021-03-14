@@ -112,8 +112,8 @@ function Admin() {
     } else {
       getBudgetByDepartment(userDepartment).then((res) => {
         console.log("budgets", res.data);
-        if (res.data) {
-          setBudgets(res.data);
+        if (res.data.data) {
+          setBudgets(res.data.data);
         } else {
           setBudgets([]);
         }

@@ -1,27 +1,79 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Card, Container, Row, Col, Table, Button } from "react-bootstrap";
+import { Card, Container, Row, Col, Table, Button, Modal, Form } from "react-bootstrap";
 import Pagination from "../../../components/Pagination/Pagination";
 import axios from "../../../axios";
 import { Link } from "react-router-dom";
 import { numberWithCommas } from "../../../helpers";
+import { trackPromise } from 'react-promise-tracker';
+import { toast } from "react-toastify";
 
 function PurchaseRequestLogs() {
   const [logs, setLogs] = useState([]);
   const [totalItems, setTotaltems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [editing, setEditing] = useState(false);
+  const [data, setData] = useState({
+
+  });
+
+  const handleClose = () => {
+    setEditing(false);
+    setData({});
+  }
+
+  const handleEdit = (id) => {
+    setData(logs.find(log => log.id == id));
+    setEditing(true);
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const dat = {
+      narration: data.narration,
+      amount: data.amount
+    };
+
+    trackPromise(
+      axios.patch(`/v1/log/${data.id}`, dat).then(res => {
+        handleClose();
+        toast.success(res.data.message);
+        fetchLogs();
+      }).catch(err => {
+        console.log(err.response);
+      })
+    );
+  }
+
+  const handleDelete = (id) => {
+    trackPromise(
+      axios.delete(`/v1/log/${id}`).then(res => {
+        toast.success(res.data.message);
+        fetchLogs();
+      }).catch(err => {
+        console.log(err.response);
+      })
+    );
+  }
+
+  const handleInputChange = ({ target }) => {
+    setData({ ...data, [target.name]: target.value });
+  };
+
   const ITEMS_PER_PAGE = 10;
 
   const fetchLogs = () => {
-    axios.get("/v1/log").then((res) => {
-      console.log("v1/log", res.data.data);
-      setLogs(res.data.data.data);
-    });
+    trackPromise (
+      axios.get("/v1/log").then((res) => {
+        console.log("v1/log", res.data.data);
+        setLogs(res.data.data.data);
+      })
+    );
   };
 
   const logsData = useMemo(() => {
     setTotaltems(logs.length);
 
-    return logs.filter(log => log.status !== true)
+    return logs
       .reverse()
       .slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
@@ -93,6 +145,8 @@ function PurchaseRequestLogs() {
                             >
                               <Button size="sm">View</Button>
                             </Link>
+                            <Button size="sm" variant="info" className="ml-1" onClick={() => handleEdit(request.id)}>Edit</Button>
+                            <Button size="sm" variant="danger" className="ml-1" onClick={() => handleDelete(request.id)}>Delete</Button>
                           </td>
                         </tr>
                       ))}
@@ -102,6 +156,41 @@ function PurchaseRequestLogs() {
               </div>
             </Card.Body>
           </Card>
+          <Modal show={editing} onHide={handleClose}>
+						<Modal.Header closeButton>
+							<Modal.Title>Edit Log</Modal.Title>
+						</Modal.Header>
+
+						<Form onSubmit={handleSubmit}>
+							<Modal.Body>
+								<Form.Group controlId="narration">
+                        <Form.Label>Narration</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          name="narration"
+                          value={data.narration}
+                          onChange={handleInputChange}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="amount">
+                        <Form.Label>Amount</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Enter Amount"
+                          name="amount"
+                          value={data.amount}
+                          onChange={handleInputChange}
+                        />
+                      </Form.Group>
+							</Modal.Body>
+							<Modal.Footer>
+								<Button variant="primary" type="submit">
+									Submit
+								</Button>
+							</Modal.Footer>
+						</Form>
+					</Modal>
         </Col>
       </Row>
     </Container>

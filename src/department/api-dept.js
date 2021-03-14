@@ -1,136 +1,24 @@
-const create = async (credentials, department) => {
-	try {
-		let response = await fetch("http://localhost:3050/api/department", {
-			method: "POST",
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/json",
-				Authorization: "Bearer " + credentials.t,
-			},
-			body: JSON.stringify(department),
-		});
-		return await response.json();
-	} catch (err) {
-		console.log(err);
-	}
-};
-const list = async (signal = null) => {
-	try {
-		let response = await fetch("http://localhost:3050/api/department", {
-			method: "GET",
-			signal: signal,
-		});
-		return await response.json();
-	} catch (err) {
-		console.log(err);
-	}
-};
-const readDepartment = async (params) => {
-	try {
-		let response = await fetch(
-			"http://localhost:3050/api/department/" + params.id,
-			{
-				method: "GET",
-			}
-		);
-		return response.json();
-	} catch (err) {
-		console.log(err);
-	}
+import axios from '../axios';
+
+const create = (department) => {
+	return axios.post('/department', department);
 };
 
-const remove = async (params, credentials) => {
-	try {
-		let response = await fetch(
-			"http://localhost:3050/api/department/" + params.id,
-			{
-				method: "DELETE",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-					Authorization: "Bearer " + credentials.t,
-				},
-			}
-		);
-		return response.json();
-	} catch (err) {
-		console.log(err);
-	}
+const list = () => {
+	return axios.get('/department');
+};
+
+const readDepartment = (params) => {
+	return axios.get('/department/' + params.id);
+};
+
+const remove = (params) => {
+	return axios.delete('/department/' + params.id);
 };
 
 
-const update = async (params, credentials, department) => {
-	try {
-		let response = await fetch(
-			"http://localhost:3050/api/department/" + params.id,
-			{
-				method: "PUT",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-					Authorization: "Bearer " + credentials.t,
-				},
-				body: JSON.stringify(department),
-			}
-		);
-		return response.json();
-	} catch (err) {
-		console.log(err);
-	}
+const update = (params, department) => {
+	return axios.put('/department/' + params.id, department);
 };
+
 export { create, list,readDepartment,remove,update };
-
-// const create = async (credentials, department) => {
-// 	try {
-// 		let response = await fetch("http://localhost:3050/api/department", {
-// 			method: "POST",
-// 			headers: {
-// 				Accept: "application/json",
-// 				"Content-Type": "application/json",
-// 				Authorization: "Bearer " + credentials.t,
-// 			},
-// 			body: JSON.stringify(department),
-// 		});
-// 		return await response.json();
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
-// const list = async (signal) => {
-// 	try {
-// 		let response = await fetch("http://localhost:3050/api/department", {
-// 			method: "GET",
-// 			signal: signal,
-// 		});
-// 		return response.json();
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
-
-
-// const update = async (params, credentials, department) => {
-// 	try {
-// 		let response = await fetch(
-// 			"http://localhost:3050/api/department/" + params.id,
-// 			{
-// 				method: "PUT",
-// 				headers: {
-// 					Accept: "application/json",
-// 					"Content-Type": "application/json",
-// 					Authorization: "Bearer " + credentials.t,
-// 				},
-// 				body: JSON.stringify(department),
-// 			}
-// 		);
-// 		return response.json();
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
-
-
-// export { list, read, create, update, remove };

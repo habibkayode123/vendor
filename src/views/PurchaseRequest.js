@@ -13,6 +13,8 @@ import { toast } from "react-toastify";
 import { connect } from "react-redux";
 import { getBudgetByDepartment } from "../budget/api-budget";
 import auth from "../auth/auth-helper";
+import { trackPromise } from 'react-promise-tracker';
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -27,41 +29,35 @@ function PurchaseRequest({ handleUpdate }) {
     expenseTypeId: "",
   };
   const [inputList, setInputList] = useState([]);
-  const [vendors, setVendors] = useState([]);
   const [expenseTypes, setExpenseTypes] = useState([]);
   const [input, setInput] = useState(init);
 
   useEffect(() => {
-    // fetchVendors();
     fetchBudgets();
   }, []);
 
   const fetchBudgets = () => {
-    getBudgetByDepartment({
-      departmentId: auth.isAuthenticated().user.departmentId,
-    }).then((res) => {
-      let data;
-      console.log("newLog", res.data);
-      if (res.data.length > 0) {
-        data = res.data.map((datum) => {
-          return {
-            name: datum.expenseType.name,
-            id: datum.expenseTypeId,
-          };
-        });
-      } else {
-        data = [];
-      }
-      console.log(data, "final datat");
+    trackPromise (
+      getBudgetByDepartment({
+        departmentId: auth.isAuthenticated().user.departmentId,
+      }).then((res) => {
+        let data;
+        console.log("newLog", res.data);
+        if (res.data.data.length > 0) {
+          data = res.data.data.map((datum) => {
+            return {
+              name: datum.expenseType.name,
+              id: datum.expenseTypeId,
+            };
+          });
+        } else {
+          data = [];
+        }
+        console.log(data, "final datat");
 
-      setExpenseTypes(data);
-    });
-  };
-
-  const fetchVendors = () => {
-    axios.get("/v1/vendor").then((res) => {
-      setVendors(res.data.data);
-    });
+        setExpenseTypes(data);
+      })
+    );
   };
 
   // handle click event of the Remove button
@@ -97,36 +93,21 @@ function PurchaseRequest({ handleUpdate }) {
     });
 
     const newData = data.filter((item) => item.amount != 0);
-    axios
-      .post("/v1/log", newData)
-      .then((res) => {
-        toast.success(res.data.message);
-        setInput(init);
-        setInputList([]);
-      })
-      .catch((err) => {
-        toast.error(err.response.data.message);
-      });
+    trackPromise(
+      axios
+        .post("/v1/log", newData)
+        .then((res) => {
+          toast.success(res.data.message);
+          setInput(init);
+          setInputList([]);
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        })
+    );
   };
 
   const handleInputChange = ({ target }) => {
-    // const list = [...inputList];
-    // if (name === "vendorId") {
-    // 	const vendor = vendors.find((vendor) => vendor.id == value);
-    // 	list[index]["products"] = vendor.products
-    // }
-    // if (name === "name") {
-    // 	const price = list[index]["products"].find(product => product.name === value).price;
-    // 	list[index]["amount"] = price;
-    // 	list[index]["quantity"] = 1;
-    // } else if (name === "quantity") {
-    // 	const price = list[index]["products"]
-    // 		.find(product => product.name === list[index]["name"]).price;
-
-    // 	list[index]["amount"] = price * value;
-    // }
-
-    // list[index][name] = value;
     setInput({ ...input, [target.name]: target.value });
   };
 
