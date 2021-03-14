@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { list } from "./api-vendorQuotation";
+import { list, getQuotationByVendor } from "./api-vendorQuotation";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
 import { numberWithCommas } from "../../helpers";
+import Loading from "../../components/Loading";
 import {
   Card,
   Container,
@@ -333,14 +334,17 @@ const FetchVendorQuotation = () => {
   const [appprovedStatus, setApprovedStatus] = useState(STATUS.ALL);
   const [filterDate, setFileterDate] = useState(0);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [loading, setLoading] = useState(true);
 
   const fetchVedorQuotation = () => {
-    list().then((res) => {
-      console.log("response", res);
-      console.log("Vendor data", res.data);
-      setVendorQuotation(res.data);
-      setVariableData(res.data);
-    });
+    getQuotationByVendor()
+      .then((res) => {
+        console.log("response", res);
+        console.log("Vendor data", res.data);
+        setVendorQuotation(res.data || []);
+        setVariableData(res.data);
+      })
+      .catch((error) => console.log(error, "err in fetch"));
   };
 
   useEffect(() => {
@@ -415,13 +419,16 @@ const FetchVendorQuotation = () => {
   ];
   return (
     <div>
-      <Container fluid>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header className="d-flex justify-content-between">
-                <Card.Title as="h4">Vendors Quotations</Card.Title>
-                {/* {
+      {loading ? (
+        <Loading />
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col md="12">
+              <Card>
+                <Card.Header className="d-flex justify-content-between">
+                  <Card.Title as="h4">Vendors Quotations</Card.Title>
+                  {/* {
                   <div className="buttons">
                     <Button
                       size="sm"
@@ -437,88 +444,89 @@ const FetchVendorQuotation = () => {
                     />
                   </div>
                 }{" "} */}
-              </Card.Header>
-              <Card.Body>
-                <p className="d-flex justify-content-center">Filter By</p>
-                <Row className="d-flex justify-content-center">
-                  <Col sm={6} md={3}>
-                    <Form.Group>
-                      <Form.Label>Status</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={appprovedStatus}
-                        onChange={(e) => {
-                          setApprovedStatus(e.target.value);
-                        }}
-                      >
-                        <option value={STATUS.ALL}>All</option>
-                        <option value={STATUS.APPROVED}>Approved</option>
-                        <option value={STATUS.PENDING}>Pending</option>
-                        <option value={STATUS.REJECTED}>Rejected</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Col>
-                  <Col sm={6} md={3}>
-                    <Form.Group>
-                      <Form.Label>Dates</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={filterDate}
-                        onChange={(e) => {
-                          setFileterDate(e.target.value);
-                        }}
-                      >
-                        <option value={0}>All</option>
-                        <option value={1}>One day ago</option>
-                        <option value={3}>Three days ago</option>
-                        <option value={7}>one week ago</option>
-                        <option value={14}>two week ago</option>
-                        <option value={30}>One month ago</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="d-flex justify-content-center"></div>
-                <div className="d-flex justify-content-center">
-                  <Pagination
-                    total={totalItems}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    currentPage={currentPage}
-                    onPageChange={(page) => setCurrentPage(page)}
-                  />
-                </div>
-                <Table responsive>
-                  <TableHeader
-                    headers={headers}
-                    onSorting={(field, order) => setSorting({ field, order })}
-                  />
-                  <tbody>
-                    {displayData.map((item, index) => {
-                      console.log(item);
-                      return (
-                        <tr key={index}>
-                          <td>
-                            {index +
-                              1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
-                              1}
-                          </td>
-                          <td>{item.caseId}</td>
-                          <td>{numberWithCommas(item.totalAmount)}</td>
-                          {/* <td>{item.email}</td>
+                </Card.Header>
+                <Card.Body>
+                  <p className="d-flex justify-content-center">Filter By</p>
+                  <Row className="d-flex justify-content-center">
+                    <Col sm={6} md={3}>
+                      <Form.Group>
+                        <Form.Label>Status</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={appprovedStatus}
+                          onChange={(e) => {
+                            setApprovedStatus(e.target.value);
+                          }}
+                        >
+                          <option value={STATUS.ALL}>All</option>
+                          <option value={STATUS.APPROVED}>Approved</option>
+                          <option value={STATUS.PENDING}>Pending</option>
+                          <option value={STATUS.REJECTED}>Rejected</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} md={3}>
+                      <Form.Group>
+                        <Form.Label>Dates</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={filterDate}
+                          onChange={(e) => {
+                            setFileterDate(e.target.value);
+                          }}
+                        >
+                          <option value={0}>All</option>
+                          <option value={1}>One day ago</option>
+                          <option value={3}>Three days ago</option>
+                          <option value={7}>one week ago</option>
+                          <option value={14}>two week ago</option>
+                          <option value={30}>One month ago</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center"></div>
+                  <div className="d-flex justify-content-center">
+                    <Pagination
+                      total={totalItems}
+                      itemsPerPage={ITEMS_PER_PAGE}
+                      currentPage={currentPage}
+                      onPageChange={(page) => setCurrentPage(page)}
+                    />
+                  </div>
+                  <Table responsive>
+                    <TableHeader
+                      headers={headers}
+                      onSorting={(field, order) => setSorting({ field, order })}
+                    />
+                    <tbody>
+                      {displayData.map((item, index) => {
+                        console.log(item);
+                        return (
+                          <tr key={index}>
+                            <td>
+                              {index +
+                                1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
+                                1}
+                            </td>
+                            <td>{item.caseId}</td>
+                            <td>{numberWithCommas(item.totalAmount)}</td>
+                            {/* <td>{item.email}</td>
                           <td>{item.name}</td> */}
-                          <td>{item.comment}</td>
-                          <td>{item.status}</td>
-                          <td>{new Date(item.createdAt).toLocaleString()}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                            <td>{item.comment}</td>
+                            <td>{item.status}</td>
+                            <td>{new Date(item.createdAt).toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      )}
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import axios from "axios";
 import auth from "./auth/auth-helper";
+import { herouke } from "./url";
 
 const instance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "production" ? "" : "http://localhost:3050/api",
+  baseURL: process.env.NODE_ENV === "production" ? "" : `${herouke}/api`,
 });
 
 instance.interceptors.request.use(
