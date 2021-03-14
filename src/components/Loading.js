@@ -1,12 +1,28 @@
-import Spinner from "react-spinner-material";
 import React, { Component } from "react";
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from "react-loader-spinner";
 
-export default class Loading extends Component {
-  render() {
-    return (
-      <div>
-        <Spinner size={120} color="#20c997" spinnerWidth={2} visible={true} />
+const LoadingIndicator = (props) => {
+  const { promiseInProgress } = usePromiseTracker();
+  return (
+    promiseInProgress && (
+      <div
+        style={{
+          width: "100%",
+          position: "absolute",
+          height: "100vh",
+          top: 0,
+          background: "rgba(0,0,0, .5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1301,
+        }}
+      >
+        <Loader type="Circles" color="#23b9ad" height="100" width="100" />
       </div>
-    );
-  }
-}
+    )
+  );
+};
+
+export default LoadingIndicator;

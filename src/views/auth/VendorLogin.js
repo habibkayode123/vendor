@@ -5,6 +5,8 @@ import axios from "../../axios";
 import { signin } from "./api-vendorAuth.js";
 import { toast } from "react-toastify";
 import { useHistory, Redirect } from "react-router-dom";
+import LoadingIndicator from "../../components/Loading";
+import { trackPromise } from "react-promise-tracker";
 
 function VendorLogin() {
   let history = useHistory();
@@ -47,16 +49,18 @@ function VendorLogin() {
     //   });
 
     try {
-      signin(user).then((data) => {
-        console.log("Data...", data);
-        if (data.status) {
-          toast.info(`Welcome ${data.user.email.split("@")[0]}!`);
-          auth.authenticateVendor(data);
-          setLoggedIn(true);
-        } else {
-          setValues({ ...values, error: data.message });
-        }
-      });
+      trackPromise(
+        signin(user).then((data) => {
+          console.log("Data...", data);
+          if (data.status) {
+            toast.info(`Welcome ${data.user.email.split("@")[0]}!`);
+            auth.authenticateVendor(data);
+            setLoggedIn(true);
+          } else {
+            setValues({ ...values, error: data.message });
+          }
+        })
+      );
     } catch (err) {
       setValues({ ...values, error: err.message });
     }
@@ -113,6 +117,7 @@ function VendorLogin() {
           </div>
         </Col>
       </Row>
+      <LoadingIndicator />
     </Container>
   );
 }

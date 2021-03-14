@@ -5,6 +5,9 @@ import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
 import { numberWithCommas } from "../../helpers";
 import Loading from "../../components/Loading";
+import ReactExport from "react-export-excel";
+import ExcelComponet from "../../components/ExecelComponent";
+
 import {
   Card,
   Container,
@@ -18,6 +21,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
+import { trackPromise } from "react-promise-tracker";
 
 const STATUS = {
   APPROVED: "aprroved",
@@ -25,303 +29,6 @@ const STATUS = {
   ALL: "all",
   PENDING: "Pending",
 };
-
-let dummy = [
-  {
-    caseId: "KjIshaqqhM7mjDOx",
-    createdAt: "2021-03-06T21:53:58.243Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T22:53:58+01:00",
-    document:
-      "KjIshaqqhM7mjDOx-0009b108-93ba-42ea-ad7f-2a44747943df-1615067638239.pdf",
-    id: "3bf3909b-db9a-4a92-97ff-3a97b836478f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Rejected",
-    updatedAt: "2021-03-06T21:53:58.243Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-];
 
 let ITEMS_PER_PAGE = 10;
 
@@ -334,17 +41,42 @@ const FetchVendorQuotation = () => {
   const [appprovedStatus, setApprovedStatus] = useState(STATUS.ALL);
   const [filterDate, setFileterDate] = useState(0);
   const [sorting, setSorting] = useState({ field: "", order: "" });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  let [execelData, setExecelData] = useState([]);
 
   const fetchVedorQuotation = () => {
-    getQuotationByVendor()
-      .then((res) => {
-        console.log("response", res);
-        console.log("Vendor data", res.data);
-        setVendorQuotation(res.data || []);
-        setVariableData(res.data);
-      })
-      .catch((error) => console.log(error, "err in fetch"));
+    trackPromise(
+      getQuotationByVendor()
+        .then((res) => {
+          console.log("response", res);
+          console.log("Vendor data", res.data);
+          setVendorQuotation(res.data || []);
+          if (res.data) {
+            let realData = res.data.map((i) => ({
+              approvalComment: i.approvalComment,
+              approvalDate: i.approvalDate,
+              approvedBy: i.approvedBy,
+              caseId: i.caseId,
+              comment: i.comment,
+              createdAt: i.createdAt,
+              createdBy: i.createdBy,
+              createdOn: i.createdOn,
+              deliveryDate: i.deliveryDate,
+              totalAmount: i.totalAmount,
+              status: i.status,
+              orderId: i.orderId,
+              paymnentStatus: i.paymnentStatus,
+              processStatus: i.processStatus,
+              processStatusInvoice: i.processStatusInvoice,
+              processStatusPaymnent: i.processStatusPaymnent,
+            }));
+
+            setExecelData(realData);
+          }
+          setVariableData(res.data);
+        })
+        .catch((error) => console.log(error, "err in fetch"))
+    );
   };
 
   useEffect(() => {
@@ -444,6 +176,10 @@ const FetchVendorQuotation = () => {
                     />
                   </div>
                 }{" "} */}
+                  <ExcelComponet
+                    execelData={execelData}
+                    name={"All Quotations"}
+                  />
                 </Card.Header>
                 <Card.Body>
                   <p className="d-flex justify-content-center">Filter By</p>

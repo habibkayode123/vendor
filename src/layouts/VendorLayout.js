@@ -6,6 +6,7 @@ import FetchVendorQuotation from "views/VendorQuotation/fetchVendorsQuotation";
 import AprrovedQuotation from "../views/VendorQuotation/ApprovedQuotation";
 import PendingQuotation from "../views/VendorQuotation/PendingQuotation";
 import RejectedQuotation from "../views/VendorQuotation/RejectedQuotation";
+import Analysis from "../views/Vendors/Analysis";
 
 import UploadQuotation from "../views/VendorQuotation/uploadQuotation";
 import React from "react";
@@ -36,6 +37,8 @@ function VendorLayout() {
               path="/vendor/approvedQuotation"
               component={ApprovedQuotation}
             />
+
+            <Route exact path="/vendor/analysis" component={Analysis} />
             <Route
               exact
               path="/vendor/rejectedQuotation"

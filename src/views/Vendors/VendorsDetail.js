@@ -3,23 +3,27 @@ import React, { useState, useEffect } from "react";
 import { Button, Container, Row, Col, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getSingleVendorDetails } from "./vendor-api";
+import { trackPromise } from "react-promise-tracker";
+
 const VendorDetail = (prop) => {
   let [error, setError] = useState(false);
   let [loading, setLoading] = useState(true);
   let [data, setData] = useState({});
 
   useEffect(() => {
-    getSingleVendorDetails()
-      .then((data) => {
-        setData(data.data);
-        setLoading(false);
-        toast.info("Detail Fectched");
-      })
-      .catch((error) => {
-        setError(false);
-        setLoading(false);
-        toast.error("An Error occur");
-      });
+    trackPromise(
+      getSingleVendorDetails()
+        .then((data) => {
+          setData(data.data);
+          setLoading(false);
+          toast.info("Detail Fectched");
+        })
+        .catch((error) => {
+          setError(true);
+          setLoading(false);
+          toast.error("An Error occur");
+        })
+    );
   }, []);
 
   return (

@@ -7,8 +7,11 @@ const list = async (signal = null) => {
       method: "GET",
       signal: signal,
     });
-    console.log("poo");
-    return response.json();
+    if (response.ok && response.status === 200) {
+      return response.json();
+    } else {
+      throw "Error occur";
+    }
   } catch (err) {
     console.log("er");
     console.log(err);
@@ -23,8 +26,11 @@ const getQuotationByVendor = async (signal = null) => {
       method: "GET",
       signal: signal,
     });
-    console.log("poo");
-    return response.json();
+    if (response.ok && response.status === 200) {
+      return response.json();
+    } else {
+      throw "Error occur";
+    }
   } catch (err) {
     console.log("er");
     console.log(err);
@@ -50,7 +56,11 @@ const getQuotationByVendorByStatus = async (status) => {
       }
     );
 
-    return response.json();
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw "Error occur";
+    }
   } catch (err) {
     console.log("er");
     console.log(err);
@@ -77,8 +87,11 @@ const getQuotationByCaseId = async (caseId) => {
       },
       body: JSON.stringify(payload),
     });
-    console.log(response, "rep");
-
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw "Error occur";
+    }
     return response.json();
   } catch (err) {
     console.log("er");

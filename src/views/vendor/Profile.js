@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Card, Button } from "react-bootstrap";
 import { changePassWord } from "./api-profile";
 import { toast } from "react-toastify";
+import { trackPromise } from "react-promise-tracker";
 
 export default function Profile() {
   const [value, setValue] = useState({
@@ -21,20 +22,22 @@ export default function Profile() {
         oldpassword: value.oldPassword,
         confirmpassword: value.confirmPassword,
       };
-      changePassWord(payload)
-        .then((res) => {
-          console.log("passwordChange", res);
-          setValue({
-            newPassword: "",
-            confirmPassword: "",
-            oldPassword: "",
-          });
-          toast.success("Password Change successfully");
-        })
-        .catch((error) => {
-          toast.error("Please try again");
-          console.log(error, "err in fetch");
-        });
+      trackPromise(
+        changePassWord(payload)
+          .then((res) => {
+            console.log("passwordChange", res);
+            setValue({
+              newPassword: "",
+              confirmPassword: "",
+              oldPassword: "",
+            });
+            toast.success("Password Change successfully");
+          })
+          .catch((error) => {
+            toast.error("Please try again");
+            console.log(error, "err in fetch");
+          })
+      );
     } else {
       setErr(true);
     }

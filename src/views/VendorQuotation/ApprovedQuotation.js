@@ -6,6 +6,7 @@ import {
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
+import ExcelComponet from "../../components/ExecelComponent";
 import { numberWithCommas } from "../../helpers";
 import {
   Card,
@@ -20,6 +21,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
+import { trackPromise } from "react-promise-tracker";
 
 const STATUS = {
   APPROVED: "aprroved",
@@ -39,16 +41,41 @@ const ApprovedQuotation = () => {
   const [appprovedStatus, setApprovedStatus] = useState(STATUS.ALL);
   const [filterDate, setFileterDate] = useState(0);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  let [execelData, setExecelData] = useState([]);
 
   const fetchVedorQuotation = () => {
-    getQuotationByVendorByStatus("Approved")
-      .then((res) => {
-        console.log("response", res);
-        console.log("Vendor data", res.data);
-        setVendorQuotation(res.data);
-        setVariableData(res.data);
-      })
-      .catch((error) => console.log(error, "err in fetch"));
+    trackPromise(
+      getQuotationByVendorByStatus("Approved")
+        .then((res) => {
+          console.log("response ooo", res);
+          console.log("Vendor data", res.data);
+          setVendorQuotation(res.data || []);
+          if (res.data) {
+            let realData = res.data.map((i) => ({
+              approvalComment: i.approvalComment,
+              approvalDate: i.approvalDate,
+              approvedBy: i.approvedBy,
+              caseId: i.caseId,
+              comment: i.comment,
+              createdAt: i.createdAt,
+              createdBy: i.createdBy,
+              createdOn: i.createdOn,
+              deliveryDate: i.deliveryDate,
+              totalAmount: i.totalAmount,
+              status: i.status,
+              orderId: i.orderId,
+              paymnentStatus: i.paymnentStatus,
+              processStatus: i.processStatus,
+              processStatusInvoice: i.processStatusInvoice,
+              processStatusPaymnent: i.processStatusPaymnent,
+            }));
+
+            setExecelData(realData);
+          }
+          setVariableData(res.data);
+        })
+        .catch((error) => console.log(error, "err in fetch"))
+    );
   };
 
   useEffect(() => {
@@ -128,7 +155,12 @@ const ApprovedQuotation = () => {
             <Card>
               <Card.Header className="d-flex justify-content-between">
                 <Card.Title as="h4">Approved Quotations</Card.Title>
+                <ExcelComponet
+                  execelData={execelData}
+                  name={"Approved Quotations"}
+                />
               </Card.Header>
+
               <Card.Body>
                 <p className="d-flex justify-content-center">Filter By</p>
                 <Row className="d-flex justify-content-center">

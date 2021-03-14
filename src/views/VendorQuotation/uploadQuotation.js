@@ -16,6 +16,7 @@ import auth from "../../auth/auth-helper";
 import { numberWithCommas } from "../../helpers";
 import { SettingsInputAntennaTwoTone } from "@material-ui/icons";
 import DayPickerInput from "react-day-picker/DayPickerInput";
+import { trackPromise } from "react-promise-tracker";
 
 import "react-day-picker/lib/style.css";
 import { propTypes } from "react-bootstrap/esm/Image";
@@ -40,17 +41,19 @@ const UploadQuotation = (props) => {
   });
 
   const submitCaseId = () => {
-    getQuotationByCaseId(caseId)
-      .then((data) => {
-        setOrders(data.data);
-        console.log(data.data);
-        setShow(false);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        toast.error("Invalid CaseId");
-      });
+    trackPromise(
+      getQuotationByCaseId(caseId)
+        .then((data) => {
+          setOrders(data.data);
+          console.log(data.data);
+          setShow(false);
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log(e);
+          toast.error("Invalid CaseId");
+        })
+    );
   };
   const handleCaseId = (e) => {
     setCaseId(e.target.value);
@@ -106,23 +109,26 @@ const UploadQuotation = (props) => {
       payload.append("quotationFile", file);
       payload.append("caseId", caseId);
       payload.append("deliveryDate", date);
+      payload.append("orders", date);
 
       let token = auth.isAuthenticatedVendor().token;
-      uploadQuotation()
-        .then((res) => {
-          toast.success("Quotation upload successfully");
-          setFormData({
-            comment: "",
-            totalAmount: 0,
-          });
-          setFile();
-          console.log(res, "resp upload");
-          props.history.push("/vendor");
-        })
-        .catch((err) => {
-          console.log("Payload From singleLog", payload, err.response);
-          toast.error("An error occur");
-        });
+      trackPromise(
+        uploadQuotation()
+          .then((res) => {
+            toast.success("Quotation upload successfully");
+            setFormData({
+              comment: "",
+              totalAmount: 0,
+            });
+            setFile();
+            console.log(res, "resp upload");
+            props.history.push("/vendor");
+          })
+          .catch((err) => {
+            console.log("Payload From singleLog", payload, err.response);
+            toast.error("An error occur");
+          })
+      );
     }
   };
   return (

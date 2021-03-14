@@ -77,6 +77,18 @@ export default function VendorSidebar() {
                 <p>Pending Quotations</p>
               </NavLink>
             </li>
+
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/analysis"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Quotations Analysis</p>
+              </NavLink>
+            </li>
             <li className="nav-item">
               <NavLink
                 to="/vendor/uploadVendorQuotation"

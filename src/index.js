@@ -23,9 +23,8 @@ import FetchVendorQuotation from "views/VendorQuotation/fetchVendorsQuotation";
 import VendorLayout from "layouts/VendorLayout";
 import PrivateRouteVendor from "./auth/PrivateRouteVendor";
 import { usePromiseTracker } from "react-promise-tracker";
-import Loader from 'react-loader-spinner';
+import Loader from "react-loader-spinner";
 // import setAuthToken from 'setAuthToken';
-
 
 // if (sessionStorage.getItem("jwt"))
 //   JSON.parse(setAuthToken(sessionStorage.getItem("jwt"))).token
@@ -49,27 +48,28 @@ const getBudget = () => {
   }
 };
 
-const LoadingIndicator = props => {
+const LoadingIndicator = (props) => {
   const { promiseInProgress } = usePromiseTracker();
   return (
-    promiseInProgress &&
-    <div
-      style={{
-        width: "100%",
-        position: "absolute",
-        height: '100vh',
-        top: 0,
-        background: "rgba(0,0,0, .5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1301
-      }}
-    >
-      <Loader type="Circles" color="#23b9ad" height="100" width="100" />
-    </div>
-  );  
-}
+    promiseInProgress && (
+      <div
+        style={{
+          width: "100%",
+          position: "absolute",
+          height: "100vh",
+          top: 0,
+          background: "rgba(0,0,0, .5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1301,
+        }}
+      >
+        <Loader type="Circles" color="#23b9ad" height="100" width="100" />
+      </div>
+    )
+  );
+};
 
 const budgetReducer = function (state = { amount: 0 }, action) {
   switch (action.type) {
@@ -84,21 +84,21 @@ let store = createStore(budgetReducer);
 
 ReactDOM.render(
   <>
-	<Provider store={store}>
-		<BrowserRouter>
-			<Switch>
-				<Route path="/vendor/login" exact component={VendorLogin} />
-				{/* <PrivateRouteVendor path="/vendor/vendorQuotation" component={FetchVendorQuotation} /> */}
+    <Provider store={store}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/vendor/login" exact component={VendorLogin} />
+          {/* <PrivateRouteVendor path="/vendor/vendorQuotation" component={FetchVendorQuotation} /> */}
 
-				<PrivateRouteVendor path="/vendor" component={VendorLayout} />
-				<Route path="/admin/login" exact component={Login} />
-				<Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-				<Redirect exact="true" from="/" to="/admin/login" />
-				<Redirect exact from="/admin" to="/admin/login" />
-			</Switch>
-		</BrowserRouter>
-	</Provider>
-  <LoadingIndicator />
+          <PrivateRouteVendor path="/vendor" component={VendorLayout} />
+          <Route path="/admin/login" exact component={Login} />
+          <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+          <Redirect exact="true" from="/" to="/admin/login" />
+          <Redirect exact from="/admin" to="/admin/login" />
+        </Switch>
+      </BrowserRouter>
+    </Provider>
+    <LoadingIndicator />
   </>,
-	document.getElementById("root")
+  document.getElementById("root")
 );
