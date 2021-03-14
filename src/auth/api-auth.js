@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const signin = async (user) => {
   console.log(user, "jaa");
   try {
@@ -26,6 +27,18 @@ const signout = async () => {
   } catch (err) {
     console.log(err);
   }
+=======
+import axios from '../axios';
+
+const signin = (user) => {
+	return axios.post('/auth/signin', user);
+};
+
+const signout = () => {
+	return axios.get('/auth/signout');
+>>>>>>> 833a7f049c50cfc0239725c4646ed587b909a6d0
 };
 
 export { signin, signout };
+
+

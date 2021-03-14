@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Light Bootstrap Dashboard React - v2.0.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/light-bootstrap-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/light-bootstrap-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import ReactDOM from "react-dom";
 
@@ -39,6 +22,13 @@ import VendorLogin from "views/auth/VendorLogin";
 import FetchVendorQuotation from "views/VendorQuotation/fetchVendorsQuotation";
 import VendorLayout from "layouts/VendorLayout";
 import PrivateRouteVendor from "./auth/PrivateRouteVendor";
+import { usePromiseTracker } from "react-promise-tracker";
+import Loader from 'react-loader-spinner';
+// import setAuthToken from 'setAuthToken';
+
+
+// if (sessionStorage.getItem("jwt"))
+//   JSON.parse(setAuthToken(sessionStorage.getItem("jwt"))).token
 
 const getBudget = () => {
   if (auth.isAuthenticated()) {
@@ -59,6 +49,28 @@ const getBudget = () => {
   }
 };
 
+const LoadingIndicator = props => {
+  const { promiseInProgress } = usePromiseTracker();
+  return (
+    promiseInProgress &&
+    <div
+      style={{
+        width: "100%",
+        position: "absolute",
+        height: '100vh',
+        top: 0,
+        background: "rgba(0,0,0, .5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1301
+      }}
+    >
+      <Loader type="Circles" color="#23b9ad" height="100" width="100" />
+    </div>
+  );  
+}
+
 const budgetReducer = function (state = { amount: 0 }, action) {
   switch (action.type) {
     case "UPDATE":
@@ -71,6 +83,7 @@ const budgetReducer = function (state = { amount: 0 }, action) {
 let store = createStore(budgetReducer);
 
 ReactDOM.render(
+  <>
 	<Provider store={store}>
 		<BrowserRouter>
 			<Switch>
@@ -84,6 +97,8 @@ ReactDOM.render(
 				<Redirect exact from="/admin" to="/admin/login" />
 			</Switch>
 		</BrowserRouter>
-	</Provider>,
+	</Provider>
+  <LoadingIndicator />
+  </>,
 	document.getElementById("root")
 );

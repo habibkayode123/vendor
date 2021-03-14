@@ -14,6 +14,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import { trackPromise } from 'react-promise-tracker';
+import { CollectionsOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -63,22 +65,20 @@ export default function ControlledAccordions() {
 	const handleShow = (type, uuid = null) => {
 		setType(type);
 		if(type == 'edit') {
-			readDepartment(
-				{
-					id: uuid,
-				}
-			).then((data) => {
-				if (data.error) {
-					setValues({ ...values, error: data.error });
-				} else {
+			trackPromise(
+				readDepartment(
+					{ id: uuid }
+				).then(res => { 
 					setData({
-						name: data.name,
-						hod:data.hod,
-						id: data.id
+						name: res.data.name,
+						hod: res.data.hod,
+						id: res.data.id
 					});
 					setShow(true);
-				}
-			});
+				}).catch(err => {
+					console.log(err.response)
+				})
+			);
 		} else {
 			setShow(true);
 		}
@@ -101,20 +101,19 @@ export default function ControlledAccordions() {
 	}
 
 	const deleteDepartment = () => {
-		remove(
-			{
-				id: data.id,
-			},
-			{ t: jwt.token }
-		).then((data) => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
+		trackPromise(
+			remove(
+				{
+					id: data.id,
+				}
+			).then(res => {
 				handleDialogClose();
 				toast.success('Deleted successfully!');
 				setNeedsReload(!needsReload);
-			}
-		});
+			}).catch(err => {
+				console.log(err.response);
+			})
+		);
 	};
 
 	const handleSubmit = (e) => {
@@ -125,70 +124,61 @@ export default function ControlledAccordions() {
 		};
 
 		if (type == 'add'){
-			create(
-				{
-					t: jwt.token,
-				},
-				departmentData
-			).then((data) => {
-				if (data.errors) {
-					setValues({ ...values, error: data.errors });
-				} else {
-					toast.success(data.message);
+			trackPromise(
+				create(
+					departmentData
+				).then(res => {
+					toast.success(res.data.message);
 					handleClose();
 					setNeedsReload(!needsReload);
-				}
-			});
+				}).catch(err => {
+					setValues({ ...values, error: err.response.data.errors });
+				})
+			);
 		} else {
-			update(
-				{
-					id: data.id,
-				},
-				{
-					t: jwt.token,
-				},
-				departmentData
-			).then((data) => {
-				if (data.errors) {
-					setValues({ ...values, error: data.errors });
-				} else {
+			trackPromise(
+				update(
+					{
+						id: data.id,
+					},
+					departmentData
+				).then(res => {
 					toast.success('Updated successfully!');
 					handleClose();
 					setNeedsReload(!needsReload);
-				}
-			});
+				}).catch(err => {
+					console.log(err.response)
+				})
+			);
 		}
 	};
 
 	useEffect(() => {
-		const abortController = new AbortController();
-		const signal = abortController.signal;
-		list(signal).then((data) => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				setDepartments(data.data);
-			}
-		});
-		return function cleanup() {
-			abortController.abort();
-		};
+		trackPromise(
+			list().then(res => {
+				setDepartments(res.data.data);
+			}).catch(err => {
+				console.log(err.response)
+			})
+		);
 	}, [needsReload]);
 
 	const onFileUpload = (close) => {
 		let data = new FormData();
 		data.append('files', selectedFile);
-		axios.post('/businessUnitsUpload', data).then(res => {
-			toast.success(res.data.message);
-			setNeedsReload(!needsReload);
-			setSelectedFile(null);
-			close();
-		}).catch(err => {
-			toast.error(err.response.data.errors ? err.response.data.errors : 'An error occurred');
-			setNeedsReload(!needsReload);
-			setSelectedFile(null);
-			close();
-		})
+		trackPromise(
+			axios.post('/businessUnitsUpload', data).then(res => {
+				toast.success(res.data.message);
+				setNeedsReload(!needsReload);
+				setSelectedFile(null);
+				close();
+			}).catch(err => {
+				toast.error(err.response.data.errors ? err.response.data.errors : 'An error occurred');
+				setNeedsReload(!needsReload);
+				setSelectedFile(null);
+				close();
+			})
+		);
 	}
 
 	const headers = [

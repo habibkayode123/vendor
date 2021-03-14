@@ -15,6 +15,7 @@ import {
 import { numberWithCommas } from "../../../helpers";
 import auth from "auth/auth-helper";
 import { toast } from "react-toastify";
+import { trackPromise } from 'react-promise-tracker';
 
 function SingleLog(props) {
   console.log("props...", props);
@@ -40,15 +41,13 @@ function SingleLog(props) {
 
   const fetchLog = () => {
     const uuid = props.match.params.uuid;
-    console.log(props, "all Props");
-    axios.get(`/v1/log/${uuid}`).then((res) => {
-      console.log("singleLog", res.data.data);
-      console.log("singleLogDeptId", res.data.data.data.departmentId);
-      // setExpenseTypeId(res.data.data.data.expenseTypeId);
-      setExpenseTypeId(props.location.state.expenseTypeId);
-      setLog(res.data.data.data);
-      setDepartmentId(props.location.state.departmentId);
-    });
+    trackPromise(
+      axios.get(`/v1/log/${uuid}`).then((res) => {
+        setExpenseTypeId(props.location.state.expenseTypeId);
+        setLog(res.data.data.data);
+        setDepartmentId(props.location.state.departmentId);
+      })
+    );
   };
 
   const fetchVendors = () => {
@@ -207,7 +206,7 @@ function SingleLog(props) {
                         {vendors.map((e, key) => {
                           return (
                             <option value={e.id} key={key}>
-                              {e.title}
+                              {e.name}
                             </option>
                           );
                         })}

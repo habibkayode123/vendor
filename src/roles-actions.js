@@ -297,7 +297,7 @@ export default [
           },
           {
             name: "approve",
-            active: false,
+            active: true,
           },
           {
             name: "quote",
@@ -342,4 +342,74 @@ export default [
 			},
 		],
 	},
+	{
+		role: "VP Finance",
+		pages: [
+		  {
+			url: "purchase",
+			actions: [
+			  {
+				name: "purchase",
+				active: true,
+			  },
+			],
+		  },
+		  {
+			url: "budget",
+			actions: [],
+		  },
+		  {
+			url: "purchaserequests:uuid",
+			actions: [
+			  {
+				name: "review",
+				active: true,
+			  },
+			  {
+				name: "approve",
+				active: false,
+			  },
+			  {
+				name: "quote",
+				active: false,
+			  },
+	
+						{
+							name: "invoice",
+							active: false,
+						},
+					],
+				},
+			],
+			sidebar: [
+				{
+					name: "raise-request",
+					active: false,
+				},
+				{
+					name: "view-requests",
+					active: true,
+				},
+				{
+					name: "view-budgets",
+					active: true,
+				},
+				{
+					name: "add-department",
+					active: false,
+				},
+				{
+					name: "view-departments",
+					active: false,
+				},
+				{
+					name: "add-budget",
+					active: true,
+				},
+				{
+					name: "manage-users",
+					active: false,
+				},
+			],
+		},
 ];
