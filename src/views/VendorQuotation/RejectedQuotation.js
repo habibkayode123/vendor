@@ -22,6 +22,7 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import { trackPromise } from "react-promise-tracker";
+import DayPickerInput from "react-day-picker/DayPickerInput";
 
 const STATUS = {
   APPROVED: "aprroved",
@@ -42,6 +43,8 @@ const RejectedQuotation = () => {
   const [filterDate, setFileterDate] = useState(0);
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [execelData, setExecelData] = useState();
+  const [startingDate, setStartingDate] = useState();
+  const [endingDate, setEndingDate] = useState();
 
   const fetchVedorQuotation = () => {
     trackPromise(
@@ -86,50 +89,44 @@ const RejectedQuotation = () => {
   }, []);
 
   useEffect(() => {
-    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-      setVariableData(vendorQuotation);
-      setTotaltems(vendorQuotation.length);
-      return;
-    } else if (appprovedStatus !== STATUS.All && filterDate === 0) {
-      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-      setVariableData(newData);
-      setTotaltems(newData.length);
-      return;
-    } else if (appprovedStatus !== STATUS.All && filterDate !== 0) {
-      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-      let date = new Date();
-      let days = date.getDate() - filterDate;
-      date.setDate(days);
-      let newData2 = newData.filter((k) => new Date(k) >= date);
-      setVariableData(newData2);
-      setTotaltems(newData2.length);
-    }
-  }, [appprovedStatus, vendorQuotation]);
+    console.log();
+    if (startingDate && endingDate) {
+      console.log("in staing and");
+      let newData = vendorQuotation.filter((i) => {
+        console.log(
+          new Date(i.approvalDate) >= startingDate &&
+            new Date(i.approvalDate) <= endingDate,
+          "ooo"
+        );
+        return (
+          new Date(i.approvalDate) >= startingDate &&
+          new Date(i.approvalDate) <= endingDate
+        );
+      });
 
-  useEffect(() => {
-    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-      setVariableData(vendorQuotation);
-      setTotaltems(vendorQuotation.length);
-      return;
-    } else if (appprovedStatus === STATUS.All && filterDate !== 0) {
-      let newDate = new Date();
-      let realDate = newDate.getDate() - fileterDate;
-      newDate.setDate(realDate);
-      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-      setVariableData(vData);
-      setTotaltems(vData.length);
-      return;
-    } else if (appprovedStatus === !STATUS.All && filterDate !== 0) {
-      let newDate = new Date();
-      let realDate = newDate.getDate() - fileterDate;
-      newDate.setDate(realDate);
-      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-      vData2 = vData.filter((i) => i.status === appprovedStatus);
-      setVariableData(vData2);
-      setTotaltems(vData2.length);
-      return;
+      setVariableData(newData);
     }
-  }, [filterDate, vendorQuotation]);
+
+    if (startingDate && !endingDate) {
+      console.log("in staing and 11");
+      let newData = vendorQuotation.filter((i) => {
+        console.log(startingDate >= new Date(i.approvalDate), "iiii");
+        return new Date(i.approvalDate) >= startingDate;
+      });
+
+      setVariableData(newData);
+    }
+
+    if (!startingDate && endingDate) {
+      console.log("in staing and33");
+      let newData = vendorQuotation.filter((i) => {
+        console.log(new Date(i.approvalDate) <= endingDate, "make proun");
+        return new Date(i.approvalDate) <= endingDate;
+      });
+
+      setVariableData(newData);
+    }
+  }, [startingDate, endingDate]);
 
   useEffect(() => {
     let lastIndex = currentPage * ITEMS_PER_PAGE;
@@ -144,8 +141,9 @@ const RejectedQuotation = () => {
     { name: "Total Amount", field: "hod", sortable: true },
     // { name: "Vendor Email", field: "unit", sortable: true },
     // { name: "Vendor Name", field: "hod", sortable: true },
+    { name: "Rejected By", field: "hod", sortable: true },
     { name: "Comments", field: "unit", sortable: true },
-    { name: "Created Date", field: "hod", sortable: true },
+    { name: "Rejected Date", field: "hod", sortable: true },
   ];
   return (
     <div>
@@ -165,22 +163,27 @@ const RejectedQuotation = () => {
                 <p className="d-flex justify-content-center">Filter By</p>
                 <Row className="d-flex justify-content-center">
                   <Col sm={6} md={3}>
-                    <Form.Group>
-                      <Form.Label>Dates</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={filterDate}
-                        onChange={(e) => {
-                          setFileterDate(e.target.value);
-                        }}
-                      >
-                        <option value={0}>All</option>
-                        <option value={1}>One day ago</option>
-                        <option value={3}>Three days ago</option>
-                        <option value={7}>one week ago</option>
-                        <option value={14}>two week ago</option>
-                        <option value={30}>One month ago</option>
-                      </Form.Control>
+                    <Form.Group controlId="caseId">
+                      <Form.Label>Starting Date</Form.Label>
+                      <DayPickerInput
+                        style={{ display: "block", padding: "6 12" }}
+                        value={startingDate}
+                        onDayChange={(e) => setStartingDate(new Date(e))}
+                        placeholder="DD/MM/YYYY"
+                        format="DD/MM/YYYY"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col sm={6} md={3}>
+                    <Form.Group controlId="caseId">
+                      <Form.Label>Ending Date</Form.Label>
+                      <DayPickerInput
+                        style={{ display: "block", padding: "6 12" }}
+                        value={endingDate}
+                        onDayChange={(e) => setEndingDate(new Date(e))}
+                        placeholder="DD/MM/YYYY"
+                        format="DD/MM/YYYY"
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -212,8 +215,12 @@ const RejectedQuotation = () => {
                           <td>{numberWithCommas(item.totalAmount)}</td>
                           {/* <td>{item.email}</td>
                           <td>{item.name}</td> */}
+
+                          <td>{item.approvedBy}</td>
                           <td>{item.comment}</td>
-                          <td>{new Date(item.createdAt).toLocaleString()}</td>
+                          <td>
+                            {new Date(item.approvalDate).toLocaleString()}
+                          </td>
                         </tr>
                       );
                     })}

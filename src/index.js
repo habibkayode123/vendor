@@ -24,6 +24,8 @@ import VendorLayout from "layouts/VendorLayout";
 import PrivateRouteVendor from "./auth/PrivateRouteVendor";
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "react-loader-spinner";
+import RequstResetPassword from "./views/vendor/RequstResetPassword";
+import ResetPassword from "./views/vendor/ResetPassword";
 // import setAuthToken from 'setAuthToken';
 
 // if (sessionStorage.getItem("jwt"))
@@ -89,7 +91,16 @@ ReactDOM.render(
         <Switch>
           <Route path="/vendor/login" exact component={VendorLogin} />
           {/* <PrivateRouteVendor path="/vendor/vendorQuotation" component={FetchVendorQuotation} /> */}
-
+          <Route
+            path="/changepassword/vendor"
+            exact
+            component={RequstResetPassword}
+          />
+          <Route
+            path="/resetpassword/vendor/:token"
+            exact
+            component={ResetPassword}
+          />
           <PrivateRouteVendor path="/vendor" component={VendorLayout} />
           <Route path="/admin/login" exact component={Login} />
           <Route path="/admin" render={(props) => <AdminLayout {...props} />} />

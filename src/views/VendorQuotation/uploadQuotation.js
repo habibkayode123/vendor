@@ -287,6 +287,14 @@ const UploadQuotation = (props) => {
               <Button variant="primary" onClick={() => submitCaseId()}>
                 Submit
               </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  props.history.push("/vendor");
+                }}
+              >
+                cancel
+              </Button>
             </Modal.Footer>
           </Form>
         </Modal>
