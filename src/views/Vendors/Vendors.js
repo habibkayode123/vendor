@@ -48,8 +48,8 @@ function Vendors() {
 
     const vendorsData = useMemo(() => {
 			setTotaltems(vendors.length);
-			let newVendors = vendors.filter((v) => v.title != null);
-			return newVendors.slice(
+			// let newVendors = vendors.filter((v) => v.title != null);
+			return vendors.slice(
 				(currentPage - 1) * ITEMS_PER_PAGE,
 				(currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
 			);
@@ -92,7 +92,7 @@ function Vendors() {
 												<tr>
 													<th>#</th>
 													<th>Name</th>
-													<th>Phone</th>
+													<th>Email</th>
 													{/* <th></th> */}
 												</tr>
 											</thead>
@@ -103,16 +103,16 @@ function Vendors() {
 															<td>
 																{(currentPage - 1) * ITEMS_PER_PAGE + i + 1}
 															</td>
-															<td>{vendor.title}</td>
-															<td>{vendor.phone}</td>
+															<td>{vendor.name}</td>
+															<td>{vendor.email}</td>
 															{/* <td>{vendor.Title}</td> */}
 															{/* <td>{vendor["Phone Number"]}</td> */}
 
 															{/* <td>
-                                                            <Link to={`/admin/vendor/${vendor.id}`}>
-                                                                <Button size="sm">View</Button>
-                                                            </Link>
-                                                        </td> */}
+																<Button size="sm" className='mr-1' variant="info">View</Button>
+																<Button size="sm" className='mr-1'>Edit</Button>
+																<Button size="sm" variant='danger'>Delete</Button>
+															</td> */}
 														</tr>
 													</>
 												))}

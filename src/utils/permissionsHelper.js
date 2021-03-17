@@ -29,15 +29,16 @@ const checkPageAccess = (path, permittedPages) => {
   };
 };
 
-const checkAccess = (name) => {return true;
+const checkAccess = (name) => {
   if (!auth.isAuthenticated()) return false;
+  const perms = auth.isAuthenticated().permissions.data
 
-  const userRole = auth.isAuthenticated().user.role;
-  const links = roles.find((role) => role.role === userRole).sidebar;
+  if (perms.length == 0) return false;
 
-  const link = links.find((link) => link.name === name);
+  const link = perms.find(p => p.page == name);
+  
   if (!link) return false;
-  return link.active;
+  return link.isActive;
 };
 
 export { checkPageAccess, checkAccess };

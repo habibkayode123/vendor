@@ -25,27 +25,32 @@ function PurchaseRequests() {
   const departmentId = auth.isAuthenticated().user.departmentId;
   const role = auth.isAuthenticated().user.role;
   const fetchRequests = () => {
-    // if (role == "CFO") {
-    //   axios.get("/v1/request").then((res) => {
-    //     console.log(res.data, "cfo log");
-    //     const data = res.data.data.map((request) => {
-    //       let approvalStatusReadable;
-    //       const approvalStatus = request.approvalStatus;
-
-    //       if (approvalStatus == null) approvalStatusReadable = "Pending";
-    //       else if (approvalStatus == false) approvalStatusReadable = "Declined";
-    //       else approvalStatusReadable = "Approved";
-    //       return { ...request, approvalStatusReadable };
-    //     });
-
-    //     setRequests(data);
-    //   });
-    // } else {
+    const url = role == 'Procurement Committee' ? '/v1/request' : '/v1/request/getRequestApprover';
+    if (role == 'Procurement Committee') {
       axios
-        .post("/v1/request/getRequestApprover", {
+        .get(url)
+        .then((res) => {console.log(res)
+          const data = res.data.data.map((request) => {
+            let approvalStatusReadable;
+          const approvalStatus = request.approvalStatus;
+
+          if (approvalStatus == null) approvalStatusReadable = "Pending";
+          else if (approvalStatus == false) approvalStatusReadable = "Declined";
+          else approvalStatusReadable = "Approved";
+          return { ...request, approvalStatusReadable };
+          });
+
+          setRequests(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axios
+        .post(url, {
           loggedUserId: auth.isAuthenticated().user.id
         })
-        .then((res) => {console.log(res);
+        .then((res) => {
           const data = res.data.data.data.map((request) => {
             let approvalStatusReadable;
           const approvalStatus = request.approvalStatus;
@@ -61,6 +66,8 @@ function PurchaseRequests() {
         .catch((err) => {
           console.log(err);
         });
+    }
+      
     // }
   };
 

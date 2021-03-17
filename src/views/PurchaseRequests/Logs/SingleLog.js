@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { trackPromise } from 'react-promise-tracker';
 
 function SingleLog(props) {
-  console.log("props...", props);
+  
   const init = {
     vendorId: "",
     name: "",
@@ -31,10 +31,13 @@ function SingleLog(props) {
   const [values, setValues] = useState(init);
   const [items, setItems] = useState([]);
   const [expenseTypeId, setExpenseTypeId] = useState("");
+  const [products, setProducts] = useState([]);
 
-  const handleOnChange = ({ target }) => {
-    console.log("Targets", target);
-    setValues({ ...values, [target.name]: target.value });
+  const handleOnChange = (e, i) => {
+    let product = products[i];
+    product.vendorId = e.target.value;
+    products.splice(i, 1);
+    setProducts([...products, product]);
   };
 
   const history = useHistory();
@@ -46,6 +49,8 @@ function SingleLog(props) {
         setExpenseTypeId(props.location.state.expenseTypeId);
         setLog(res.data.data.data);
         setDepartmentId(props.location.state.departmentId);
+        setProducts(res.data.data.data.products)
+        console.log(res.data.data.data.products);
       })
     );
   };
@@ -57,15 +62,17 @@ function SingleLog(props) {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("datalogs", items);
-    auth;
-    const data = items.map((item) => {
+  const handleSubmit = (e) => {console.log('Here');
+    e.preventDefault();
+
+
+
+    const data = products.map((item) => {
       const newItems = [
         {
           quantity: item.quantity,
           name: item.name,
-          amount: item.amount,
+          amount: item.price * parseInt(item.quantity)
         },
       ];
 
@@ -74,9 +81,9 @@ function SingleLog(props) {
         items: newItems,
       };
     });
-    console.log(items, "items");
+
     const payload = {
-      total: items.reduce((a, c) => a + parseFloat(c.amount), 0).toString(),
+      total: log.amount,
       logId: log.id,
       departmentId: departmentId,
       expenseTypeId: expenseTypeId,
@@ -85,13 +92,11 @@ function SingleLog(props) {
       userId: auth.isAuthenticated().user.id,
     };
 
-    // console.log("propsBudget",props)
     props.setBudgets(payload.total, expenseTypeId);
-    console.log("Payloads...", payload);
+
     axios
       .post("/v1/request", payload)
       .then((res) => {
-        console.log("res/v1/request", res);
         toast.success(res.data.message);
         setItems([]);
         setValues(init);
@@ -121,38 +126,13 @@ function SingleLog(props) {
             <Card.Header>
               <Card.Title className="d-flex justify-content-between">
                 <h4>Purchase Request Log</h4>
-                {/* <div className="">
-                                    {!request.reviewDate && isActionAllowed('review') && (<Button size="sm" onClick={() => handleShow('Review')} >Review</Button>)}
-                                    {
-                                        isActionAllowed('approve') &&
-                                        request.reviewStatus == 1 
-                                        && !request.approvalStatus
-                                        && (
-                                            <>
-                                            <Button variant="success" size="sm" className="mr-2" onClick={() => handleShow('Approve')}>Approve</Button>
-                                            <Button variant="danger" size="sm" onClick={() => handleShow('Decline')}>Decline</Button>
-                                            </>
-                                        )
-                                    }
-                                    {
-                                        isActionAllowed('quote') && request.approvalStatus == 1 && (
-
-                                            <Button variant="info" size="sm" onClick={handleShowQuotModal}>Request For Quotation</Button>
-                                        )
-                                    }
-                                    
-                                    {
-                                        isActionAllowed('invoice') && request.approvalStatus == 1 && (
-                                            
-                                            <Button variant="success" size="sm">Print Invoice</Button>
-                                        )
-                                    }
-                                </div> */}
+                
               </Card.Title>
             </Card.Header>
             <Card.Body>
+            
               <Row>
-                <Col md="3">
+                <Col md="6">
                   <Card>
                     <Card.Header>
                       <Card.Title as="h6">Narration:</Card.Title>
@@ -162,7 +142,7 @@ function SingleLog(props) {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md="3">
+                <Col md="6">
                   <Card>
                     <Card.Header>
                       <Card.Title as="h6">Amount:</Card.Title>
@@ -172,7 +152,7 @@ function SingleLog(props) {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md="3">
+                <Col md="6">
                   <Card>
                     <Card.Header>
                       <Card.Title as="h6">Date:</Card.Title>
@@ -184,118 +164,74 @@ function SingleLog(props) {
                     </Card.Body>
                   </Card>
                 </Col>
+                <Col md="6">
+                  <Card>
+                    <Card.Header>
+                      <Card.Title as="h6">Department:</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                      <Card.Text>
+                        {log.departmentId}
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </Col>
               </Row>
-
               <Row>
                 <Col md="12">
-                  <h5>Raise Request</h5>
-                </Col>
-                <Col md="4">
-                  <Form>
-                    <Form.Group controlId="vendorId">
-                      <Form.Label>Vendor</Form.Label>
-                      <Form.Control
-                        as="select"
-                        name="vendorId"
-                        value={values.vendorId}
-                        onChange={handleOnChange}
-                      >
-                        <option>Choose</option>
-                        {vendors.map((e, key) => {
-                          return (
-                            <option value={e.id} key={key}>
-                              {e.name}
-                            </option>
-                          );
-                        })}
-                      </Form.Control>
-                    </Form.Group>
-                    {/* <Form.Group controlId="narration">
-                                            <Form.Label>Vendor</Form.Label>
-                                            <Form.Control
-                                                as="textarea"
-                                                rows={3}
-                                                name="narration"
-                                                value={input.narration}
-                                                onChange={handleInputChange}
-                                            />
-                                        </Form.Group> */}
-                    <Form.Group controlId="item">
-                      <Form.Label>Item</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Product Name"
-                        name="name"
-                        value={values.name}
-                        onChange={handleOnChange}
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="quantity">
-                      <Form.Label>Quantity</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="Qty"
-                        name="quantity"
-                        value={values.quantity}
-                        onChange={handleOnChange}
-                      />
-                    </Form.Group>
-                    <Form.Group controlId="amount">
-                      <Form.Label>Amount</Form.Label>
-                      <Form.Control
-                        type="number"
-                        placeholder="Amount"
-                        name="amount"
-                        value={log.amount}
-                        onChange={handleOnChange}
-                      />
-                    </Form.Group>
-                    <Button onClick={handleAddItem}>Add</Button>
+              <Form onSubmit={handleSubmit}>
+                <Row>
+              {products.length > 0 && (
+                      <Col md="12">
+                        <Table striped bordered hover>
+                          <thead>
+                            <tr>
+                              <th>Product</th>
+                              <th>Quantity</th>
+                              <th>Amount</th>
+                              <th>Vendor</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {products.map((list, index) => (
+                              <tr key={index}>
+                                <td>{list.name}</td>
+                                <td>{list.quantity}</td>
+                                <td>{list.quantity * list.price}</td>
+                                <td>
+                                  <Form.Control
+                                    as="select"
+                                    name="vendorId"
+                                    value={list.vendorId}
+                                    onChange={(e) => handleOnChange(e, index)}
+                                    disabled={auth.isAuthenticated().user.role == 'Requestor'}
+                                  >
+                                    <option>Choose</option>
+                                    {vendors.map((e, key) => {
+                                      return (
+                                        <option value={e.id} key={key}>
+                                          {e.name}
+                                        </option>
+                                      );
+                                    })}
+                                  </Form.Control>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </Col>
+                    
+                  )}
+                  </Row>
+                  {
+                    auth.isAuthenticated().user.role !== 'Requestor' && <Button type="submit">Submit</Button>
+                  }
+                    
+                    
                   </Form>
-                </Col>
-                {items.length > 0 && (
-                  <Col md="8">
-                    <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Vendor</th>
-                          <th>Item Name</th>
-                          <th>Qty</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map((item, index) => (
-                          <tr key={index}>
-                            <td>
-                              {vendors.find((v) => v.id == item.vendorId).title}
-                            </td>
-                            <td>{item.name}</td>
-                            <td>{item.quantity}</td>
-                            <td>{numberWithCommas(item.amount)}</td>
-                            {/* <td>
-                                                        <Button
-                                                            className="mr-1"
-                                                            variant="danger"
-                                                            onClick={() => handleRemoveClick(index)}
-                                                        >
-                                                            Remove
-                                                        </Button>
-                                                
-                                                        <Button
-                                                            variant="info"
-                                                            onClick={() => handleOnEdit(index)}
-                                                        >
-                                                            Edit
-                                                        </Button>
-                                                    </td> */}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                    <Button onClick={handleSubmit}>Raise Request</Button>
                   </Col>
-                )}
+              
               </Row>
             </Card.Body>
           </Card>

@@ -54,6 +54,8 @@ import ApproveRequest from "views/PurchaseRequests/PurchaseRequestList/ApproveRe
 import ListQuotation from "../views/vendor/ListQuotation";
 
 import { getBudgetByDepartment, getAllBudget } from "../budget/api-budget";
+import Roles from "views/Roles/Roles";
+import Pages from "views/Pages/Pages";
 
 if (sessionStorage.getItem("jwt"))
   setAuthToken(JSON.parse(sessionStorage.getItem("jwt")).token);
@@ -164,6 +166,16 @@ function Admin() {
                     // exact
                     path="/admin/createdepartment"
                     component={NewDepartment}
+                  />
+                  <Route
+                    exact
+                    path="/admin/roles"
+                    component={Roles}
+                  />
+                  <Route
+                    exact
+                    path="/admin/pages"
+                    component={Pages}
                   />
                   {/* <Route
 										exact

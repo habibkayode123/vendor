@@ -36,7 +36,7 @@ function SinglePurchaseRequest({ match, actions }) {
 	};
 
 	const isActionAllowed = (action) => {
-		return actions.includes(action);
+		return auth.isAuthenticated().user.role !== 'Procurement Committee';
 	};
 
 	const cancelRequest = () => {
@@ -174,11 +174,6 @@ function SinglePurchaseRequest({ match, actions }) {
 								<Card.Title className="d-flex justify-content-between">
 									<h4>Purchase Request: {request.caseId}</h4>
 									<div className="">
-										{/* {!request.reviewDate && isActionAllowed("review") && (
-											<Button size="sm" onClick={() => handleShow("Review")}>
-												Review
-											</Button>
-										)} */}
 										{isActionAllowed("approve") &&
 											request.approvalStatus == null &&
 											!request.hasAlreadyApproved && (
@@ -214,7 +209,7 @@ function SinglePurchaseRequest({ match, actions }) {
 							</Card.Header>
 							<Card.Body>
 								<Row>
-									<Col md="3">
+									<Col md="6">
 										<Card>
 											<Card.Header>
 												<Card.Title as="h6">Case Id:</Card.Title>
@@ -224,7 +219,7 @@ function SinglePurchaseRequest({ match, actions }) {
 											</Card.Body>
 										</Card>
 									</Col>
-									<Col md="3">
+									<Col md="6">
 										<Card>
 											<Card.Header>
 												<Card.Title as="h6">Date:</Card.Title>

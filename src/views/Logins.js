@@ -52,7 +52,7 @@ export default function Login(props) {
 	
 	let to ="/admin/purchase/requests";
 	if(auth.isAuthenticated() && auth.isAuthenticated().user.role==="Admin"){
-		to="/admin/users";
+		to="/admin/dashboard";
 	}
 	if (auth.isAuthenticated() && auth.isAuthenticated().user.department === "Finance") {
 		to = "/admin/purchase/requests";
