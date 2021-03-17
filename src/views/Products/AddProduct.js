@@ -71,7 +71,7 @@ function AddProduct() {
 														// ))
 														vendors.map((vendor) => (
 															<option key={vendor.id} value={vendor.id}>
-																{vendor.title}
+																{vendor.name}
 															</option>
 														))
 													}

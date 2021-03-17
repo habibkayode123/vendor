@@ -110,8 +110,7 @@ function Sidebar({ color, image, routes }) {
 									<p>Create Budget</p>
 								</NavLink>
 							</li>} */}
-              {checkAccess("view-budgets") &&
-                auth.isAuthenticated().user.department === "Finance" && (
+              {checkAccess("view-budgets") && (
                   <li className="nav-item">
                     <NavLink
                       to="/admin/budget"
@@ -219,6 +218,19 @@ function Sidebar({ color, image, routes }) {
                     >
                       <i className={""} />
                       <p>Pages</p>
+                    </NavLink>
+                  </li>
+              }
+              {checkAccess("view-roles") &&
+                  <li className="nav-item">
+                    <NavLink
+                      to="/admin/permissions"
+                      className="nav-link"
+                      activeClassName="active"
+                      exact
+                    >
+                      <i className={""} />
+                      <p>Permissions</p>
                     </NavLink>
                   </li>
               }

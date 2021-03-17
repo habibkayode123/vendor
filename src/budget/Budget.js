@@ -23,6 +23,7 @@ import { list } from '../department/api-dept';
 import { connect } from 'react-redux';
 import { create, getBudgetTypeList, additionalBudgetUpdate } from "./api-budget";
 import { getBudgetByDepartment } from './api-budget';
+import {herouke} from '../url';
 
 const mapDispatchToProps = dispatch => {
 	return {
@@ -153,7 +154,7 @@ function Budget(props) {
 			if (data && data.error) {
 				console.log("Error", data.error);
 			} else {
-				setDepartments(data.data);
+				setDepartments(data.data.data);
 			}
 		});
 	};
@@ -163,14 +164,14 @@ function Budget(props) {
 			if (data && data.error) {
 				console.log(data.error);
 			} else {
-				setBudgetTypes(data);
+				setBudgetTypes(data.data);
 			}
 		});
 	}
 
 	useEffect(() => {
 		const getData = () => {
-			fetch("http://localhost:3050/api/budget", {
+			fetch(herouke + "/api/budget", {
 				method: "GET",
 				headers: {
 					Accept: "application/json",

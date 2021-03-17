@@ -18,6 +18,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
+import {trackPromise} from 'react-promise-tracker';
 
 const STATUS = {
   APPROVED: "Approved",
@@ -50,12 +51,14 @@ const ListQuotation = () => {
   const [approvalCommentError, setApprovalCommentError] = useState(false);
 
   const fetchVedorQuotation = () => {
+    trackPromise(
     list().then((res) => {
       console.log("response", res);
       console.log("Vendor list data", res.data);
       setVendorQuotation(res.data);
       setTotaltems(res.data.length);
-    });
+    })
+    )
   };
 
   const handleApprove = () => {
