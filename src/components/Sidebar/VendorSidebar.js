@@ -22,6 +22,17 @@ export default function VendorSidebar() {
           <ul className="navbar-nav ml-auto">
             <li className="nav-item">
               <NavLink
+                to="/vendor"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Profile</p>
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
                 to="/vendor/vendorQuotation"
                 className="nav-link"
                 activeClassName="active"
@@ -29,6 +40,53 @@ export default function VendorSidebar() {
               >
                 <i className={""} />
                 <p>Quotations</p>
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/approvedQuotation"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Approved Quotations</p>
+              </NavLink>
+            </li>
+
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/rejectedQuotation"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Rejected Quotations</p>
+              </NavLink>
+            </li>
+
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/pendingQuotation"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Pending Quotations</p>
+              </NavLink>
+            </li>
+
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/analysis"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Quotations Analysis</p>
               </NavLink>
             </li>
             <li className="nav-item">
@@ -42,6 +100,19 @@ export default function VendorSidebar() {
                 <p>Upload Quotations</p>
               </NavLink>
             </li>
+
+            <li className="nav-item">
+              <NavLink
+                to="/vendor/profile"
+                className="nav-link"
+                activeClassName="active"
+                exact
+              >
+                <i className={""} />
+                <p>Change Password</p>
+              </NavLink>
+            </li>
+
             {/* <li className="nav-item">
               <NavLink
                 to="/vendor/profile"

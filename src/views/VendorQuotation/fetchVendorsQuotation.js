@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { list } from "./api-vendorQuotation";
+import { list, getQuotationByVendor } from "./api-vendorQuotation";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
 import { numberWithCommas } from "../../helpers";
+import Loading from "../../components/Loading";
+import ReactExport from "react-export-excel";
+import ExcelComponet from "../../components/ExecelComponent";
+
 import {
   Card,
   Container,
@@ -17,6 +21,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
+import { trackPromise } from "react-promise-tracker";
 
 const STATUS = {
   APPROVED: "aprroved",
@@ -24,303 +29,6 @@ const STATUS = {
   ALL: "all",
   PENDING: "Pending",
 };
-
-let dummy = [
-  {
-    caseId: "KjIshaqqhM7mjDOx",
-    createdAt: "2021-03-06T21:53:58.243Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T22:53:58+01:00",
-    document:
-      "KjIshaqqhM7mjDOx-0009b108-93ba-42ea-ad7f-2a44747943df-1615067638239.pdf",
-    id: "3bf3909b-db9a-4a92-97ff-3a97b836478f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Rejected",
-    updatedAt: "2021-03-06T21:53:58.243Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-  {
-    caseId: "WjIfhaqqhM9mjFOw",
-    createdAt: "2021-03-06T22:21:22.435Z",
-    createdBy: "greatp@yahoo.com",
-    createdOn: "2021-03-06T23:21:22+01:00",
-    document:
-      "WjIfhaqqhM9mjFOw-0009b108-93ba-42ea-ad7f-2a44747943df-1615069282434.pdf",
-    id: "50cdbdb6-c401-4ab1-96b3-94f0b4c9185f",
-    isApproved: false,
-    sentStatus: false,
-    status: "Pending",
-    updatedAt: "2021-03-06T22:21:22.435Z",
-    vendorId: "0009b108-93ba-42ea-ad7f-2a44747943df",
-  },
-];
 
 let ITEMS_PER_PAGE = 10;
 
@@ -333,14 +41,42 @@ const FetchVendorQuotation = () => {
   const [appprovedStatus, setApprovedStatus] = useState(STATUS.ALL);
   const [filterDate, setFileterDate] = useState(0);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [loading, setLoading] = useState(false);
+  let [execelData, setExecelData] = useState([]);
 
   const fetchVedorQuotation = () => {
-    list().then((res) => {
-      console.log("response", res);
-      console.log("Vendor data", res.data);
-      setVendorQuotation(res.data);
-      setVariableData(res.data);
-    });
+    trackPromise(
+      getQuotationByVendor()
+        .then((res) => {
+          console.log("response", res);
+          console.log("Vendor data", res.data);
+          setVendorQuotation(res.data || []);
+          if (res.data) {
+            let realData = res.data.map((i) => ({
+              approvalComment: i.approvalComment,
+              approvalDate: i.approvalDate,
+              approvedBy: i.approvedBy,
+              caseId: i.caseId,
+              comment: i.comment,
+              createdAt: i.createdAt,
+              createdBy: i.createdBy,
+              createdOn: i.createdOn,
+              deliveryDate: i.deliveryDate,
+              totalAmount: i.totalAmount,
+              status: i.status,
+              orderId: i.orderId,
+              paymnentStatus: i.paymnentStatus,
+              processStatus: i.processStatus,
+              processStatusInvoice: i.processStatusInvoice,
+              processStatusPaymnent: i.processStatusPaymnent,
+            }));
+
+            setExecelData(realData);
+          }
+          setVariableData(res.data);
+        })
+        .catch((error) => console.log(error, "err in fetch"))
+    );
   };
 
   useEffect(() => {
@@ -415,13 +151,16 @@ const FetchVendorQuotation = () => {
   ];
   return (
     <div>
-      <Container fluid>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header className="d-flex justify-content-between">
-                <Card.Title as="h4">Vendors Quotations</Card.Title>
-                {/* {
+      {loading ? (
+        <Loading />
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col md="12">
+              <Card>
+                <Card.Header className="d-flex justify-content-between">
+                  <Card.Title as="h4">Vendors Quotations</Card.Title>
+                  {/* {
                   <div className="buttons">
                     <Button
                       size="sm"
@@ -437,88 +176,93 @@ const FetchVendorQuotation = () => {
                     />
                   </div>
                 }{" "} */}
-              </Card.Header>
-              <Card.Body>
-                <p className="d-flex justify-content-center">Filter By</p>
-                <Row className="d-flex justify-content-center">
-                  <Col sm={6} md={3}>
-                    <Form.Group>
-                      <Form.Label>Status</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={appprovedStatus}
-                        onChange={(e) => {
-                          setApprovedStatus(e.target.value);
-                        }}
-                      >
-                        <option value={STATUS.ALL}>All</option>
-                        <option value={STATUS.APPROVED}>Approved</option>
-                        <option value={STATUS.PENDING}>Pending</option>
-                        <option value={STATUS.REJECTED}>Rejected</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Col>
-                  <Col sm={6} md={3}>
-                    <Form.Group>
-                      <Form.Label>Dates</Form.Label>
-                      <Form.Control
-                        as="select"
-                        value={filterDate}
-                        onChange={(e) => {
-                          setFileterDate(e.target.value);
-                        }}
-                      >
-                        <option value={0}>All</option>
-                        <option value={1}>One day ago</option>
-                        <option value={3}>Three days ago</option>
-                        <option value={7}>one week ago</option>
-                        <option value={14}>two week ago</option>
-                        <option value={30}>One month ago</option>
-                      </Form.Control>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="d-flex justify-content-center"></div>
-                <div className="d-flex justify-content-center">
-                  <Pagination
-                    total={totalItems}
-                    itemsPerPage={ITEMS_PER_PAGE}
-                    currentPage={currentPage}
-                    onPageChange={(page) => setCurrentPage(page)}
+                  <ExcelComponet
+                    execelData={execelData}
+                    name={"All Quotations"}
                   />
-                </div>
-                <Table responsive>
-                  <TableHeader
-                    headers={headers}
-                    onSorting={(field, order) => setSorting({ field, order })}
-                  />
-                  <tbody>
-                    {displayData.map((item, index) => {
-                      console.log(item);
-                      return (
-                        <tr key={index}>
-                          <td>
-                            {index +
-                              1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
-                              1}
-                          </td>
-                          <td>{item.caseId}</td>
-                          <td>{numberWithCommas(item.totalAmount)}</td>
-                          {/* <td>{item.email}</td>
+                </Card.Header>
+                <Card.Body>
+                  <p className="d-flex justify-content-center">Filter By</p>
+                  <Row className="d-flex justify-content-center">
+                    <Col sm={6} md={3}>
+                      <Form.Group>
+                        <Form.Label>Status</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={appprovedStatus}
+                          onChange={(e) => {
+                            setApprovedStatus(e.target.value);
+                          }}
+                        >
+                          <option value={STATUS.ALL}>All</option>
+                          <option value={STATUS.APPROVED}>Approved</option>
+                          <option value={STATUS.PENDING}>Pending</option>
+                          <option value={STATUS.REJECTED}>Rejected</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} md={3}>
+                      <Form.Group>
+                        <Form.Label>Dates</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={filterDate}
+                          onChange={(e) => {
+                            setFileterDate(e.target.value);
+                          }}
+                        >
+                          <option value={0}>All</option>
+                          <option value={1}>One day ago</option>
+                          <option value={3}>Three days ago</option>
+                          <option value={7}>one week ago</option>
+                          <option value={14}>two week ago</option>
+                          <option value={30}>One month ago</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <div className="d-flex justify-content-center"></div>
+                  <div className="d-flex justify-content-center">
+                    <Pagination
+                      total={totalItems}
+                      itemsPerPage={ITEMS_PER_PAGE}
+                      currentPage={currentPage}
+                      onPageChange={(page) => setCurrentPage(page)}
+                    />
+                  </div>
+                  <Table responsive>
+                    <TableHeader
+                      headers={headers}
+                      onSorting={(field, order) => setSorting({ field, order })}
+                    />
+                    <tbody>
+                      {displayData.map((item, index) => {
+                        console.log(item);
+                        return (
+                          <tr key={index}>
+                            <td>
+                              {index +
+                                1 * (ITEMS_PER_PAGE * (currentPage - 1)) +
+                                1}
+                            </td>
+                            <td>{item.caseId}</td>
+                            <td>{numberWithCommas(item.totalAmount)}</td>
+                            {/* <td>{item.email}</td>
                           <td>{item.name}</td> */}
-                          <td>{item.comment}</td>
-                          <td>{item.status}</td>
-                          <td>{new Date(item.createdAt).toLocaleString()}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                            <td>{item.comment}</td>
+                            <td>{item.status}</td>
+                            <td>{new Date(item.createdAt).toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      )}
     </div>
   );
 };

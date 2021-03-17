@@ -100,10 +100,10 @@ function SingleLog(props) {
         toast.success(res.data.message);
         setItems([]);
         setValues(init);
-        history.push('/admin/purchase/request/logs');
+        history.push("/admin/purchase/request/logs");
       })
       .catch((err) => {
-        toast.error(err.response.data.message)
+        toast.error(err.response.data.message);
       });
   };
 
@@ -111,6 +111,8 @@ function SingleLog(props) {
     let newValues = { ...values, amount: log.amount };
     setItems([...items, newValues]);
     setValues(init);
+
+    props.history.push("/admin/purchase/request/logs");
   };
 
   useEffect(() => {
