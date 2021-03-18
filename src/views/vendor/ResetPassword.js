@@ -12,7 +12,6 @@ export default function ResetPassword(props) {
     confirmPassword: "",
   });
   const [err, setErr] = useState(false);
-
   const handleChange = ({ target }) => {
     setValue({ ...value, [target.name]: target.value });
   };
@@ -33,7 +32,7 @@ export default function ResetPassword(props) {
               confirmPassword: "",
             });
             toast.success("Password Change successfully");
-            props.history.push("/vendor");
+            props.history.push("/vendor/login");
           })
           .catch((error) => {
             toast.error("Please try again");

@@ -76,7 +76,7 @@ const getQuotationByCaseId = async (caseId) => {
 
   let payload = {
     caseId,
-    vendorId: "4172799689",
+    vendorId: id,
   };
   console.log(payload);
   try {
@@ -103,16 +103,16 @@ const uploadQuotation = async (payload) => {
   let token = auth.isAuthenticatedVendor().token;
   console.log(payload);
   try {
-    let response = await fetch(`${herouke}/api/v1/request/getorder`, {
+    let response = await fetch(`${herouke}/api/vendorQUpload`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        //  "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
-      body: JSON.stringify(payload),
+      body: payload,
     });
     console.log(response, "rep in upload");
-
+    if (!response.ok) throw response.text;
     return response.json();
   } catch (err) {
     console.log("er upload");

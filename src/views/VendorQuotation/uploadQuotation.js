@@ -23,13 +23,12 @@ import { propTypes } from "react-bootstrap/esm/Image";
 
 const UploadQuotation = (props) => {
   const [file, setFile] = useState();
-  const [caseId, setCaseId] = useState();
+  const [caseId, setCaseId] = useState("");
   const [show, setShow] = useState(true);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [caseError, setCaseError] = useState(false);
   const [date, setDate] = useState();
-
   const [formData, setFormData] = useState({
     comment: "",
     totalAmount: 0,
@@ -41,19 +40,23 @@ const UploadQuotation = (props) => {
   });
 
   const submitCaseId = () => {
-    trackPromise(
-      getQuotationByCaseId(caseId)
-        .then((data) => {
-          setOrders(data.data);
-          console.log(data.data);
-          setShow(false);
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.log(e);
-          toast.error("Invalid CaseId");
-        })
-    );
+    if (caseId.length > 3) {
+      trackPromise(
+        getQuotationByCaseId(caseId)
+          .then((data) => {
+            setOrders(data.data);
+            console.log(data.data);
+            setShow(false);
+            setLoading(false);
+          })
+          .catch((e) => {
+            console.log(e);
+            toast.error("Invalid CaseId");
+          })
+      );
+    } else {
+      setCaseError(true);
+    }
   };
   const handleCaseId = (e) => {
     setCaseId(e.target.value);
@@ -73,9 +76,8 @@ const UploadQuotation = (props) => {
 
   const onFileChange = (event) => {
     event.preventDefault();
-    const file = event.target.files[0];
-    console.log(file, event.target.files);
-    setFile(file);
+    const holder = event.target.files[0];
+    setFile(holder);
   };
 
   const checkformError = () => {
@@ -99,22 +101,80 @@ const UploadQuotation = (props) => {
   };
 
   const onSubmit = () => {
+    let payload = new FormData();
     if (checkformError()) {
       console.log("mm");
       return;
     } else {
-      let payload = new FormData();
+      let ordersNew = [
+        {
+          id: "861c4caf-384b-4151-ad07-2d6f37df46e7",
+          items: [
+            {
+              amount: "500",
+              name: "table",
+              quantity: 2,
+            },
+            {
+              amount: "20",
+              name: "biro",
+              quantity: 2,
+              vendorId: "dcc3cfbe-8157-4fb7-b6ba-dad59ff7a664",
+            },
+            {
+              amount: "1000",
+              name: "car",
+              quantity: 2,
+            },
+            {
+              amount: "80",
+              name: "laptop",
+              quantity: 2,
+            },
+          ],
+          status: false,
+          vendorId: "dcc3cfbe-8157-4fb7-b6ba-dad59ff7a664",
+        },
+        {
+          id: "9006aae8-b1ed-459e-8f31-8f2a5d0d2ed6",
+          items: [
+            {
+              amount: "500",
+              name: "table",
+              quantity: 3,
+            },
+            {
+              amount: "20",
+              name: "pen",
+              quantity: 3,
+            },
+            {
+              amount: "1000",
+              name: "car",
+              quantity: 3,
+            },
+            {
+              amount: "80",
+              name: "laptop",
+              quantity: 3,
+            },
+          ],
+          status: false,
+          vendorId: "dcc3cfbe-8157-4fb7-b6ba-dad59ff7a664",
+        },
+      ];
+
+      console.log(orders, "orders");
       payload.append("comment", formData.comment);
       payload.append("totalAmount", formData.totalAmount);
       payload.append("quotationFile", file);
       payload.append("caseId", caseId);
       payload.append("deliveryDate", date);
-      payload.append("orders", date);
-
-      let token = auth.isAuthenticatedVendor().token;
+      payload.append("orders", orders);
       trackPromise(
-        uploadQuotation()
+        uploadQuotation(payload)
           .then((res) => {
+            console.log(res, "upload ");
             toast.success("Quotation upload successfully");
             setFormData({
               comment: "",
@@ -122,7 +182,7 @@ const UploadQuotation = (props) => {
             });
             setFile();
             console.log(res, "resp upload");
-            props.history.push("/vendor");
+            //    props.history.push("/vendor");
           })
           .catch((err) => {
             console.log("Payload From singleLog", payload, err.response);
@@ -205,7 +265,7 @@ const UploadQuotation = (props) => {
                   <Form.Group controlId="caseId">
                     <Form.Label>Delivery Date</Form.Label>
                     <DayPickerInput
-                      style={{ display: "block", padding: "6 12" }}
+                      style={{ display: "block", padding: "12" }}
                       value={date}
                       onDayChange={handleDateChange}
                       placeholder="DD/MM/YYYY"
@@ -281,7 +341,13 @@ const UploadQuotation = (props) => {
                   onChange={handleCaseId}
                 />
               </Form.Group>
-              {caseError && <Form.Text>Invalid Case Id </Form.Text>}
+              {caseError && (
+                <Form.Text className="text-danger">
+                  {caseId.length === 0
+                    ? "Case Id is required"
+                    : "Invalid case id"}
+                </Form.Text>
+              )}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary" onClick={() => submitCaseId()}>

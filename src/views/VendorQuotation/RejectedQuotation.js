@@ -6,7 +6,7 @@ import {
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
-import { numberWithCommas } from "../../helpers";
+import { formatDate, numberWithCommas } from "../../helpers";
 import ExcelComponet from "../../components/ExecelComponent";
 import {
   Card,
@@ -94,13 +94,13 @@ const RejectedQuotation = () => {
       console.log("in staing and");
       let newData = vendorQuotation.filter((i) => {
         console.log(
-          new Date(i.approvalDate) >= startingDate &&
+          new Date(i.approvalDate).set >= startingDate &&
             new Date(i.approvalDate) <= endingDate,
           "ooo"
         );
         return (
-          new Date(i.approvalDate) >= startingDate &&
-          new Date(i.approvalDate) <= endingDate
+          formatDate(i.approvalDate) >= formatDate(startingDate) &&
+          formatDate(i.approvalDate) <= formatDate(endingDate)
         );
       });
 
@@ -108,10 +108,10 @@ const RejectedQuotation = () => {
     }
 
     if (startingDate && !endingDate) {
-      console.log("in staing and 11");
+      console.log("in staing and 11", startingDate);
       let newData = vendorQuotation.filter((i) => {
         console.log(startingDate >= new Date(i.approvalDate), "iiii");
-        return new Date(i.approvalDate) >= startingDate;
+        return formatDate(i.approvalDate) >= formatDate(startingDate);
       });
 
       setVariableData(newData);
@@ -120,8 +120,11 @@ const RejectedQuotation = () => {
     if (!startingDate && endingDate) {
       console.log("in staing and33");
       let newData = vendorQuotation.filter((i) => {
-        console.log(new Date(i.approvalDate) <= endingDate, "make proun");
-        return new Date(i.approvalDate) <= endingDate;
+        console.log(
+          new Date(i.approvalDate) <= formatDate(endingDate),
+          "make proun"
+        );
+        return formatDate(i.approvalDate) <= formatDate(endingDate);
       });
 
       setVariableData(newData);
@@ -129,6 +132,7 @@ const RejectedQuotation = () => {
   }, [startingDate, endingDate]);
 
   useEffect(() => {
+    setTotaltems(variableData.length);
     let lastIndex = currentPage * ITEMS_PER_PAGE;
     let startIndex = lastIndex - ITEMS_PER_PAGE;
     let newData = variableData.slice(startIndex, lastIndex);
@@ -166,7 +170,7 @@ const RejectedQuotation = () => {
                     <Form.Group controlId="caseId">
                       <Form.Label>Starting Date</Form.Label>
                       <DayPickerInput
-                        style={{ display: "block", padding: "6 12" }}
+                        style={{}}
                         value={startingDate}
                         onDayChange={(e) => setStartingDate(new Date(e))}
                         placeholder="DD/MM/YYYY"

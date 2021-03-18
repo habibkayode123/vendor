@@ -7,7 +7,7 @@ import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
 import ExcelComponet from "../../components/ExecelComponent";
-import { numberWithCommas } from "../../helpers";
+import { numberWithCommas, formatDate } from "../../helpers";
 import {
   Card,
   Container,
@@ -88,6 +88,7 @@ const ApprovedQuotation = () => {
   }, []);
 
   useEffect(() => {
+    setTotaltems(variableData.length);
     let lastIndex = currentPage * ITEMS_PER_PAGE;
     let startIndex = lastIndex - ITEMS_PER_PAGE;
     let newData = variableData.slice(startIndex, lastIndex);
@@ -100,13 +101,13 @@ const ApprovedQuotation = () => {
       console.log("in staing and");
       let newData = vendorQuotation.filter((i) => {
         console.log(
-          new Date(i.approvalDate) >= startingDate &&
-            new Date(i.approvalDate) <= endingDate,
+          formatDate(i.approvalDate) >= formatDate(startingDate) &&
+            formatDate(i.approvalDate) <= formatDate(endingDate),
           "ooo"
         );
         return (
-          new Date(i.approvalDate) >= startingDate &&
-          new Date(i.approvalDate) <= endingDate
+          formatDate(i.approvalDate) >= formatDate(startingDate) &&
+          formatDate(i.approvalDate) <= formatDate(endingDate)
         );
       });
 
@@ -117,7 +118,7 @@ const ApprovedQuotation = () => {
       console.log("in staing and 11");
       let newData = vendorQuotation.filter((i) => {
         console.log(startingDate >= new Date(i.approvalDate), "iiii");
-        return new Date(i.approvalDate) >= startingDate;
+        return formatDate(i.approvalDate) >= formatDate(startingDate);
       });
 
       setVariableData(newData);
@@ -127,7 +128,7 @@ const ApprovedQuotation = () => {
       console.log("in staing and33");
       let newData = vendorQuotation.filter((i) => {
         console.log(new Date(i.approvalDate) <= endingDate, "make proun");
-        return new Date(i.approvalDate) <= endingDate;
+        return formatDate(i.approvalDate) <= formatDate(endingDate);
       });
 
       setVariableData(newData);

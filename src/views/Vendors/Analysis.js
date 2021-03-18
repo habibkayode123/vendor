@@ -17,6 +17,11 @@ const Analysis = () => {
   const [approved, setApproved] = useState();
   const [rejected, setRejected] = useState();
   const [pending, setPending] = useState();
+  const [show, setShow] = useState({
+    pending: false,
+    approved: false,
+    rejected: false,
+  });
   //  const [datasets,setDatasets] = useState()
 
   let labels = ["Total", "Approved", "Pending", "Rejected"];
@@ -37,8 +42,10 @@ const Analysis = () => {
     trackPromise(
       getVendorQuotationStatusCount("Approved")
         .then((data) => {
-          if (data.message === "Success") setApproved(data.data);
-          else {
+          if (data.message === "Success") {
+            setApproved(data.data);
+            setShow((prev) => ({ ...prev, approved: true }));
+          } else {
             console.log(data);
           }
         })
@@ -52,8 +59,10 @@ const Analysis = () => {
     trackPromise(
       getVendorQuotationStatusCount("Pending")
         .then((data) => {
-          if (data.message === "Success") setRejected(data.data);
-          else {
+          if (data.message === "Success") {
+            setPending(data.data);
+            setShow((prev) => ({ ...prev, pending: true }));
+          } else {
             console.log(data);
           }
         })
@@ -67,8 +76,10 @@ const Analysis = () => {
     trackPromise(
       getVendorQuotationStatusCount("Rejected")
         .then((data) => {
-          if (data.message === "Success") setPending(data.data);
-          else {
+          if (data.message === "Success") {
+            setRejected(data.data);
+            setShow((prev) => ({ ...prev, rejected: true }));
+          } else {
             console.log(data);
           }
         })
@@ -93,7 +104,7 @@ const Analysis = () => {
               <Card.Title as="h4">Quotation Analysis</Card.Title>
             </Card.Header>
             <Card.Body>
-              {rejected && approved && pending && (
+              {show.rejected && show.approved && show.pending && (
                 <Bar
                   data={{ labels, datasets }}
                   options={{

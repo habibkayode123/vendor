@@ -6,7 +6,7 @@ import {
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
-import { numberWithCommas } from "../../helpers";
+import { numberWithCommas, formatDate } from "../../helpers";
 import ExcelComponet from "../../components/ExecelComponent";
 import { trackPromise } from "react-promise-tracker";
 
@@ -91,18 +91,13 @@ const PendingQuotation = () => {
   }, []);
 
   useEffect(() => {
-    console.log();
     if (startingDate && endingDate) {
       console.log("in staing and");
       let newData = vendorQuotation.filter((i) => {
-        console.log(
-          new Date(i.createdAt) >= startingDate &&
-            new Date(i.createdAt) <= endingDate,
-          "ooo"
-        );
+        console.log(formatDate(i.createdAt), "ooo");
         return (
-          new Date(i.createdAt) >= startingDate &&
-          new Date(i.createdAt) <= endingDate
+          formatDate(i.createdAt) >= formatDate(startingDate) &&
+          formatDate(i.createdAt) <= formatDate(endingDate)
         );
       });
 
@@ -112,8 +107,12 @@ const PendingQuotation = () => {
     if (startingDate && !endingDate) {
       console.log("in staing and 11");
       let newData = vendorQuotation.filter((i) => {
-        console.log(i.createdAt >= new Date(i.createdAt), "iiii");
-        return new Date(i.createdAt) >= startingDate;
+        console.log(
+          formatDate(i.createdAt),
+          "iiiiooo",
+          formatDate(startingDate)
+        );
+        return formatDate(i.createdAt) >= formatDate(startingDate);
       });
 
       setVariableData(newData);
@@ -123,13 +122,15 @@ const PendingQuotation = () => {
       console.log("in staing and33");
       let newData = vendorQuotation.filter((i) => {
         console.log(new Date(i.createdAt) <= endingDate, "make proun");
-        return new Date(i.createdAt) <= endingDate;
+        return new formatDate(i.createdAt) <= formatDate(endingDate);
       });
 
       setVariableData(newData);
     }
   }, [startingDate, endingDate]);
+
   useEffect(() => {
+    setTotaltems(variableData.length);
     let lastIndex = currentPage * ITEMS_PER_PAGE;
     let startIndex = lastIndex - ITEMS_PER_PAGE;
     let newData = variableData.slice(startIndex, lastIndex);

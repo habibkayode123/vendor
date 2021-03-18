@@ -30,7 +30,7 @@ export const getVendorQuotationStatusCount = async (status) => {
       },
       body: JSON.stringify({ status }),
     });
-    console.log(response, "rep in upload");
+    console.log(response, "rep in upload", status);
 
     if (response.ok && response.status === 200) {
       return response.json();

@@ -133,6 +133,7 @@ const FetchVendorQuotation = () => {
   }, [filterDate, vendorQuotation]);
 
   useEffect(() => {
+    setTotaltems(variableData.length);
     let lastIndex = currentPage * ITEMS_PER_PAGE;
     let startIndex = lastIndex - ITEMS_PER_PAGE;
     let newData = variableData.slice(startIndex, lastIndex);
