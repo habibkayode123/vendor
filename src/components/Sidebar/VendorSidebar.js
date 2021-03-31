@@ -1,6 +1,7 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import { useLocation, NavLink } from "react-router-dom";
+import auth from "../../auth/auth-helper";
 
 export default function VendorSidebar() {
   return (
@@ -31,76 +32,95 @@ export default function VendorSidebar() {
                 <p>Profile</p>
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/vendorQuotation"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Quotations</p>
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/approvedQuotation"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Approved Quotations</p>
-              </NavLink>
-            </li>
 
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/rejectedQuotation"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Rejected Quotations</p>
-              </NavLink>
-            </li>
+            {!auth.isAuthenticatedVendor().user.uploadStatus && (
+              <li className="nav-item">
+                <NavLink
+                  to="/vendor/uploadCredential"
+                  className="nav-link"
+                  activeClassName="active"
+                  exact
+                >
+                  <i className={""} />
+                  <p>Upload Credential</p>
+                </NavLink>
+              </li>
+            )}
 
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/pendingQuotation"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Pending Quotations</p>
-              </NavLink>
-            </li>
+            {auth.isAuthenticatedVendor().user.vendorApprovalStatus ===
+              "approved" && (
+              <>
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/vendorQuotation"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Quotations</p>
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/approvedQuotation"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Approved Quotations</p>
+                  </NavLink>
+                </li>
 
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/analysis"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Quotations Analysis</p>
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                to="/vendor/uploadVendorQuotation"
-                className="nav-link"
-                activeClassName="active"
-                exact
-              >
-                <i className={""} />
-                <p>Upload Quotations</p>
-              </NavLink>
-            </li>
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/rejectedQuotation"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Rejected Quotations</p>
+                  </NavLink>
+                </li>
 
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/pendingQuotation"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Pending Quotations</p>
+                  </NavLink>
+                </li>
+
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/analysis"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Quotations Analysis</p>
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    to="/vendor/uploadVendorQuotation"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Upload Quotations</p>
+                  </NavLink>
+                </li>
+              </>
+            )}
             <li className="nav-item">
               <NavLink
                 to="/vendor/profile"

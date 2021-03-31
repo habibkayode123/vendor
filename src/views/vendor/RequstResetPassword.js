@@ -41,6 +41,42 @@ const ResetPassword = (props) => {
   return (
     <Container>
       <Row>
+        <Col md={{ span: 4, offset: 4 }}>
+          <div className="select-inner d-flex flex-column align-items-center mt-5">
+            <img
+              src={require("assets/img/logo.png").default}
+              style={{ width: "210px", height: "50px" }}
+              alt="Car45"
+            />
+
+            <h5 className="mt-5">Reset your Password</h5>
+            <Form onSubmit={handleSubmit} className="w-100 mt-5">
+              <Form.Group controlId="email">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="input your password"
+                  name="email"
+                />
+                <Form.Text
+                  className={`${
+                    status.status ? "text-success" : "text-danger"
+                  }`}
+                >
+                  {status.message}
+                </Form.Text>
+              </Form.Group>
+              <div style={{ display: "flex" }}>
+                <Button className="mt-3 btn-lg" variant="primary" type="submit">
+                  Submit
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </Col>
+      </Row>
+
+      {/* <Row>
         <Col md="12">
           <Card className="">
             <Card.Header className="d-flex justify-content-between">
@@ -74,7 +110,7 @@ const ResetPassword = (props) => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </Container>
   );
 };

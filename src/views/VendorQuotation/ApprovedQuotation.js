@@ -8,6 +8,8 @@ import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
 import ExcelComponet from "../../components/ExecelComponent";
 import { numberWithCommas, formatDate } from "../../helpers";
+import DatePicker from "react-datepicker";
+
 import {
   Card,
   Container,
@@ -164,8 +166,9 @@ const ApprovedQuotation = () => {
                   <Col sm={6} md={3}>
                     <Form.Group controlId="caseId">
                       <Form.Label>Starting Date</Form.Label>
-                      <DayPickerInput
-                        style={{ display: "block", padding: "6 12" }}
+                      <DayPickerInput           
+                        
+                        style={{ display: "block", borderWidth: 10 }}
                         value={startingDate}
                         onDayChange={(e) => setStartingDate(new Date(e))}
                         placeholder="DD/MM/YYYY"

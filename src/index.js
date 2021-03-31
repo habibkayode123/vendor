@@ -26,6 +26,7 @@ import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "react-loader-spinner";
 import RequstResetPassword from "./views/vendor/RequstResetPassword";
 import ResetPassword from "./views/vendor/ResetPassword";
+import "react-datepicker/dist/react-datepicker.css";
 // import setAuthToken from 'setAuthToken';
 
 // if (sessionStorage.getItem("jwt"))

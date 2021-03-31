@@ -58,4 +58,88 @@ const setResetPassword = async (payload) => {
   }
 };
 
-export { changePassWord, resetPassWord, setResetPassword };
+const updateAccount = async (payload) => {
+  let data = auth.isAuthenticatedVendor();
+  try {
+    let response = await fetch(
+      `${herouke}/api/vportal/editvendoraccountsdetails`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + data.token,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    if (response.ok) return response.json();
+    else throw response.text;
+  } catch (err) {
+    throw err.message;
+    console.log(err);
+  }
+};
+
+const uploadCredential = async (payload) => {
+  console.log(payload, "upload");
+  let data = auth.isAuthenticatedVendor();
+
+  try {
+    let response = await fetch(`${herouke}/api/vendordocument/upload`, {
+      method: "POST",
+      headers: {
+        //  Accept: "application/json",
+        // "Content-Type": "application/json",
+        Authorization: "Bearer " + data.token,
+      },
+      body: payload,
+    });
+    if (response.ok) return response.json();
+    else throw response;
+  } catch (err) {
+    console.log("er");
+    console.log(err);
+  }
+};
+
+const getAccountType = async () => {
+  try {
+    let response = await fetch(`${herouke}/api/accounttypes`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) return response.json();
+    else throw response.text;
+  } catch (err) {
+    throw err.message;
+    console.log(err);
+  }
+};
+
+const getBankName = async () => {
+  try {
+    let response = await fetch(`${herouke}/api/banks`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) return response.json();
+    else throw response.text;
+  } catch (err) {
+    throw err.message;
+    console.log(err);
+  }
+};
+export {
+  changePassWord,
+  resetPassWord,
+  setResetPassword,
+  uploadCredential,
+  updateAccount,
+  getAccountType,
+  getBankName,
+};

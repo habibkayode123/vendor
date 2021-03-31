@@ -4,7 +4,7 @@ import { Button, Container, Row, Col } from "react-bootstrap";
 import axios from "../../axios";
 import { signin } from "./api-vendorAuth.js";
 import { toast } from "react-toastify";
-import { useHistory, Redirect } from "react-router-dom";
+import { useHistory, Redirect, Link } from "react-router-dom";
 import LoadingIndicator from "../../components/Loading";
 import { trackPromise } from "react-promise-tracker";
 
@@ -110,14 +110,40 @@ function VendorLogin() {
               </div>
               <br />
               {/* <button className="btn btn-primary btn-block">Login</button> */}
-              <Button className="btn-fill" type="submit" variant="info">
-                Login
-              </Button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <Button
+                  className="btn-fill btn-lg "
+                  type="submit"
+                  variant="info"
+                >
+                  Login
+                </Button>
+              </div>
             </form>
           </div>
         </Col>
       </Row>
-      <LoadingIndicator />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+          marginTop: 10,
+        }}
+      >
+        <Link to="/changepassword/vendor">
+          <button type="button" class="btn btn-link ">
+            Forget Password?
+          </button>
+        </Link>
+      </div>
+      {/* <LoadingIndicator /> */}
     </Container>
   );
 }
