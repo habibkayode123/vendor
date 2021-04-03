@@ -129,7 +129,7 @@ export default function VendorSidebar() {
                 exact
               >
                 <i className={""} />
-                <p>Change Password</p>
+                <p>Edit Details</p>
               </NavLink>
             </li>
 

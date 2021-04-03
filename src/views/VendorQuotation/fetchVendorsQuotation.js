@@ -3,7 +3,8 @@ import { list, getQuotationByVendor } from "./api-vendorQuotation";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import CsvImport from "components/CsvImport";
 import Pagination from "../../components/Pagination/Pagination";
-import { numberWithCommas,formatDate } from "../../helpers";
+import { numberWithCommas, formatDate } from "../../helpers";
+import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
 import ReactExport from "react-export-excel";
 import ExcelComponet from "../../components/ExecelComponent";
@@ -30,12 +31,36 @@ const STATUS = {
   PENDING: "Pending",
 };
 
+let dummyArray = [
+  {
+    caseId: "hcuuc123",
+    totalAmount: 300000,
+    comment: "dummy comment",
+    status: "Approved",
+    createdAt: new Date(),
+  },
+  {
+    caseId: "hcuuc123",
+    totalAmount: 300000,
+    comment: "dummy comment",
+    status: "Approved",
+    createdAt: new Date(),
+  },
+  {
+    caseId: "hcuuc123",
+    totalAmount: 300000,
+    comment: "dummy comment",
+    status: "Approved",
+    createdAt: new Date(),
+  },
+];
+
 let ITEMS_PER_PAGE = 10;
 
 const FetchVendorQuotation = () => {
   const [vendorQuotation, setVendorQuotation] = useState([]);
   const [variableData, setVariableData] = useState([]);
-  const [displayData, setDisplayData] = useState([]);
+  const [displayData, setDisplayData] = useState(dummyArray);
   const [totalItems, setTotaltems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [appprovedStatus, setApprovedStatus] = useState(STATUS.ALL);
@@ -79,66 +104,66 @@ const FetchVendorQuotation = () => {
     );
   };
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-    fetchVedorQuotation(signal);
-    // setVendorQuotation(dummy);
-  }, []);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+  //   const signal = abortController.signal;
+  //   fetchVedorQuotation(signal);
+  //   // setVendorQuotation(dummy);
+  // }, []);
 
-  useEffect(() => {
-    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-      setVariableData(vendorQuotation);
-      setTotaltems(vendorQuotation.length);
-      return;
-    } else if (appprovedStatus !== STATUS.All && filterDate === 0) {
-      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-      setVariableData(newData);
-      setTotaltems(newData.length);
-      return;
-    } else if (appprovedStatus !== STATUS.All && filterDate !== 0) {
-      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-      let date = new Date();
-      let days = date.getDate() - filterDate;
-      date.setDate(days);
-      let newData2 = newData.filter((k) => new Date(k) >= date);
-      setVariableData(newData2);
-      setTotaltems(newData2.length);
-    }
-  }, [appprovedStatus, vendorQuotation]);
+  // useEffect(() => {
+  //   if (appprovedStatus === STATUS.ALL && filterDate === 0) {
+  //     setVariableData(vendorQuotation);
+  //     setTotaltems(vendorQuotation.length);
+  //     return;
+  //   } else if (appprovedStatus !== STATUS.All && filterDate === 0) {
+  //     let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
+  //     setVariableData(newData);
+  //     setTotaltems(newData.length);
+  //     return;
+  //   } else if (appprovedStatus !== STATUS.All && filterDate !== 0) {
+  //     let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
+  //     let date = new Date();
+  //     let days = date.getDate() - filterDate;
+  //     date.setDate(days);
+  //     let newData2 = newData.filter((k) => new Date(k) >= date);
+  //     setVariableData(newData2);
+  //     setTotaltems(newData2.length);
+  //   }
+  // }, [appprovedStatus, vendorQuotation]);
 
-  useEffect(() => {
-    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-      setVariableData(vendorQuotation);
-      setTotaltems(vendorQuotation.length);
-      return;
-    } else if (appprovedStatus === STATUS.All && filterDate !== 0) {
-      let newDate = new Date();
-      let realDate = newDate.getDate() - fileterDate;
-      newDate.setDate(realDate);
-      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-      setVariableData(vData);
-      setTotaltems(vData.length);
-      return;
-    } else if (appprovedStatus === !STATUS.All && filterDate !== 0) {
-      let newDate = new Date();
-      let realDate = newDate.getDate() - fileterDate;
-      newDate.setDate(realDate);
-      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-      vData2 = vData.filter((i) => i.status === appprovedStatus);
-      setVariableData(vData2);
-      setTotaltems(vData2.length);
-      return;
-    }
-  }, [filterDate, vendorQuotation]);
+  // useEffect(() => {
+  //   if (appprovedStatus === STATUS.ALL && filterDate === 0) {
+  //     setVariableData(vendorQuotation);
+  //     setTotaltems(vendorQuotation.length);
+  //     return;
+  //   } else if (appprovedStatus === STATUS.All && filterDate !== 0) {
+  //     let newDate = new Date();
+  //     let realDate = newDate.getDate() - fileterDate;
+  //     newDate.setDate(realDate);
+  //     let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
+  //     setVariableData(vData);
+  //     setTotaltems(vData.length);
+  //     return;
+  //   } else if (appprovedStatus === !STATUS.All && filterDate !== 0) {
+  //     let newDate = new Date();
+  //     let realDate = newDate.getDate() - fileterDate;
+  //     newDate.setDate(realDate);
+  //     let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
+  //     vData2 = vData.filter((i) => i.status === appprovedStatus);
+  //     setVariableData(vData2);
+  //     setTotaltems(vData2.length);
+  //     return;
+  //   }
+  // }, [filterDate, vendorQuotation]);
 
-  useEffect(() => {
-    setTotaltems(variableData.length);
-    let lastIndex = currentPage * ITEMS_PER_PAGE;
-    let startIndex = lastIndex - ITEMS_PER_PAGE;
-    let newData = variableData.slice(startIndex, lastIndex);
-    setDisplayData(newData);
-  }, [currentPage, variableData, vendorQuotation]);
+  // useEffect(() => {
+  //   setTotaltems(variableData.length);
+  //   let lastIndex = currentPage * ITEMS_PER_PAGE;
+  //   let startIndex = lastIndex - ITEMS_PER_PAGE;
+  //   let newData = variableData.slice(startIndex, lastIndex);
+  //   setDisplayData(newData);
+  // }, [currentPage, variableData, vendorQuotation]);
 
   const headers = [
     { name: "SN", field: "id" },
@@ -149,6 +174,7 @@ const FetchVendorQuotation = () => {
     { name: "Comments", field: "unit", sortable: true },
     { name: "Status", field: "hod", sortable: true },
     { name: "Created Date", field: "hod", sortable: true },
+    { name: "Actions", field: "hod", sortable: true },
   ];
   return (
     <div>
@@ -224,12 +250,12 @@ const FetchVendorQuotation = () => {
                   </Row>
                   <div className="d-flex justify-content-center"></div>
                   <div className="d-flex justify-content-center">
-                    <Pagination
+                    {/* <Pagination
                       total={totalItems}
                       itemsPerPage={ITEMS_PER_PAGE}
                       currentPage={currentPage}
                       onPageChange={(page) => setCurrentPage(page)}
-                    />
+                    /> */}
                   </div>
                   <Table responsive>
                     <TableHeader
@@ -253,6 +279,16 @@ const FetchVendorQuotation = () => {
                             <td>{item.comment}</td>
                             <td>{item.status}</td>
                             <td>{new Date(item.createdAt).toLocaleString()}</td>
+                            <td>
+                              <Button className="btn-primary text-secondary">
+                                <Link
+                                  to="/vendor/quotationDetails/99"
+                                  className="text-light"
+                                >
+                                  View
+                                </Link>
+                              </Button>
+                            </td>
                           </tr>
                         );
                       })}

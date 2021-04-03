@@ -18,6 +18,7 @@ import ApprovedQuotation from "../views/VendorQuotation/ApprovedQuotation";
 import PrivateRouteVendor2 from "../auth/PrivateRouteVendor2";
 import UploadCredential from "views/vendor/UploadCredential";
 import auth from "../auth/auth-helper";
+import QuotationDetails from "views/VendorQuotation/QuotationDetails";
 
 function VendorLayout() {
   return (
@@ -75,6 +76,11 @@ function VendorLayout() {
               exact
               path="/vendor/listQuotation"
               component={ListQuotation}
+            />
+            <PrivateRouteVendor2
+              exact
+              path="/vendor/quotationDetails/:id"
+              component={QuotationDetails}
             />
           </Switch>
         </div>
