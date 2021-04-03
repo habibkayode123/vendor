@@ -1,7 +1,9 @@
+import { herouke } from "../../../url";
+
 const listRequests = async (payload) => {
 	try {
 		let response = await fetch(
-			"http://localhost:3050/api/v1/request/getRequestApprover",
+			`${herouke}/api/v1/request/getRequestApprover`,
 			{
 				method: "POST",
 				signal: signal,

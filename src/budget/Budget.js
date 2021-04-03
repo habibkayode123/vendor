@@ -23,6 +23,8 @@ import { list } from '../department/api-dept';
 import { connect } from 'react-redux';
 import { create, getBudgetTypeList, additionalBudgetUpdate } from "./api-budget";
 import { getBudgetByDepartment } from './api-budget';
+import {herouke} from '../url';
+import {trackPromise} from 'react-promise-tracker';
 
 const mapDispatchToProps = dispatch => {
 	return {
@@ -93,9 +95,7 @@ function Budget(props) {
 	const updateBudgetP = (signal) => {
 		getBudgetByDepartment(
 			{
-				departmentId: auth.isAuthenticated()
-					? auth.isAuthenticated().user.departmentId
-					: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
+				departmentId: auth.isAuthenticated().user.departmentId
 			},
 			signal
 		).then((data) => {
@@ -110,6 +110,7 @@ function Budget(props) {
 		const updateBudget = {
 			amount: values.amount,
 		};
+		trackPromise(
 		additionalBudgetUpdate(
 			{
 				budgetId: values.id,
@@ -125,11 +126,13 @@ function Budget(props) {
 				handleTopUpClose()
 				updateBudgetP()
 			}
-		});
+		})
+		)
 	}
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		trackPromise(
 		create(values).then((data) => {
 			if (data.errors) {
 				// console.log(data.errors);
@@ -142,7 +145,8 @@ function Budget(props) {
 				setNeedsReload(!needsReload);
 				updateBudgetP();
 			}
-		});
+		})
+		)
 	}
 
 	
@@ -153,7 +157,7 @@ function Budget(props) {
 			if (data && data.error) {
 				console.log("Error", data.error);
 			} else {
-				setDepartments(data.data);
+				setDepartments(data.data.data);
 			}
 		});
 	};
@@ -163,14 +167,15 @@ function Budget(props) {
 			if (data && data.error) {
 				console.log(data.error);
 			} else {
-				setBudgetTypes(data);
+				setBudgetTypes(data.data);
 			}
 		});
 	}
 
 	useEffect(() => {
 		const getData = () => {
-			fetch("http://localhost:3050/api/budget", {
+			trackPromise(
+			fetch(herouke + "/api/budget", {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
@@ -181,7 +186,8 @@ function Budget(props) {
 				.then((json) => {
 					console.log("BudgetsJson",json)
 					setBudgets(json.data);
-				});
+				})
+			)
 		};
 		getData();
 		fetchDepartments();
@@ -191,6 +197,7 @@ function Budget(props) {
 	const onFileUpload = (close) => {
 		let data = new FormData();
 		data.append('files', selectedFile);
+		trackPromise(
 		axios.post('/budgetUpload', data).then(res => {
 			toast.success(res.data.message);
 			setNeedsReload(!needsReload);
@@ -202,10 +209,11 @@ function Budget(props) {
 			setSelectedFile(null);
 			close();
 		})
+		)
 	};
 
 	const isActionAllowed = action => {
-		return props.actions.includes(action);
+		return true
 	}
 
 	const budgetsData = useMemo(() => {

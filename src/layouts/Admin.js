@@ -51,9 +51,11 @@ import BudgetBalance from "components/Sidebar/BudgetBalance";
 import PurchaseRequestLogs from "views/PurchaseRequests/Logs/PurchaseRequestLogs";
 import SingleLog from "views/PurchaseRequests/Logs/SingleLog";
 import ApproveRequest from "views/PurchaseRequests/PurchaseRequestList/ApproveRequest";
-import ListQuotation from "../views/vendor/ListQuotation";
 
 import { getBudgetByDepartment, getAllBudget } from "../budget/api-budget";
+import Roles from "views/Roles/Roles";
+import Pages from "views/Pages/Pages";
+import Permissions from "views/Roles/Permissions";
 
 if (sessionStorage.getItem("jwt"))
   setAuthToken(JSON.parse(sessionStorage.getItem("jwt")).token);
@@ -165,6 +167,21 @@ function Admin() {
                     path="/admin/createdepartment"
                     component={NewDepartment}
                   />
+                  <Route
+                    exact
+                    path="/admin/roles"
+                    component={Roles}
+                  />
+                  <Route
+                    exact
+                    path="/admin/permissions"
+                    component={Permissions}
+                  />
+                  <Route
+                    exact
+                    path="/admin/pages"
+                    component={Pages}
+                  />
                   {/* <Route
 										exact
 										path="/admin/departments"
@@ -228,11 +245,11 @@ function Admin() {
                     component={PurchaseRequests}
                   />
                   <PrivateRoute exact path="/admin/budget" component={Budget} />
-                  <PrivateRoute
+                  {/* <PrivateRoute
                     exact
                     path="/admin/quotations-list"
                     component={ListQuotation}
-                  />
+                  /> */}
                   <PrivateRoute
                     exact
                     path="/admin/purchase/requests/:uuid"

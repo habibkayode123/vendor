@@ -1,10 +1,11 @@
 import auth from "../../auth/auth-helper";
+import { herouke } from "../../url";
 
 const approveQuotation = async (id, payload) => {
   console.log("token vendor", auth.isAuthenticated().token);
   try {
     let response = await fetch(
-      `http://localhost:3050/api/vquotation/approve/${id}`,
+      `${herouke}/api/vquotation/approve/${id}`,
       {
         method: "PUT",
         headers: {
@@ -25,7 +26,7 @@ const approveQuotation = async (id, payload) => {
 const rejectQuotation = async (id,payload) => {
   try {
     let response = await fetch(
-			`http://localhost:3050/api/vquotation/approve/${id}`,
+			`${herouke}/api/vquotation/approve/${id}`,
 			{
 				method: "PUT",
 				headers: {

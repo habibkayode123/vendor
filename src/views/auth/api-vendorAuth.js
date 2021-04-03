@@ -20,7 +20,7 @@ const signin = async (vportaluser) => {
 
 const signout = async () => {
   try {
-    let response = await fetch("http://localhost:3050/api/auth/signout/", {
+    let response = await fetch(herouke + "/api/auth/signout/", {
       method: "GET",
     });
     return await response.json();

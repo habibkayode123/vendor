@@ -17,9 +17,12 @@ import {
 import { toast } from "react-toastify";
 import Pagination from "../components/Pagination/Pagination";
 import { trackPromise } from 'react-promise-tracker';
+import axios from '../axios';
+import  Swal from 'sweetalert2';
 
 export default function Register(props) {
 	const [show, setShow] = useState(false);
+    const [type, setType] = useState('');
 	const [deptValue, setDeptValue] = useState([]);
 	const [userValue, setUserValue] = useState([]);
 	const [roleValue, setRoleValue] = useState([]);
@@ -36,6 +39,7 @@ export default function Register(props) {
 
 	const handleClose = () => {
 		setShow(false);
+		setType('')
 		setValues({
 			email: "",
 			departmentId: "",
@@ -43,6 +47,41 @@ export default function Register(props) {
 		});
 	};
 	const handleShow = () => setShow(true);
+
+	const handleEdit = (id) => {
+        setValues(userValue.find(r => r.id == id));
+        setType('edit');
+        handleShow();
+	}
+	
+	const handleDelete = (id) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover again!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it'
+          }).then((result) => {
+            if (result.value) {
+                axios.delete('/users/'+id).then(res => {
+                    fetchUsers();
+                    Swal.fire(
+                        'Deleted!',
+                        res.data.message,
+                        'success'
+                      )
+                })
+            
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              Swal.fire(
+                'Cancelled',
+                '',
+                'error'
+              )
+            }
+          })
+    }
 
 	const removeUser = (user) => {
 		const updatedUsers = [...userValue];
@@ -96,15 +135,27 @@ export default function Register(props) {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 
-		trackPromise(
-			create(values).then((res) => {
-				setRedirect(!redirect);
-				toast.success(res.data.message);
-				handleClose();
-			}).catch(err => {
-				setValues({ ...values, error: err.response.data.error });
-			})
-		);
+		if (type != 'edit') {
+			trackPromise(
+				create(values).then((res) => {
+					setRedirect(!redirect);
+					toast.success(res.data.message);
+					handleClose();
+				}).catch(err => {
+					setValues({ ...values, error: err.response.data.error });
+				})
+			);
+		} else {
+			trackPromise(
+				axios.put(`/users/${values.id}`, values).then((res) => {
+					setRedirect(!redirect);
+					toast.success(res.data.message);
+					handleClose();
+				}).catch(err => {
+					setValues({ ...values, error: err.response.data.error });
+				})
+			);
+		}
 	};
 	return (
 		<Container fluid>
@@ -161,7 +212,8 @@ export default function Register(props) {
 														{new Date(user.createdOn).toLocaleDateString()}
 													</td>
 													<td>
-														{/* <Button size="sm" variant="info" className="ml-1" onClick={() => handleEdit(requ.id)}>Edit</Button> */}
+														<Button size="sm" variant="info" className="ml-1" onClick={() => handleEdit(user.id)}>Edit</Button>
+														<Button size="sm" variant="danger" className="ml-1" onClick={() => handleDelete(user.id)}>Delete</Button>
 													</td>
 												</tr>
 											))}
@@ -173,7 +225,7 @@ export default function Register(props) {
 					</Card>
 					<Modal show={show} onHide={handleClose}>
 						<Modal.Header closeButton>
-							<Modal.Title>Add User</Modal.Title>
+							<Modal.Title>{ type == 'edit' ? 'Edit User' : 'Add User' }</Modal.Title>
 						</Modal.Header>
 
 						<Form onSubmit={handleSubmit}>

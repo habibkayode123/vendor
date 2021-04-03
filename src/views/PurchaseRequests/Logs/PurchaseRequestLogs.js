@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { numberWithCommas } from "../../../helpers";
 import { trackPromise } from 'react-promise-tracker';
 import { toast } from "react-toastify";
+import auth from "auth/auth-helper";
 
 function PurchaseRequestLogs() {
   const [logs, setLogs] = useState([]);
@@ -13,8 +14,10 @@ function PurchaseRequestLogs() {
   const [currentPage, setCurrentPage] = useState(1);
   const [editing, setEditing] = useState(false);
   const [data, setData] = useState({
-
   });
+  const shouldNotSeeAll = [
+    'Requestor'
+  ];
 
   const handleClose = () => {
     setEditing(false);
@@ -62,9 +65,13 @@ function PurchaseRequestLogs() {
   const ITEMS_PER_PAGE = 10;
 
   const fetchLogs = () => {
+    const user = auth.isAuthenticated().user
+    const url = shouldNotSeeAll.indexOf(user.role) == -1 ? "/v1/log" : 
+      `/v1/log/getByUserId/${user.id}`;
+
+      if (user)
     trackPromise (
-      axios.get("/v1/log").then((res) => {
-        console.log("v1/log", res.data.data);
+      axios.get(url).then((res) => {
         setLogs(res.data.data.data);
       })
     );
@@ -145,8 +152,20 @@ function PurchaseRequestLogs() {
                             >
                               <Button size="sm">View</Button>
                             </Link>
-                            <Button size="sm" variant="info" className="ml-1" onClick={() => handleEdit(request.id)}>Edit</Button>
-                            <Button size="sm" variant="danger" className="ml-1" onClick={() => handleDelete(request.id)}>Delete</Button>
+                            <Button 
+                              size="sm" 
+                              variant="info" 
+                              className="ml-1" 
+                              onClick={() => handleEdit(request.id)}
+                              hidden={request.status}
+                            >Edit</Button>
+                            <Button
+                              size="sm" 
+                              variant="danger" 
+                              className="ml-1" 
+                              onClick={() => handleDelete(request.id)}
+                              hidden={request.status}
+                              >Delete</Button>
                           </td>
                         </tr>
                       ))}

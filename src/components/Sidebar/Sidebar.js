@@ -46,7 +46,20 @@ function Sidebar({ color, image, routes }) {
         <Nav>
           {auth.isAuthenticated() && (
             <ul className="navbar-nav ml-auto">
-              {checkAccess("raise-request") && (
+              {checkAccess("manage-users") && (
+                <li className="nav-item">
+                  <NavLink
+                    to="/admin/dashboard"
+                    className="nav-link"
+                    activeClassName="active"
+                    exact
+                  >
+                    <i className={""} />
+                    <p>Dashboard</p>
+                  </NavLink>
+                </li>
+              )}
+              {checkAccess("log-request") && (
                 <li className="nav-item">
                   <NavLink
                     to="/admin/purchase"
@@ -61,7 +74,7 @@ function Sidebar({ color, image, routes }) {
               )}
 
               {auth.isAuthenticated().user.role !== "CFO" &&
-                checkAccess("view-requests-pro") && (
+                checkAccess("view-logs") && (
                   <li className="nav-item">
                     <NavLink
                       to="/admin/purchase/request/logs"
@@ -97,8 +110,7 @@ function Sidebar({ color, image, routes }) {
 									<p>Create Budget</p>
 								</NavLink>
 							</li>} */}
-              {checkAccess("view-budgets") &&
-                auth.isAuthenticated().user.department === "Finance" && (
+              {checkAccess("view-budgets") && (
                   <li className="nav-item">
                     <NavLink
                       to="/admin/budget"
@@ -171,7 +183,7 @@ function Sidebar({ color, image, routes }) {
                   </NavLink>
                 </li>
               )}
-              {checkAccess("view-qoutations") && (
+              {checkAccess("view-quotations") && (
                 <li className="nav-item">
                   <NavLink
                     to="/admin/quotations-list"
@@ -183,6 +195,45 @@ function Sidebar({ color, image, routes }) {
                   </NavLink>
                 </li>
               )}
+              {checkAccess("view-roles") &&
+                  <li className="nav-item">
+                    <NavLink
+                      to="/admin/roles"
+                      className="nav-link"
+                      activeClassName="active"
+                      exact
+                    >
+                      <i className={""} />
+                      <p>Roles</p>
+                    </NavLink>
+                  </li>
+              }
+              {checkAccess("view-roles") &&
+                  <li className="nav-item">
+                    <NavLink
+                      to="/admin/pages"
+                      className="nav-link"
+                      activeClassName="active"
+                      exact
+                    >
+                      <i className={""} />
+                      <p>Pages</p>
+                    </NavLink>
+                  </li>
+              }
+              {checkAccess("view-roles") &&
+                  <li className="nav-item">
+                    <NavLink
+                      to="/admin/permissions"
+                      className="nav-link"
+                      activeClassName="active"
+                      exact
+                    >
+                      <i className={""} />
+                      <p>Permissions</p>
+                    </NavLink>
+                  </li>
+              }
             </ul>
           )}
         </Nav>

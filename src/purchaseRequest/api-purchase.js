@@ -1,6 +1,8 @@
+import { herouke } from "../url";
+
 const listPurchaseByDepartment = async (params, credentials, signal) => {
 	try {
-		let response = await fetch("/api/purhcase/vendor/" + params.departmentId, {
+		let response = await fetch(herouke + "/api/purhcase/vendor/" + params.departmentId, {
 			method: "GET",
 			signal: signal,
 			headers: {
@@ -16,7 +18,7 @@ const listPurchaseByDepartment = async (params, credentials, signal) => {
 
 const getVendors = async (signal) => {
 	try {
-		let response = await fetch("http://localhost:3050/api/getVendors", {
+		let response = await fetch(herouke + "/api/getVendors", {
 			method: "GET",
 			signal: signal,
 		});
