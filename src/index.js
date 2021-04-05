@@ -22,14 +22,6 @@ import { usePromiseTracker } from "react-promise-tracker";
 import Loader from "react-loader-spinner";
 import RequstResetPassword from "./views/vendor/RequstResetPassword";
 import ResetPassword from "./views/vendor/ResetPassword";
-<<<<<<< HEAD
-import "react-datepicker/dist/react-datepicker.css";
-// import setAuthToken from 'setAuthToken';
-
-// if (sessionStorage.getItem("jwt"))
-//   JSON.parse(setAuthToken(sessionStorage.getItem("jwt"))).token
-=======
->>>>>>> bfef9ba45e281895d1096116b8e54f6807ee2059
 
 const getBudget = () => {
   if (auth.isAuthenticated()) {

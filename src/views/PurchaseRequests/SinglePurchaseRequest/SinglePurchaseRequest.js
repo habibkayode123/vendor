@@ -17,6 +17,7 @@ import {
 import QuotationModal from "./QuotationRequests";
 import auth from "../../../auth/auth-helper";
 import { numberWithCommas } from "../../../helpers";
+import VendorTable from "./vendorsTable";
 
 function SinglePurchaseRequest({ match, actions }) {
   const [request, setRequest] = useState({});
@@ -24,6 +25,7 @@ function SinglePurchaseRequest({ match, actions }) {
     status: false,
     type: null,
   });
+
   const [showQuotModal, setShowQuotModal] = useState(false);
   const [reviewData, setReviewData] = useState({
     status: 1,
@@ -95,43 +97,55 @@ function SinglePurchaseRequest({ match, actions }) {
 
   const fetchRequest = () => {
     const uuid = match.params.uuid;
-    axios
-      .get(`/v1/request/${uuid}`)
+    axios.get(`/v1/request/${uuid}`).then((res) => {
+      console.log("Requests", res);
+      let data = res.data.data.data;
+      let newData = {};
+      newData.items = data.order.items;
+      newData.caseId = data.caseId;
+      newData.vendors = data.order.vendors;
+      newData.createdAt = data.order.createdAt;
+      newData.approvalStatus = data.approvalStatus;
 
-      .then((res) => {
-        console.log("Requests", res);
-        let data = res.data.data.data;
-        if (data.reviewStatus == 1) {
-          data.reviewStatusReadable = "Approved";
-        }
-        if (data.approvalStatus == 1) data.approvalStatusReadable = "Approved";
-
-        if (data.reviewStatus == 2) {
-          data.reviewStatusReadable = "Declined";
-        }
-        if (data.approvalStatus == 2) data.approvalStatusReadable = "Declined";
-
-        data.hasAlreadyApproved =
-          data.approvals &&
-          data.approvals.find(
-            (a) => a.userId == auth.isAuthenticated().user.id
+      if (data.approvalStatus === null) {
+        if (data.approvals.length > 0) {
+          let findMe = data.approvals.find(
+            (i) => i.userId === auth.isAuthenticated().user.id
           );
+          if (findMe) {
+            newData.alreadyApprovedByMe = true;
+          } else {
+            newData.alreadyApprovedByMe = false;
+          }
+        }
+      }
+      // if (data.reviewStatus == 1) {
+      // 	data.reviewStatusReadable = "Approved";
+      // }
+      // if (data.approvalStatus == 1) data.approvalStatusReadable = "Approved";
 
-        let items = [];
-        data.order.forEach((order) => {
-          let orde = order.items.map((item) => {
-            return {
-              ...item,
-              vendorId: order.vendorId,
-            };
-          });
-          items = items.concat(orde);
-        });
-        data.items = items;
-        // data.totalItemsAmount = data.items.reduce((a, item) => a + parseFloat(item.amount), 0);
-        console.log("dara from request single after every every", data);
-        setRequest(data);
-      });
+      // if (data.reviewStatus == 2) {
+      // 	data.reviewStatusReadable = "Declined";
+      // }
+      // if (data.approvalStatus == 2) data.approvalStatusReadable = "Declined";
+
+      // data.hasAlreadyApproved = data.approvals && data.approvals.find(a => a.userId == auth.isAuthenticated().user.id)
+
+      // let items = [];
+      // data.orders.forEach((order) => {
+      // 	let orde = order.items.map((item) => {
+      // 		return {
+      // 			...item,
+      // 			vendorId: order.vendorId,
+      // 		};
+      // 	});
+      // 	items = items.concat(orde);
+      // });
+      // data.items = items;
+      // // data.totalItemsAmount = data.items.reduce((a, item) => a + parseFloat(item.amount), 0);
+      // console.log("dara from request single after every every", data);
+      setRequest(newData);
+    });
   };
 
   const handleShow = (type) => {
@@ -178,8 +192,8 @@ function SinglePurchaseRequest({ match, actions }) {
                   <h4>Purchase Request: {request.caseId}</h4>
                   <div className="">
                     {isActionAllowed("approve") &&
-                      request.approvalStatus == null &&
-                      !request.hasAlreadyApproved && (
+                    request.approvalStatus === null ? (
+                      !request.alreadyApprovedByMe && (
                         <>
                           <Button
                             variant="success"
@@ -205,7 +219,12 @@ function SinglePurchaseRequest({ match, actions }) {
                             Cancel
                           </Button>
                         </>
-                      )}
+                      )
+                    ) : request.approvalStatus ? (
+                      <span className="text-success">Approved</span>
+                    ) : (
+                      <span className="text-danger">Rejected</span>
+                    )}
                   </div>
                 </Card.Title>
               </Card.Header>
@@ -234,9 +253,11 @@ function SinglePurchaseRequest({ match, actions }) {
                     </Card>
                   </Col>
                 </Row>
+                {
+                  //<Row>
+                }
 
-                <Row>
-                  {/* <Col md="6">
+                {/* <Col md="6">
 										<Accordion defaultActiveKey="0">
 											<Card>
 												<Accordion.Toggle
@@ -278,8 +299,8 @@ function SinglePurchaseRequest({ match, actions }) {
 										</Accordion>
 									</Col> */}
 
-                  {/* {request.reviewStatus == 1 && ( */}
-                  {/* <Col md="12">
+                {/* {request.reviewStatus == 1 && ( */}
+                {/* <Col md="12">
 											<Accordion defaultActiveKey="0">
 												<Card>
 													<Accordion.Toggle
@@ -340,12 +361,16 @@ function SinglePurchaseRequest({ match, actions }) {
 												</Card>
 											</Accordion>
 										</Col> */}
-                  {/* )} */}
-                </Row>
+                {/* )} */}
+                {/* </Row> */}
                 <Row>
-                  <Col md="6">
+                  <Col md="8">
                     <h5>Items</h5>
                     <ItemsTable items={request.items} />
+                  </Col>
+                  <Col md="4">
+                    <h5>List of Vendors</h5>
+                    <VendorTable vendors={request.vendors} />
                   </Col>
 
                   {/* {
@@ -439,5 +464,9 @@ function SinglePurchaseRequest({ match, actions }) {
     </>
   );
 }
+
+let testin = () => {
+  return <div></div>;
+};
 
 export default SinglePurchaseRequest;

@@ -207,67 +207,78 @@ function SingleLog(props) {
                     <Row>
                       {products.length > 0 && (
                         <Col md="12">
-                          <Table striped bordered hover>
-                            <thead>
-                              <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Amount</th>
-                                <th>Vendor</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {products.map((list, index) => (
-                                <tr key={index}>
-                                  <td>{list.name}</td>
-                                  <td>{list.quantity}</td>
-                                  <td>{list.quantity * list.price}</td>
-                                  <td>
-                                    <Form.Control
-                                      as="select"
-                                      name="vendorId"
-                                      value={vendorsList}
-                                      multiple={true}
-                                      onChange={(e) => {
-                                        setVendorsList((prev) => {
-                                          let find = prev.find(
-                                            (i) => i === e.target.value
-                                          );
-                                          if (find) {
-                                            let newState = prev.filter(
-                                              (ele) => ele !== e.target.value
-                                            );
-                                            return newState;
-                                          }
-
-                                          return [...prev, e.target.value];
-                                        });
-                                        //  handleOnChange(e, index);
-                                      }}
-                                      disabled={
-                                        auth.isAuthenticated().user.role ==
-                                        "Requestor"
-                                      }
-                                    >
-                                      <option>Choose</option>
-                                      {vendors.map((e, key) => {
-                                        return (
-                                          <option value={e.id} key={key}>
-                                            {e.name}
-                                          </option>
-                                        );
-                                      })}
-                                    </Form.Control>
-                                  </td>
+                          <>
+                            <Table striped bordered hover>
+                              <thead>
+                                <tr>
+                                  <th>Product</th>
+                                  <th>Quantity</th>
+                                  <th>Amount</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </Table>
+                              </thead>
+                              <tbody>
+                                {products.map((list, index) => (
+                                  <tr key={index}>
+                                    <td>{list.name}</td>
+                                    <td>{list.quantity}</td>
+                                    <td>{list.quantity * list.price}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          </>
                         </Col>
                       )}
                     </Row>
+                    <Row>
+                      <Col md="12">
+                        <Card className="p-3">
+                          <Card.Title className="ml-1" as="h5">
+                            Pick Vendor
+                          </Card.Title>
+                          <Card.Body>
+                            <Form.Control
+                              as="select"
+                              name="vendorId"
+                              value={vendorsList}
+                              multiple={true}
+                              onChange={(e) => {
+                                setVendorsList((prev) => {
+                                  let find = prev.find(
+                                    (i) => i === e.target.value
+                                  );
+                                  if (find) {
+                                    let newState = prev.filter(
+                                      (ele) => ele !== e.target.value
+                                    );
+                                    return newState;
+                                  }
+
+                                  return [...prev, e.target.value];
+                                });
+                                //  handleOnChange(e, index);
+                              }}
+                              disabled={
+                                auth.isAuthenticated().user.role == "Requestor"
+                              }
+                            >
+                              <option>Choose</option>
+                              {vendors.map((e, key) => {
+                                return (
+                                  <option value={e.id} key={key}>
+                                    {e.name}
+                                  </option>
+                                );
+                              })}
+                            </Form.Control>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
                     {auth.isAuthenticated().user.role !== "Requestor" && (
-                      <Button type="submit">Submit</Button>
+                      <Button disabled={vendorsList.length <= 0} type="submit">
+                        Submit
+                      </Button>
                     )}
                   </Form>
                 </Col>

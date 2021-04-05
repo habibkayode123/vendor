@@ -26,10 +26,10 @@ function PurchaseRequests() {
   const role = auth.isAuthenticated().user.role;
   const fetchRequests = () => {
     const url =
-      role == "Procurement Committee"
+      role == "Procurement Team"
         ? "/v1/request"
         : "/v1/request/getRequestApprover";
-    if (role == "Procurement Committee") {
+    if (role == "Procurement Team") {
       axios
         .get(url)
         .then((res) => {
