@@ -33,6 +33,16 @@ const mapDispatchToProps = dispatch => {
 };
 
 function Budget(props) {
+	const init = {
+		name: '',
+		amount: '',
+		departmentId: '',
+		budgetTypeId: '',
+		startDate: '',
+		endDate: '',
+		expenseTypeId: '',
+		budgetAvailability: ''
+	};
 	const [show, setShow] = useState(false);
 	const [showTopUp, setShowTopUp] = useState(false);
 	const [budgets, setBudgets] = useState([]);
@@ -42,15 +52,10 @@ function Budget(props) {
 	const [sorting, setSorting] = useState({ field: "", order: "" });
 	const [selectedFile, setSelectedFile] = useState(null);
 	const [needsReload, setNeedsReload] = useState(true);
-	const [values, setValues] = useState({
-		amount: '',
-		departmentId: '',
-		budgetTypeId: '',
-		startDate: '',
-		endDate: '',
-	});
+	const [values, setValues] = useState(init);
 	const [departments, setDepartments] = useState([]);
 	const [budgetTypes, setBudgetTypes] = useState([]);
+	const [expenseTypes, setExpenseTypes] = useState([]);
 	const ITEMS_PER_PAGE = 10;
 	const jwt = auth.isAuthenticated();
 
@@ -83,13 +88,7 @@ function Budget(props) {
 	const handleShow = () => setShow(true);
 	const handleClose = () => {
 		setShow(false);
-		setValues({
-			amount: '',
-			departmentId: '',
-			budgetTypeId: '',
-			startDate: '',
-			endDate: '',
-		});
+		setValues(init);
 	}
 
 	const updateBudgetP = (signal) => {
@@ -132,6 +131,7 @@ function Budget(props) {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		
 		trackPromise(
 		create(values).then((data) => {
 			if (data.errors) {
@@ -141,7 +141,7 @@ function Budget(props) {
 				// console.log("datasss", data);
 				// setValues({ ...values, error: "", redirect: true });
 				handleClose();
-				toast.success(data.message);
+				toast.success('Budget Added Successfully');
 				setNeedsReload(!needsReload);
 				updateBudgetP();
 			}
@@ -161,6 +161,12 @@ function Budget(props) {
 			}
 		});
 	};
+
+	const fetchExpenseTypes = () => {
+		axios.get('/expensecategory').then(res => {
+			setExpenseTypes(res.data.expeseCat)
+		})
+	}
 
 	const fetchBudgetTypes = () => {
 		getBudgetTypeList().then((data) => {
@@ -192,6 +198,7 @@ function Budget(props) {
 		getData();
 		fetchDepartments();
 		fetchBudgetTypes();
+		fetchExpenseTypes();
 	}, [needsReload]);
 
 	const onFileUpload = (close) => {
@@ -352,13 +359,25 @@ function Budget(props) {
 								</div>
 							</Card.Body>
 						</Card>
-						<Modal show={show} onHide={handleClose}>
+						<Modal show={show} onHide={handleClose} size="lg">
 							<Modal.Header closeButton>
 								<Modal.Title>Add Budget</Modal.Title>
 							</Modal.Header>
 
 							<Form onSubmit={handleSubmit}>
 							<Modal.Body>
+							<Row>
+							<Col md="6">
+								<Form.Group>
+									<Form.Label>Name</Form.Label>
+									<Form.Control
+										type="text"
+										name="name"
+										onChange={handleOnChange}
+										placeholder="Name"
+										value={values.name}
+									/>
+								</Form.Group>
 								<Form.Group controlId="role">
 									<Form.Label>Department</Form.Label>
 									<Form.Control as="select"
@@ -376,7 +395,38 @@ function Budget(props) {
 										};
 									</Form.Control>
 								</Form.Group>
-
+								<Form.Group controlId="expenseType">
+									<Form.Label>Expense Type</Form.Label>
+									<Form.Control as="select"
+										value={values.expenseTypeId}
+										onChange={handleOnChange}
+										name="expenseTypeId"
+									>
+										<option value="">Select</option>
+										{
+											expenseTypes.map((item, i) => (
+												<option value={item.id} key={item.id}>
+													{item.name}
+												</option>
+												))
+										};
+									</Form.Control>
+								</Form.Group>
+								<Form.Group controlId="availability">
+									<Form.Label>Availability</Form.Label>
+									<Form.Control as="select"
+										value={values.budgetAvailability}
+										onChange={handleOnChange}
+										name="budgetAvailability"
+									>
+										<option value="">Select</option>
+										<option value="Monthly">Monthly</option>
+										<option value="Quarterly">Quarterly</option>
+										<option value="Annual">Annual</option>
+									</Form.Control>
+								</Form.Group>
+								</Col>
+								<Col md="6">
 								<Form.Group controlId="startDate">
 									<Form.Label>Start Date</Form.Label>
 									<Form.Control
@@ -426,6 +476,8 @@ function Budget(props) {
 										};
 									</Form.Control>
 								</Form.Group>	
+							</Col>
+							</Row>
 							</Modal.Body>
 							<Modal.Footer>
 								<Button variant="primary" type="submit">

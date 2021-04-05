@@ -67,22 +67,6 @@ const Header = ({budget, handleUpdate}) => {
 		const abortController = new AbortController();
 		const signal = abortController.signal;
 		
-		// auth.isAuthenticated()&&(
-		// getBudgetByDepartment(
-		// 	{
-		// 		departmentId: auth.isAuthenticated()
-		// 			? auth.isAuthenticated().user.departmentId
-		// 			: "cd29f9a5-73e6-4aa8-b8fe-7a0cad9b2142",
-		// 	},
-		// 	signal
-		// ).then((data) => { console.log(data);
-		// 	if (data.data.errors) {
-		// 		setError(data.errors);
-		// 	} else {
-		// 		handleUpdate(data.data[0]);
-		// 	}
-		// }));
-		// }
 
 		return function cleanup() {
 			abortController.abort();
@@ -180,14 +164,25 @@ const Header = ({budget, handleUpdate}) => {
 										} */}
 										{
 											auth.isAuthenticated() &&
-												(auth.isAuthenticated().user.role === "Admin" || auth.isAuthenticated().user.role === "CFO" ) && (
+												(auth.isAuthenticated().user.role === "Admin") && (
 													<li className="center nav-item">
 														
 														Welcome	{auth.isAuthenticated().user.role}
 														
 													</li>
 												)
-											// )
+											
+										}
+										{
+											auth.isAuthenticated() &&
+												(auth.isAuthenticated().user.role !== "Admin") && (
+													<li className="center nav-item">
+														
+														Welcome	{auth.isAuthenticated().user.email.split('@')[0]}
+														
+													</li>
+												)
+											
 										}
 									</ul>
 								{/* {auth.isAuthenticated().user.role !=="Admin" &&(

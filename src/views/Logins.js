@@ -57,6 +57,9 @@ export default function Login(props) {
 	if (auth.isAuthenticated() && auth.isAuthenticated().user.department === "Finance") {
 		to = "/admin/purchase/requests";
 	}
+	if (auth.isAuthenticated() && auth.isAuthenticated().user.role === "Finance Admin") {
+		to = "/admin/budget";
+	}
 	const { redirectToReferrer } = values;
 	if (redirectToReferrer) {
 		return <Redirect to={to} />;
