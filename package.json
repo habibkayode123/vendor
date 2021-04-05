@@ -13,7 +13,6 @@
     "bootstrap": "^4.6.0",
     "chart.js": "^2.9.4",
     "chartist": "0.10.1",
-    "esbuild-darwin-64": "^0.9.2",
     "font-awesome": "^4.7.0",
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8",

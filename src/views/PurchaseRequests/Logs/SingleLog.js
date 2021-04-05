@@ -15,10 +15,9 @@ import {
 import { numberWithCommas } from "../../../helpers";
 import auth from "auth/auth-helper";
 import { toast } from "react-toastify";
-import { trackPromise } from 'react-promise-tracker';
+import { trackPromise } from "react-promise-tracker";
 
 function SingleLog(props) {
-  
   const init = {
     vendorId: "",
     name: "",
@@ -32,6 +31,7 @@ function SingleLog(props) {
   const [items, setItems] = useState([]);
   const [expenseTypeId, setExpenseTypeId] = useState("");
   const [products, setProducts] = useState([]);
+  const [vendorsList, setVendorsList] = useState([]);
 
   const handleOnChange = (e, i) => {
     let product = products[i];
@@ -49,7 +49,7 @@ function SingleLog(props) {
         setExpenseTypeId(props.location.state.expenseTypeId);
         setLog(res.data.data.data);
         setDepartmentId(props.location.state.departmentId);
-        setProducts(res.data.data.data.products)
+        setProducts(res.data.data.data.products);
         console.log(res.data.data.data.products);
       })
     );
@@ -62,17 +62,23 @@ function SingleLog(props) {
     });
   };
 
-  const handleSubmit = (e) => {console.log('Here');
+  const handleSubmit = (e) => {
+    console.log("Here");
     e.preventDefault();
-
-
+    let vendorsTobeSend = vendorsList.map((i) => {
+      let current = vendors.find((ele) => ele.id === i);
+      return {
+        name: current.name,
+        id: current.id,
+      };
+    });
 
     const data = products.map((item) => {
       const newItems = [
         {
           quantity: item.quantity,
           name: item.name,
-          amount: item.price * parseInt(item.quantity)
+          amount: item.price * parseInt(item.quantity),
         },
       ];
 
@@ -82,18 +88,38 @@ function SingleLog(props) {
       };
     });
 
+    let itemTobeSend = products.map((item) => {
+      return {
+        quantity: item.quantity,
+        name: item.name,
+        amount: item.price * parseInt(item.quantity),
+      };
+    });
+
+    console.log(
+      {
+        vendors: vendorsTobeSend,
+        items: itemTobeSend,
+      },
+      "ordersss"
+    );
+
     const payload = {
       total: log.amount,
       logId: log.id,
       departmentId: departmentId,
       expenseTypeId: expenseTypeId,
-      orders: data,
+      // orders: data,
+      order: {
+        vendors: vendorsTobeSend,
+        items: itemTobeSend,
+      },
       requestedBy: auth.isAuthenticated().user.email.split("@")[0],
       userId: auth.isAuthenticated().user.id,
     };
 
-    props.setBudgets(payload.total, expenseTypeId);
-
+    //    props.setBudgets(payload.total, expenseTypeId);
+    console.log(payload, "my new payload");
     axios
       .post("/v1/request", payload)
       .then((res) => {
@@ -128,19 +154,17 @@ function SingleLog(props) {
             <Card.Header>
               <Card.Title className="d-flex justify-content-between">
                 <h4>Purchase Request Log</h4>
-                
               </Card.Title>
             </Card.Header>
             <Card.Body>
-            
               <Row>
                 <Col md="6">
                   <Card>
                     <Card.Header>
-                      <Card.Title as="h6">Narration:</Card.Title>
+                      <Card.Title as="h6">Balance:</Card.Title>
                     </Card.Header>
                     <Card.Body>
-                      <Card.Text>{log.narration}</Card.Text>
+                      <Card.Text>{numberWithCommas(log.balance)}</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -172,68 +196,81 @@ function SingleLog(props) {
                       <Card.Title as="h6">Department:</Card.Title>
                     </Card.Header>
                     <Card.Body>
-                      <Card.Text>
-                        {log.departmentId}
-                      </Card.Text>
+                      <Card.Text>{log.departmentId}</Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
               </Row>
               <Row>
                 <Col md="12">
-              <Form onSubmit={handleSubmit}>
-                <Row>
-              {products.length > 0 && (
-                      <Col md="12">
-                        <Table striped bordered hover>
-                          <thead>
-                            <tr>
-                              <th>Product</th>
-                              <th>Quantity</th>
-                              <th>Amount</th>
-                              <th>Vendor</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {products.map((list, index) => (
-                              <tr key={index}>
-                                <td>{list.name}</td>
-                                <td>{list.quantity}</td>
-                                <td>{list.quantity * list.price}</td>
-                                <td>
-                                  <Form.Control
-                                    as="select"
-                                    name="vendorId"
-                                    value={list.vendorId}
-                                    onChange={(e) => handleOnChange(e, index)}
-                                    disabled={auth.isAuthenticated().user.role == 'Requestor'}
-                                  >
-                                    <option>Choose</option>
-                                    {vendors.map((e, key) => {
-                                      return (
-                                        <option value={e.id} key={key}>
-                                          {e.name}
-                                        </option>
-                                      );
-                                    })}
-                                  </Form.Control>
-                                </td>
+                  <Form onSubmit={handleSubmit}>
+                    <Row>
+                      {products.length > 0 && (
+                        <Col md="12">
+                          <Table striped bordered hover>
+                            <thead>
+                              <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                                <th>Vendor</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </Col>
-                    
-                  )}
-                  </Row>
-                  {
-                    auth.isAuthenticated().user.role !== 'Requestor' && <Button type="submit">Submit</Button>
-                  }
-                    
-                    
+                            </thead>
+                            <tbody>
+                              {products.map((list, index) => (
+                                <tr key={index}>
+                                  <td>{list.name}</td>
+                                  <td>{list.quantity}</td>
+                                  <td>{list.quantity * list.price}</td>
+                                  <td>
+                                    <Form.Control
+                                      as="select"
+                                      name="vendorId"
+                                      value={vendorsList}
+                                      multiple={true}
+                                      onChange={(e) => {
+                                        setVendorsList((prev) => {
+                                          let find = prev.find(
+                                            (i) => i === e.target.value
+                                          );
+                                          if (find) {
+                                            let newState = prev.filter(
+                                              (ele) => ele !== e.target.value
+                                            );
+                                            return newState;
+                                          }
+
+                                          return [...prev, e.target.value];
+                                        });
+                                        //  handleOnChange(e, index);
+                                      }}
+                                      disabled={
+                                        auth.isAuthenticated().user.role ==
+                                        "Requestor"
+                                      }
+                                    >
+                                      <option>Choose</option>
+                                      {vendors.map((e, key) => {
+                                        return (
+                                          <option value={e.id} key={key}>
+                                            {e.name}
+                                          </option>
+                                        );
+                                      })}
+                                    </Form.Control>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                        </Col>
+                      )}
+                    </Row>
+                    {auth.isAuthenticated().user.role !== "Requestor" && (
+                      <Button type="submit">Submit</Button>
+                    )}
                   </Form>
-                  </Col>
-              
+                </Col>
               </Row>
             </Card.Body>
           </Card>

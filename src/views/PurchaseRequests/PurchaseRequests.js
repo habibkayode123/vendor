@@ -25,19 +25,24 @@ function PurchaseRequests() {
   const departmentId = auth.isAuthenticated().user.departmentId;
   const role = auth.isAuthenticated().user.role;
   const fetchRequests = () => {
-    const url = role == 'Procurement Committee' ? '/v1/request' : '/v1/request/getRequestApprover';
-    if (role == 'Procurement Committee') {
+    const url =
+      role == "Procurement Committee"
+        ? "/v1/request"
+        : "/v1/request/getRequestApprover";
+    if (role == "Procurement Committee") {
       axios
         .get(url)
-        .then((res) => {console.log(res)
+        .then((res) => {
+          console.log(res);
           const data = res.data.data.map((request) => {
             let approvalStatusReadable;
-          const approvalStatus = request.approvalStatus;
+            const approvalStatus = request.approvalStatus;
 
-          if (approvalStatus == null) approvalStatusReadable = "Pending";
-          else if (approvalStatus == false) approvalStatusReadable = "Declined";
-          else approvalStatusReadable = "Approved";
-          return { ...request, approvalStatusReadable };
+            if (approvalStatus == null) approvalStatusReadable = "Pending";
+            else if (approvalStatus == false)
+              approvalStatusReadable = "Declined";
+            else approvalStatusReadable = "Approved";
+            return { ...request, approvalStatusReadable };
           });
 
           setRequests(data);
@@ -48,17 +53,18 @@ function PurchaseRequests() {
     } else {
       axios
         .post(url, {
-          loggedUserId: auth.isAuthenticated().user.id
+          loggedUserId: auth.isAuthenticated().user.id,
         })
         .then((res) => {
           const data = res.data.data.data.map((request) => {
             let approvalStatusReadable;
-          const approvalStatus = request.approvalStatus;
+            const approvalStatus = request.approvalStatus;
 
-          if (approvalStatus == null) approvalStatusReadable = "Pending";
-          else if (approvalStatus == false) approvalStatusReadable = "Declined";
-          else approvalStatusReadable = "Approved";
-          return { ...request, approvalStatusReadable };
+            if (approvalStatus == null) approvalStatusReadable = "Pending";
+            else if (approvalStatus == false)
+              approvalStatusReadable = "Declined";
+            else approvalStatusReadable = "Approved";
+            return { ...request, approvalStatusReadable };
           });
 
           setRequests(data);
@@ -67,7 +73,7 @@ function PurchaseRequests() {
           console.log(err);
         });
     }
-      
+
     // }
   };
 

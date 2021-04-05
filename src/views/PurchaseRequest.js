@@ -13,8 +13,7 @@ import { toast } from "react-toastify";
 import { connect } from "react-redux";
 import { getBudgetByDepartment } from "../budget/api-budget";
 import auth from "../auth/auth-helper";
-import { trackPromise } from 'react-promise-tracker';
-
+import { trackPromise } from "react-promise-tracker";
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -24,22 +23,25 @@ const mapDispatchToProps = (dispatch) => {
 
 function PurchaseRequest({ handleUpdate }) {
   const init = {
-    narration: "",
-    expenseTypeId: "",
+    // narration: "",
+    // expenseTypeId: "",
     products: [],
   };
   const initProduct = {
-    name: '',
-    quantity: '',
-    amount: '',
-    price: '',
-    id: ''
+    name: "",
+    quantity: "",
+    amount: "",
+    price: "",
+    id: "",
+    narration: "",
   };
   const [inputList, setInputList] = useState([]);
   const [expenseTypes, setExpenseTypes] = useState([]);
+  const [expenseTypeValue, setExpenseTypesValue] = useState("");
   const [input, setInput] = useState(init);
   const [products, setProducts] = useState([]);
-  const [product, setProduct] = useState(initProduct)
+  const [product, setProduct] = useState(initProduct);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     fetchBudgets();
@@ -48,14 +50,14 @@ function PurchaseRequest({ handleUpdate }) {
 
   const fetchProducts = () => {
     trackPromise(
-      axios.get('/v1/vendor/product').then(res => {
-        setProducts(res.data.data.data)
+      axios.get("/v1/vendor/product").then((res) => {
+        setProducts(res.data.data.data);
       })
     );
-  }
+  };
 
   const fetchBudgets = () => {
-    trackPromise (
+    trackPromise(
       getBudgetByDepartment({
         departmentId: auth.isAuthenticated().user.departmentId,
       }).then((res) => {
@@ -82,7 +84,7 @@ function PurchaseRequest({ handleUpdate }) {
   const handleRemoveClick = (index) => {
     let products = input.products;
     products.splice(index, 1);
-    setInput({...input, products});
+    setInput({ ...input, products });
   };
 
   const handleOnEdit = (index) => {
@@ -90,39 +92,47 @@ function PurchaseRequest({ handleUpdate }) {
     const product = products[index];
     setProduct(product);
     products.splice(index, 1);
-    setInput({...input, products});
+    setInput({ ...input, products });
   };
 
   // handle click event of the Add button
   const handleAddClick = () => {
     let products = input.products;
     products.push(product);
-    setInput({...input, products});
+    setInput({ ...input, products });
     setProduct(initProduct);
   };
   // handle click event of the Make Purchase button
-  const handlePurchase = (e) => {
-    e.preventDefault();
-    const total = input.products.reduce((a, c) => a + parseFloat(c.amount), 0).toString()
-    const data = {
-      ...input,
-      requestedBy: auth.isAuthenticated().user.email.split("@")[0],
-      departmentId: auth.isAuthenticated().user.departmentId,
-      userId: auth.isAuthenticated().user.id,
-      amount: total
+  const handlePurchase = () => {
+    //  e.preventDefault();
+    if (expenseTypeValue.length > 3) {
+      const total = input.products
+        .reduce((a, c) => a + parseFloat(c.amount), 0)
+        .toString();
+      const data = {
+        ...input,
+        requestedBy: auth.isAuthenticated().user.email.split("@")[0],
+        departmentId: auth.isAuthenticated().user.departmentId,
+        userId: auth.isAuthenticated().user.id,
+        amount: total,
+        expenseTypeId: expenseTypeValue,
+        narration: "testing",
+      };
+      console.log(data);
+      trackPromise(
+        axios
+          .post("/v1/log", [data])
+          .then((res) => {
+            toast.success(res.data.message);
+            setInput(init);
+          })
+          .catch((err) => {
+            toast.error(err.response.data.message);
+          })
+      );
+    } else {
+      setShowError(true);
     }
-    console.log(data);
-    trackPromise(
-      axios
-        .post("/v1/log", [data])
-        .then((res) => {
-          toast.success(res.data.message);
-          setInput(init);
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message);
-        })
-    );
   };
 
   const handleInputChange = ({ target }) => {
@@ -130,22 +140,31 @@ function PurchaseRequest({ handleUpdate }) {
   };
 
   const handleProductChange = ({ target }) => {
-    if (target.name == 'name') {
-      const product = products.find(p => p.id == target.value);
+    if (target.name == "name") {
+      const product = products.find((p) => p.id == target.value);
       setProduct({
         name: product.name,
         price: product.price,
         quantity: 1,
         id: product.id,
-        amount: product.price
-      })
-    } 
-    if (target.name == 'quantity') {
-      setProduct({...product,
+        amount: product.price,
+        narration: "",
+      });
+    }
+    if (target.name == "quantity") {
+      setProduct({
+        ...product,
         quantity: target.value,
-        amount: product.price * target.value
-      })
-    } 
+        amount: product.price * target.value,
+      });
+    }
+
+    if (target.name == "narration") {
+      setProduct({
+        ...product,
+        narration: target.value,
+      });
+    }
     // setProduct({ ...product, [target.name]: target.value });
   };
 
@@ -166,20 +185,50 @@ function PurchaseRequest({ handleUpdate }) {
                         Budget not available yet.Purchase request cannot be
                         raised at the moment
                       </p>
-                    )}{" "}
-                    <Form onSubmit={handlePurchase}>
-                      <Form.Group controlId="narration">
-                        <Form.Label>Narration</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          rows={3}
-                          name="narration"
-                          value={input.narration}
-                          onChange={handleInputChange}
-                        />
-                      </Form.Group>
-
-                      <Form.Group controlId="expenseType">
+                    )}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Form.Group controlId="expenseType">
+                      <Form.Label>Expense Type</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="expenseTypeId"
+                        value={expenseTypeValue}
+                        onChange={(e) => {
+                          //console.log(e.target.value, "eeee");
+                          setExpenseTypesValue(e.target.value);
+                        }}
+                      >
+                        <option>Choose</option>
+                        {expenseTypes.map((e, key) => {
+                          return (
+                            <option value={e.id} key={key}>
+                              {e.name}
+                            </option>
+                          );
+                        })}
+                      </Form.Control>
+                      {showError && expenseTypeValue.length < 3 && (
+                        <Form.Text className="text-danger">
+                          Expense Type Cannot be empty
+                        </Form.Text>
+                      )}
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Card>
+                      <Card.Header>
+                        <Card.Title as="h5">Add a Single Product</Card.Title>
+                      </Card.Header>
+                      <Card.Body>
+                        <Form
+                        // onSubmit={handlePurchase}
+                        >
+                          {/* <Form.Group controlId="expenseType">
                         <Form.Label>Expense Type</Form.Label>
                         <Form.Control
                           as="select"
@@ -196,108 +245,147 @@ function PurchaseRequest({ handleUpdate }) {
                             );
                           })}
                         </Form.Control>
-                      </Form.Group>
+                      </Form.Group> */}
 
-                      <Row>
-												<Col md="3">
-													<Form.Group>
-														<select
-															className="form-control"
-															name="name"
-															value={product.id}
-															onChange={handleProductChange}
-														>
-															<option>Choose Item</option>
-															{products.map((e, key) => {
-																return (
-																	<option value={e.id} key={key}>
-																		{e.name}
-																	</option>
-																);
-															})}
-														</select>
-													</Form.Group>
-												</Col>
-												<Col  md="2">
-													<Form.Group>
-														{/* <label>Quantity</label> */}
-														<Form.Control
-															placeholder="Qty"
-															type="number"
-															name="quantity"
-															value={product.quantity}
-															onChange={handleProductChange}
-														></Form.Control>
-													</Form.Group>
-												</Col>
-												<Col md="3">
-													<Form.Group>
-														{/* <label>Amount</label> */}
-														<Form.Control
-															placeholder="Amount"
-															type="number"
-															value={product.amount}
-															readOnly
-														></Form.Control>
-													</Form.Group>
-												</Col>
-												<Col  md="4">
-														{/* {inputList.length - 1 === i && ( */}
-															<Button
-																className="btn-fill ml-2"
-																variant="info"
-																onClick={handleAddClick}
-															>
-																Add
-															</Button>
-														{/* )} */}
-												</Col>
-											</Row>
+                          <Row>
+                            <Col md="4">
+                              <Form.Group>
+                                <select
+                                  className="form-control"
+                                  name="name"
+                                  value={product.id}
+                                  onChange={handleProductChange}
+                                >
+                                  <option>Choose Item</option>
+                                  {products.map((e, key) => {
+                                    return (
+                                      <option value={e.id} key={key}>
+                                        {e.name}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              </Form.Group>
+                            </Col>
+                            <Col md="4">
+                              <Form.Group>
+                                {/* <label>Quantity</label> */}
+                                <Form.Control
+                                  placeholder="Qty"
+                                  type="number"
+                                  name="quantity"
+                                  value={product.quantity}
+                                  onChange={handleProductChange}
+                                ></Form.Control>
+                              </Form.Group>
+                            </Col>
+                            <Col md="4">
+                              <Form.Group>
+                                {/* <label>Amount</label> */}
+                                <Form.Control
+                                  placeholder="Amount"
+                                  type="number"
+                                  value={product.amount}
+                                  readOnly
+                                ></Form.Control>
+                              </Form.Group>
+                            </Col>
+                          </Row>
 
-                      {input.products.length > 0 && (
-                        <Row>
-                      <Col md="12">
-                        <Table striped bordered hover>
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Quantity</th>
-                              <th>Amount</th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {input.products.map((list, index) => (
-                              <tr key={index}>
-                                <td>{list.name}</td>
-                                <td>{list.quantity}</td>
-                                <td>{list.amount}</td>
-                                <td>
-                                  <Button
-                                    className="mr-1"
-                                    variant="danger"
-                                    onClick={() => handleRemoveClick(index)}
-                                  >
-                                    Remove
-                                  </Button>
+                          <Row>
+                            <Col>
+                              <Form.Group controlId="narration">
+                                <Form.Label>Specification</Form.Label>
+                                <Form.Control
+                                  as="textarea"
+                                  rows={3}
+                                  name="narration"
+                                  value={product.narration}
+                                  onChange={handleProductChange}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <div
+                              style={{ width: "100%" }}
+                              className="d-flex my-3"
+                            >
+                              {/* {inputList.length - 1 === i && ( */}
+                              <Button
+                                disabled={
+                                  product.amount.length < 2 ||
+                                  product.narration.length < 3 ||
+                                  product.quantity < 1
+                                }
+                                className="btn-fill ml-2"
+                                variant="info"
+                                onClick={handleAddClick}
+                              >
+                                Add
+                              </Button>
+                              {/* )} */}
+                            </div>
+                          </Row>
+                          {input.products.length > 0 && (
+                            <>
+                              <Row>
+                                {" "}
+                                <Col md="12">
+                                  <Card.Title as="h4">
+                                    Product Details
+                                  </Card.Title>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col md="12">
+                                  <Table striped bordered hover>
+                                    <thead>
+                                      <tr>
+                                        <th>Name</th>
+                                        <th>Quantity</th>
+                                        <th>Amount</th>
+                                        <th>Specification</th>
+                                        <th></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {input.products.map((list, index) => (
+                                        <tr key={index}>
+                                          <td>{list.name}</td>
+                                          <td>{list.quantity}</td>
+                                          <td>{list.amount}</td>
+                                          <td>{list.narration}</td>
+                                          <td>
+                                            <Button
+                                              className="mr-1"
+                                              variant="danger"
+                                              onClick={() =>
+                                                handleRemoveClick(index)
+                                              }
+                                            >
+                                              Remove
+                                            </Button>
 
-                                  <Button
-                                    variant="info"
-                                    onClick={() => handleOnEdit(index)}
-                                  >
-                                    Edit
-                                  </Button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </Col>
-                    </Row>
-                  )}
-              
-                      
-                      {/* {inputList.map((x, i) => {
+                                            <Button
+                                              variant="info"
+                                              onClick={() =>
+                                                handleOnEdit(index)
+                                              }
+                                            >
+                                              Edit
+                                            </Button>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
+
+                          {/* {inputList.map((x, i) => {
 										return (
 											<Row key={i}>
 												<Col  md="3">
@@ -385,17 +473,26 @@ function PurchaseRequest({ handleUpdate }) {
 											</Row>
 										);
 									})} */}
-                      <Button
-                        disabled={expenseTypes.length === 0}
-                        className="btn-fill"
-                        type='submit'
-                        variant="info"
-                      >
-                        Submit
-                      </Button>
-                    </Form>
+                          <div className="d-flex ">
+                            {input.products.length > 0 && (
+                              <Button
+                                disabled={expenseTypes.length === 0}
+                                className="btn-fill"
+                                //    type="submit"
+                                onClick={() => {
+                                  console.log("i was cli");
+                                  handlePurchase();
+                                }}
+                                variant="info"
+                              >
+                                Submit
+                              </Button>
+                            )}
+                          </div>
+                        </Form>
+                      </Card.Body>
+                    </Card>
                   </Col>
-                  
                 </Row>
               </Card.Body>
             </Card>
