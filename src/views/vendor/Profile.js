@@ -34,13 +34,15 @@ export default function Profile({ navigation }) {
       getAccountType()
         .then((data) => {
           setAccountType(data.data);
-          setAccountDetails((prev) => {
-            let newObk = {
-              ...prev,
-              accountType: data.data[0].accountTypeName,
-            };
-            return newObk;
-          });
+          if (data.data.length > 0) {
+            setAccountDetails((prev) => {
+              let newObk = {
+                ...prev,
+                accountType: data.data[0].accountTypeName,
+              };
+              return newObk;
+            });
+          }
         })
         .catch((err) => console.log(error))
     );
@@ -49,14 +51,17 @@ export default function Profile({ navigation }) {
       getBankName()
         .then((data) => {
           setBankNames(data.data);
-          setAccountDetails((prev) => {
-            let newObj = {
-              ...prev,
+          console.log(data.data, "bank data");
+          if (data.data.length > 0) {
+            setAccountDetails((prev) => {
+              let newObj = {
+                ...prev,
 
-              bankName: data.data[0].bankName,
-            };
-            return newObj;
-          });
+                bankName: data.data[0].bankName,
+              };
+              return newObj;
+            });
+          }
         })
         .catch((err) => console.log(error))
     );

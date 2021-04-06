@@ -18,6 +18,23 @@ const list = async (signal = null) => {
   }
 };
 
+const getSingleQuotation = async (id) => {
+  try {
+    let response = await fetch(`${herouke}/api/vquotation/${id}`, {
+      method: "GET",
+    });
+    console.log(response, "network");
+    if (response.ok && response.status === 200) {
+      return response.json();
+    } else {
+      throw "Error occur";
+    }
+  } catch (err) {
+    console.log("er");
+    console.log(err);
+  }
+};
+
 const getQuotationByVendor = async (signal = null) => {
   let id = auth.isAuthenticatedVendor().user.vendorId;
   console.log(id, "id");
@@ -129,4 +146,5 @@ export {
   getQuotationByCaseId,
   getQuotationByVendorByStatus,
   uploadQuotation,
+  getSingleQuotation,
 };

@@ -104,66 +104,66 @@ const FetchVendorQuotation = () => {
     );
   };
 
-  // useEffect(() => {
-  //   const abortController = new AbortController();
-  //   const signal = abortController.signal;
-  //   fetchVedorQuotation(signal);
-  //   // setVendorQuotation(dummy);
-  // }, []);
+  useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    fetchVedorQuotation(signal);
+    // setVendorQuotation(dummy);
+  }, []);
 
-  // useEffect(() => {
-  //   if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-  //     setVariableData(vendorQuotation);
-  //     setTotaltems(vendorQuotation.length);
-  //     return;
-  //   } else if (appprovedStatus !== STATUS.All && filterDate === 0) {
-  //     let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-  //     setVariableData(newData);
-  //     setTotaltems(newData.length);
-  //     return;
-  //   } else if (appprovedStatus !== STATUS.All && filterDate !== 0) {
-  //     let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
-  //     let date = new Date();
-  //     let days = date.getDate() - filterDate;
-  //     date.setDate(days);
-  //     let newData2 = newData.filter((k) => new Date(k) >= date);
-  //     setVariableData(newData2);
-  //     setTotaltems(newData2.length);
-  //   }
-  // }, [appprovedStatus, vendorQuotation]);
+  useEffect(() => {
+    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
+      setVariableData(vendorQuotation);
+      setTotaltems(vendorQuotation.length);
+      return;
+    } else if (appprovedStatus !== STATUS.All && filterDate === 0) {
+      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
+      setVariableData(newData);
+      setTotaltems(newData.length);
+      return;
+    } else if (appprovedStatus !== STATUS.All && filterDate !== 0) {
+      let newData = vendorQuotation.filter((i) => i.status === appprovedStatus);
+      let date = new Date();
+      let days = date.getDate() - filterDate;
+      date.setDate(days);
+      let newData2 = newData.filter((k) => new Date(k) >= date);
+      setVariableData(newData2);
+      setTotaltems(newData2.length);
+    }
+  }, [appprovedStatus, vendorQuotation]);
 
-  // useEffect(() => {
-  //   if (appprovedStatus === STATUS.ALL && filterDate === 0) {
-  //     setVariableData(vendorQuotation);
-  //     setTotaltems(vendorQuotation.length);
-  //     return;
-  //   } else if (appprovedStatus === STATUS.All && filterDate !== 0) {
-  //     let newDate = new Date();
-  //     let realDate = newDate.getDate() - fileterDate;
-  //     newDate.setDate(realDate);
-  //     let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-  //     setVariableData(vData);
-  //     setTotaltems(vData.length);
-  //     return;
-  //   } else if (appprovedStatus === !STATUS.All && filterDate !== 0) {
-  //     let newDate = new Date();
-  //     let realDate = newDate.getDate() - fileterDate;
-  //     newDate.setDate(realDate);
-  //     let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
-  //     vData2 = vData.filter((i) => i.status === appprovedStatus);
-  //     setVariableData(vData2);
-  //     setTotaltems(vData2.length);
-  //     return;
-  //   }
-  // }, [filterDate, vendorQuotation]);
+  useEffect(() => {
+    if (appprovedStatus === STATUS.ALL && filterDate === 0) {
+      setVariableData(vendorQuotation);
+      setTotaltems(vendorQuotation.length);
+      return;
+    } else if (appprovedStatus === STATUS.All && filterDate !== 0) {
+      let newDate = new Date();
+      let realDate = newDate.getDate() - fileterDate;
+      newDate.setDate(realDate);
+      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
+      setVariableData(vData);
+      setTotaltems(vData.length);
+      return;
+    } else if (appprovedStatus === !STATUS.All && filterDate !== 0) {
+      let newDate = new Date();
+      let realDate = newDate.getDate() - fileterDate;
+      newDate.setDate(realDate);
+      let vData = vendorQuotation.filter((i) => new Date(i) >= newDate);
+      vData2 = vData.filter((i) => i.status === appprovedStatus);
+      setVariableData(vData2);
+      setTotaltems(vData2.length);
+      return;
+    }
+  }, [filterDate, vendorQuotation]);
 
-  // useEffect(() => {
-  //   setTotaltems(variableData.length);
-  //   let lastIndex = currentPage * ITEMS_PER_PAGE;
-  //   let startIndex = lastIndex - ITEMS_PER_PAGE;
-  //   let newData = variableData.slice(startIndex, lastIndex);
-  //   setDisplayData(newData);
-  // }, [currentPage, variableData, vendorQuotation]);
+  useEffect(() => {
+    setTotaltems(variableData.length);
+    let lastIndex = currentPage * ITEMS_PER_PAGE;
+    let startIndex = lastIndex - ITEMS_PER_PAGE;
+    let newData = variableData.slice(startIndex, lastIndex);
+    setDisplayData(newData);
+  }, [currentPage, variableData, vendorQuotation]);
 
   const headers = [
     { name: "SN", field: "id" },
@@ -250,12 +250,12 @@ const FetchVendorQuotation = () => {
                   </Row>
                   <div className="d-flex justify-content-center"></div>
                   <div className="d-flex justify-content-center">
-                    {/* <Pagination
+                    <Pagination
                       total={totalItems}
                       itemsPerPage={ITEMS_PER_PAGE}
                       currentPage={currentPage}
                       onPageChange={(page) => setCurrentPage(page)}
-                    /> */}
+                    />
                   </div>
                   <Table responsive>
                     <TableHeader
@@ -282,7 +282,7 @@ const FetchVendorQuotation = () => {
                             <td>
                               <Button className="btn-primary text-secondary">
                                 <Link
-                                  to="/vendor/quotationDetails/99"
+                                  to={`/vendor/quotationDetails/${item.id}`}
                                   className="text-light"
                                 >
                                   View
