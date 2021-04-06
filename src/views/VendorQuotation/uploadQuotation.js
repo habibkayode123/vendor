@@ -7,6 +7,7 @@ import {
   Card,
   Form,
   Modal,
+  Alert,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getQuotationByCaseId, uploadQuotation } from "./api-vendorQuotation";
@@ -21,14 +22,30 @@ import { trackPromise } from "react-promise-tracker";
 import "react-day-picker/lib/style.css";
 import { propTypes } from "react-bootstrap/esm/Image";
 
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const UploadQuotation = (props) => {
   const [file, setFile] = useState();
   const [caseId, setCaseId] = useState("");
   const [show, setShow] = useState(true);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState();
   const [loading, setLoading] = useState(true);
   const [caseError, setCaseError] = useState(false);
   const [date, setDate] = useState();
+  const [quotationExpired, setQuotationExpired] = useState(false);
   const [formData, setFormData] = useState({
     comment: "",
     totalAmount: 0,
@@ -44,6 +61,13 @@ const UploadQuotation = (props) => {
       trackPromise(
         getQuotationByCaseId(caseId)
           .then((data) => {
+            if (new Date() > new Date(data.data.expiryDate)) {
+              console.log("it was true");
+              setQuotationExpired(true);
+            } else {
+              console.log("it was false");
+              setQuotationExpired(false);
+            }
             setOrders(data.data);
             console.log(data.data);
             setShow(false);
@@ -191,32 +215,84 @@ const UploadQuotation = (props) => {
       );
     }
   };
+  if (quotationExpired)
+    return (
+      <div>
+        <Container fluid>
+          <Modal show={true}>
+            <Modal.Header>
+              <Modal.Title>Error Message</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <Alert variant="danger">
+                The submission of Quotation for this CASE ID:{" "}
+                <span style={{ fontWeight: "bold", color: "black" }}>
+                  {caseId}
+                </span>{" "}
+                has expried
+              </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  props.history.push("/vendor");
+                }}
+              >
+                Back{" "}
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Container>
+      </div>
+    );
+
   return (
     <div>
       <Container fluid>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header>
-                <Card.Title className="d-flex justify-content-between">
-                  <h4>Orders</h4>
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                {orders.map((i) => {
-                  return (
-                    <>
-                      <Row>
-                        <Col>
-                          <Card.Subtitle className="mb-3">{i.id}</Card.Subtitle>
-                        </Col>
-                      </Row>
-                      <Row>
-                        {i.items.map((k) => (
+        {orders && (
+          <>
+            <Row>
+              <Col md="12">
+                <Card>
+                  <Card.Header>
+                    <Card.Title className="d-flex justify-content-between">
+                      {orders && (
+                        <>
+                          <h4>Orders</h4>
+                          <span>
+                            Quotation Expiry Date
+                            <span className="text-warning ml-3">
+                              {`${String(
+                                new Date(orders.expiryDate).getDate()
+                              ).padStart(2, "0")} 
+                        ${monthNames[new Date(orders.expiryDate).getMonth()]} 
+                        ${new Date(orders.expiryDate).getFullYear()}`}
+                            </span>
+                          </span>
+                        </>
+                      )}
+                    </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Row>
+                      <Col>
+                        <Card.Subtitle className="mb-3">
+                          {orders.requestId}
+                        </Card.Subtitle>
+                      </Col>
+                    </Row>
+
+                    {orders &&
+                      orders.items &&
+                      orders.items.length > 0 &&
+                      orders.items.map((k) => (
+                        <Row>
                           <Col>
                             <Card>
                               <Card.Header>
-                                <Card.Title as="h6">{k.name}</Card.Title>
+                                <Card.Title as="h4">{k.name}</Card.Title>
                               </Card.Header>
                               <Card.Body>
                                 <Card.Text>
@@ -225,106 +301,103 @@ const UploadQuotation = (props) => {
                                     {k.quantity}
                                   </span>
                                 </Card.Text>
+
                                 <Card.Text>
-                                  <span className="mr-3">Amount</span>
-                                  <span className="font-weight-bold badge badge-success text-light p-2">
-                                    {numberWithCommas(k.amount)}
-                                  </span>
+                                  <span className="mr-3">Narration</span>
+                                  <span className="">{k.narration}</span>
                                 </Card.Text>
                               </Card.Body>
                             </Card>
                           </Col>
-                        ))}
-                      </Row>
-                    </>
-                  );
-                })}
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="12">
-            <Card>
-              <Card.Header>
-                <Card.Title className="d-flex justify-content-between">
-                  <h4>Upload Quotation</h4>
-                </Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Form onSubmit={onSubmit}>
-                  <Form.Group controlId="caseId">
-                    <Form.Label>Case ID</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="caseId"
-                      value={caseId}
-                      contentEditable={false}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="caseId">
-                    <Form.Label>Delivery Date</Form.Label>
-                    <DayPickerInput
-                      style={{ display: "block", padding: "12" }}
-                      value={date}
-                      onDayChange={handleDateChange}
-                      placeholder="DD/MM/YYYY"
-                      format="DD/MM/YYYY"
-                    />
-                  </Form.Group>
+                        </Row>
+                      ))}
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12">
+                <Card>
+                  <Card.Header>
+                    <Card.Title className="d-flex justify-content-between">
+                      <h4>Upload Quotation</h4>
+                    </Card.Title>
+                  </Card.Header>
+                  <Card.Body>
+                    <Form onSubmit={onSubmit}>
+                      <Form.Group controlId="caseId">
+                        <Form.Label>Case ID</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="caseId"
+                          value={caseId}
+                          contentEditable={false}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="caseId">
+                        <Form.Label>Delivery Date</Form.Label>
+                        <DayPickerInput
+                          style={{ display: "block", padding: "12" }}
+                          value={date}
+                          onDayChange={handleDateChange}
+                          placeholder="DD/MM/YYYY"
+                          format="DD/MM/YYYY"
+                        />
+                      </Form.Group>
 
-                  <Form.Group controlId="totalAmount">
-                    <Form.Label>Total Amount</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="Please enter total amount"
-                      name="totalAmount"
-                      value={formData.totalAmount}
-                      onChange={handleOnChange}
-                    />
+                      <Form.Group controlId="totalAmount">
+                        <Form.Label>Total Amount</Form.Label>
+                        <Form.Control
+                          type="number"
+                          placeholder="Please enter total amount"
+                          name="totalAmount"
+                          value={formData.totalAmount}
+                          onChange={handleOnChange}
+                        />
 
-                    <ErrorMessage
-                      status={formError.totalAmount}
-                      message={"Total amount must be greater than 1"}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="file">
-                    <Form.File
-                      id="uploadFile"
-                      label="Upload File"
-                      onChange={onFileChange}
-                    />
+                        <ErrorMessage
+                          status={formError.totalAmount}
+                          message={"Total amount must be greater than 1"}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="file">
+                        <Form.File
+                          id="uploadFile"
+                          label="Upload File"
+                          onChange={onFileChange}
+                        />
 
-                    <ErrorMessage
-                      status={formError.file}
-                      message={"You must input a valid file"}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="comment">
-                    <Form.Label>Comment</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      name="comment"
-                      value={formData.comment}
-                      onChange={handleOnChange}
-                    />
+                        <ErrorMessage
+                          status={formError.file}
+                          message={"You must input a valid file"}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="comment">
+                        <Form.Label>Comment</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          name="comment"
+                          value={formData.comment}
+                          onChange={handleOnChange}
+                        />
 
-                    <ErrorMessage
-                      status={formError.comment}
-                      message={"You must input a comment"}
-                    />
-                  </Form.Group>
+                        <ErrorMessage
+                          status={formError.comment}
+                          message={"You must input a comment"}
+                        />
+                      </Form.Group>
 
-                  <Button variant="primary" onClick={onSubmit}>
-                    Submit
-                  </Button>
-                </Form>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-
+                      <Button variant="primary" onClick={onSubmit}>
+                        Submit
+                      </Button>
+                    </Form>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </>
+        )}
         <Modal show={show}>
           <Modal.Header>
             <Modal.Title>Case Id</Modal.Title>

@@ -16,6 +16,7 @@ import { numberWithCommas } from "../../../helpers";
 import auth from "auth/auth-helper";
 import { toast } from "react-toastify";
 import { trackPromise } from "react-promise-tracker";
+import DayPickerInput from "react-day-picker/DayPickerInput";
 
 function SingleLog(props) {
   const init = {
@@ -32,6 +33,8 @@ function SingleLog(props) {
   const [expenseTypeId, setExpenseTypeId] = useState("");
   const [products, setProducts] = useState([]);
   const [vendorsList, setVendorsList] = useState([]);
+  const [expiryDate, setExpiryDate] = useState();
+  const [showError, setShowError] = useState(false);
 
   const handleOnChange = (e, i) => {
     let product = products[i];
@@ -63,8 +66,12 @@ function SingleLog(props) {
   };
 
   const handleSubmit = (e) => {
-    console.log("Here");
     e.preventDefault();
+    if (!expiryDate || vendorsList.length === 0) {
+      setShowError(true);
+      return;
+    }
+
     let vendorsTobeSend = vendorsList.map((i) => {
       let current = vendors.find((ele) => ele.id === i);
       return {
@@ -92,7 +99,8 @@ function SingleLog(props) {
       return {
         quantity: item.quantity,
         name: item.name,
-        amount: item.price * parseInt(item.quantity),
+        amount: String(item.price * parseInt(item.quantity)),
+        narration: item.narration,
       };
     });
 
@@ -113,6 +121,8 @@ function SingleLog(props) {
       order: {
         vendors: vendorsTobeSend,
         items: itemTobeSend,
+        expiryDate: expiryDate,
+        amount: log.amount,
       },
       requestedBy: auth.isAuthenticated().user.email.split("@")[0],
       userId: auth.isAuthenticated().user.id,
@@ -230,6 +240,29 @@ function SingleLog(props) {
                         </Col>
                       )}
                     </Row>
+
+                    <Row>
+                      <Col>
+                        <Form.Group controlId="startDate">
+                          <Form.Label>Expiray Date</Form.Label>
+                          <Form.Control
+                            type="date"
+                            name="ExpirayDate"
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                              setExpiryDate(e.target.value);
+                            }}
+                            placeholder="Start Date"
+                            value={expiryDate}
+                          />
+                          {showError && !expiryDate && (
+                            <Form.Text className="text-danger">
+                              Pick an Expiray Date
+                            </Form.Text>
+                          )}
+                        </Form.Group>
+                      </Col>
+                    </Row>
                     <Row>
                       <Col md="12">
                         <Card className="p-3">
@@ -271,12 +304,21 @@ function SingleLog(props) {
                                 );
                               })}
                             </Form.Control>
+
+                            {showError && vendorsList.length === 0 && (
+                              <Form.Text className="text-danger">
+                                Select Vendor(s)
+                              </Form.Text>
+                            )}
                           </Card.Body>
                         </Card>
                       </Col>
                     </Row>
                     {auth.isAuthenticated().user.role !== "Requestor" && (
-                      <Button disabled={vendorsList.length <= 0} type="submit">
+                      <Button
+                        //disabled={vendorsList.length <= 0}
+                        type="submit"
+                      >
                         Submit
                       </Button>
                     )}

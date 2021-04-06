@@ -330,7 +330,6 @@ function PurchaseRequest({ handleUpdate }) {
                           {input.products.length > 0 && (
                             <>
                               <Row>
-                                {" "}
                                 <Col md="12">
                                   <Card.Title as="h4">
                                     Product Details

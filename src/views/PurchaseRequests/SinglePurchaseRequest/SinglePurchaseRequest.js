@@ -38,7 +38,7 @@ function SinglePurchaseRequest({ match, actions }) {
   };
 
   const isActionAllowed = (action) => {
-    return auth.isAuthenticated().user.role !== "Procurement Committee";
+    return auth.isAuthenticated().user.role !== "Procurement Team";
   };
 
   const cancelRequest = () => {};
@@ -191,35 +191,42 @@ function SinglePurchaseRequest({ match, actions }) {
                 <Card.Title className="d-flex justify-content-between">
                   <h4>Purchase Request: {request.caseId}</h4>
                   <div className="">
-                    {isActionAllowed("approve") &&
-                    request.approvalStatus === null ? (
-                      !request.alreadyApprovedByMe && (
-                        <>
-                          <Button
-                            variant="success"
-                            size="sm"
-                            className="mr-2"
-                            onClick={() => handleShow("Approve")}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="info"
-                            size="sm"
-                            className="mr-2"
-                            onClick={() => handleShow("Decline")}
-                          >
-                            Decline
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleShow("Cancel")}
-                          >
-                            Cancel
-                          </Button>
-                        </>
+                    {isActionAllowed("approve") ? (
+                      request.approvalStatus === null ? (
+                        !request.alreadyApprovedByMe && (
+                          <>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              className="mr-2"
+                              onClick={() => handleShow("Approve")}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="info"
+                              size="sm"
+                              className="mr-2"
+                              onClick={() => handleShow("Decline")}
+                            >
+                              Decline
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleShow("Cancel")}
+                            >
+                              Cancel
+                            </Button>
+                          </>
+                        )
+                      ) : request.approvalStatus ? (
+                        <span className="text-success">Approved</span>
+                      ) : (
+                        <span className="text-danger">Rejected</span>
                       )
+                    ) : request.approvalStatus === null ? (
+                      <span className="text-danger">Pending</span>
                     ) : request.approvalStatus ? (
                       <span className="text-success">Approved</span>
                     ) : (

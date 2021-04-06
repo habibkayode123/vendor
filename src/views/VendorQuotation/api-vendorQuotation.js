@@ -75,18 +75,21 @@ const getQuotationByCaseId = async (caseId) => {
   //   };
 
   let payload = {
-    caseId,
+    requestId: caseId,
     vendorId: id,
   };
   console.log(payload);
   try {
-    let response = await fetch(`${herouke}/api/v1/request/getorder`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    let response = await fetch(
+      `${herouke}/api/v1/order/getOrderByRequestIdAndVendorId`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
     if (response.ok) {
       return response.json();
     } else {
