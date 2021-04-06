@@ -187,6 +187,7 @@ const UploadQuotation = (props) => {
           vendorId: "dcc3cfbe-8157-4fb7-b6ba-dad59ff7a664",
         },
       ];
+      console.log(caseId, "case id");
 
       console.log(orders, "orders");
       payload.append("comment", formData.comment);
