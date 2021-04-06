@@ -95,7 +95,7 @@ ReactDOM.render(
           <PrivateRouteVendor path="/vendor" component={VendorLayout} />
           <Route path="/admin/login" exact component={Login} />
           <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-          <Redirect exact="true" from="/" to="/admin/login" />
+          {/* <Redirect exact="true" from="/" to="/admin/login" /> */}
           <Redirect exact from="/admin" to="/admin/login" />
           <Redirect exact="true" from="/" to="/vendor/login" />
           <Redirect exact from="/vendor" to="/vendor/login" />
